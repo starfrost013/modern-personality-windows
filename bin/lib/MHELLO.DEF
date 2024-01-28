@@ -1,0 +1,15 @@
+NAME    MHello
+
+DESCRIPTION 'Simple Microsoft Windows Application (medium model)'
+
+STUB    'WINSTUB.EXE'
+
+CODE PRELOAD MOVEABLE DISCARDABLE
+DATA PRELOAD MOVEABLE
+
+HEAPSIZE  2048
+STACKSIZE 4096
+
+EXPORTS
+    HelloWndProc @1
+    About        @2

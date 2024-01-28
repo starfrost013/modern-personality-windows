@@ -1,0 +1,12 @@
+apps - inbuilt apps (msdos executive, cardfile, clock, reversi, paint, etc)
+bin - possibly a build directory? tools
+gdi - GDI obviously
+kernel - kernel obviously
+libw - Windows libraries (libc for windows ???)
+msdos - WINOLDAP?, int21 services
+oem - OEM-customisable stuff
+pif - PIFs, PIF editor
+rc - Resource Compiler
+release - build directory for release
+user - USER obviously
+write - Windows Write

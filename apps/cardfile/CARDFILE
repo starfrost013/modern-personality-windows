@@ -1,0 +1,65 @@
+cardfile.res:  cardfile.rc cardfile.ico
+    rc -r cardfile.rc
+
+inres.obj: inres.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _TEXT inres.c
+
+innew.obj: innew.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NEW innew.c
+
+index.obj:  index.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 index.c
+
+inpaint.obj: inpaint.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 inpaint.c
+
+ininput.obj: ininput.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 ininput.c
+
+inopen.obj: inopen.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 inopen.c
+
+inscroll.obj: inscroll.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 inscroll.c
+
+indos2.obj: indos2.asm
+    masm -D?PLM -D?WIN indos2.asm;
+
+incard.obj: incard.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 incard.c
+
+intext.obj: intext.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES1 intext.c
+
+infile.obj: infile.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _FILE infile.c
+
+indos.obj: indos.asm
+    masm -D?PLM -D?WIN indos.asm;
+
+inbitmap.obj: inbitmap.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES2 inbitmap.c
+
+inclip.obj: inclip.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES2 inclip.c
+
+inprint.obj: inprint.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES2 inprint.c
+
+infind.obj: infind.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES3 infind.c
+
+indb.obj: indb.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES3 indb.c
+
+indial.obj: indial.c
+    cc -u -d -c -AS -Gsw -Oas -Zpe -I\LIB -NT _NRES3 indial.c
+
+cardfile.exe:  index.obj cardfile.def inpaint.obj ininput.obj \
+            infile.obj inscroll.obj indb.obj indos.obj \
+            incard.obj cardfile.res intext.obj inprint.obj inres.obj \
+            indos2.obj infind.obj innew.obj inclip.obj inbitmap.obj \
+            indial.obj inopen.obj
+    link4 @cardfile.lnk
+    mapsym cardfile
+    rc cardfile.res

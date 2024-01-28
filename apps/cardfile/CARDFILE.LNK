@@ -1,0 +1,13 @@
+index.obj    inpaint.obj  +
+infile.obj   indb.obj     +
+ininput.obj  inscroll.obj +
+indos.obj    incard.obj   +
+intext.obj   inprint.obj  +
+inres.obj    indos2.obj   +
+infind.obj   innew.obj    +
+inclip.obj   inbitmap.obj +
+indial.obj   inopen.obj
+cardfile.exe /ALIGN:4
+cardfile.map/map
+slibw
+cardfile.def

@@ -1,0 +1,153 @@
+ ; API definitions for KERNEL
+
+ DESCRIPTION 'Microsoft Windows Kernel Interface for 2.x and 3.x' ; Singletasking DOS
+ EXETYPE WINDOWS
+ STUB 'KERNSTUB.EXE ; this must be built with regular LINK!
+
+LIBRARY KERNEL
+
+SEGMENTS
+    IGROUP   CLASS 'CODE' PRELOAD FIXED  ; this is the only segment i think
+
+HEAPSIZE 512 ;  ?
+
+EXPORTS
+
+    ; General stuff
+    ; Todo - which ones are 'NODATA' (no static data)?
+    FATALEXIT               @ 1
+    EXITKERNEL              @ 2
+    GETVERSION              @ 3
+
+    ; Local (non-shared) memory manager - interface to MT-DOS memory manager
+    LOCALINIT               @ 4
+    LOCALALLOC              @ 5
+    LOCALREALLOC            @ 6
+    LOCALFREE               @ 7
+    LOCALLOCK               @ 8
+    LOCALUNLOCK             @ 9
+    LOCALSIZE               @ 10
+    LOCALHANDLE             @ 11
+    LOCALFLAGS              @ 12
+    LOCALCOMPACT            @ 13
+    LOCALNOTIFY             @ 14
+
+    ; Global (shared) memory manager - interface to MT-DOS memory manager
+    GLOBALALLOC             @ 15
+    GLOBALREALLOC           @ 16
+    GLOBALFREE              @ 17
+    GLOBALLOCK              @ 18
+    GLOBALUNLOCK            @ 19
+    GLOBALSIZE              @ 20
+    GLOBALHANDLE            @ 21
+    GLOBALFLAGS             @ 22
+    LOCKSEGMENT             @ 23
+    UNLOCKSEGMENT           @ 24
+    GLOBALCOMPACT           @ 25
+    GLOBALFREEALL           @ 26
+    SETSWAPHOOK             @ 27
+    GLOBALMASTERHANDLE      @ 28
+
+    ; """Scheduler""" (it's cooperative)
+    YIELD                   @ 29
+    WAITEVENT               @ 30
+    POSTEVENT               @ 31
+    SETPRIORITY             @ 32
+    LOCKCURRENTTASK         @ 33
+    SETTASKQUEUE            @ 34
+    GETTASKQUEUE            @ 35
+    GETCURRENTTASK          @ 36
+    GETCURRENTPDB           @ 37
+    SETTASKSIGNALPROC       @ 38
+    SETTASKSWITCHPROC       @ 39
+    SETTASKINTERCHANGE      @ 40
+
+    ; Funny stuff
+    ENABLEDOS               @ 41
+    DISABLEDOS              @ 42
+    ISSCREENGRAB            @ 43
+    NOHOOKDOSCALL           @ 101 ; 1.02+
+    DOS3CALL                @ 102 ; 1.03+ - DOS 3, as opposed to DOS 4 (MT-DOS) or DOS 5 (OS/2)
+    NETBIOSCALL             @ 103 ; 1.03+
+
+    ; Process Loader and Management
+    BUILDPDB                @ 44
+    LOADMODULE              @ 45
+    FREEMODULE              @ 46
+    GETMODULEHANDLE         @ 47
+    GETMODULEUSAGE          @ 48
+    GETMODULEFILENAME       @ 49
+    GETPROCADDRESS          @ 50
+    MAKEPROCINSTANCE        @ 51
+    FREEPROCINSTANCE        @ 52
+    CALLPROCINSTANCE        @ 53
+    GETINSTANCEDATA         @ 54
+    INITTASK                @ 91 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    GETCODEHANDLE           @ 93 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    DEFINEHANDLETABLE       @ 94 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    LOADLIBRARY             @ 95 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    FREELIBRARY             @ 96 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    VALIDATECODESEGMENTS    @ 100 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+
+    ; Exception handling? (also a part of the process loader)
+    CATCH                   @ 55
+    THROW                   @ 56
+
+    ; WIN.INI functions
+    ; In alpha builds, this was called "User PROfile" (user.pro)
+    ; and the name remained
+    GETPROFILEINT           @ 57
+    GETPROFILESTRING        @ 58
+    WRITEPROFILESTRING      @ 59
+
+    ; Resource Manager (partially written in C here)
+    FINDRESOURCE            @ 60
+    LOADRESOURCE            @ 61
+    LOCKRESOURCE            @ 62
+    FREERESOURCE            @ 63
+    ACCESSRESOURCE          @ 64
+    SIZEOFRESOURCE          @ 65
+    ALLOCRESOURCE           @ 66
+    SETRESOURCEHANDLER      @ 67
+
+    ; Atom Manager
+    ; In this context an "atom" is a string that gets cached either in the local process or in a system-wide
+    ; atom table, so it doesn't have to be loaded from disk. In the 80s, disks were S L O W,
+    ; so it helped. Still exists in Windows today, but basically useless.
+    INITATOMTABLE           @ 68
+    FINDATOM                @ 69
+    ADDATOM                 @ 70
+    DELETEATOM              @ 71
+    GETATOMNAME             @ 72
+    GETATOMHANDLE           @ 73
+
+    ; File utilities
+    OPENFILE                @ 74
+    OPENPATHNAME            @ 75
+    DELETEPATHNAME          @ 76
+    GETTEMPFILENAME         @ 91 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    GETTEMPDRIVE            @ 92 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    GETTEMPFILENAME         @ 97 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    GETLASTDISKCHANGE       @ 98 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    GETLPERRMODE            @ 99 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+
+    ; Standard (ANSI) string libraries...
+    ; yes this was in the kernel
+    ANSINEXT                @ 77
+    ANSIPREV                @ 78
+    ANSIUPPER               @ 79
+    ANSILOWER               @ 80
+
+    ; Standard file libraries (yep, in the kernel again!)
+    _LCLOSE                 @ 81
+    _LREAD                  @ 82
+    _LCREAT                 @ 83
+    _LLSEEK                 @ 84
+    _LOPEN                  @ 85
+    _LWRITE                 @ 86
+
+    ; More string functions
+    LSTRCMP                 @ 87
+    LSTRCPY                 @ 88
+    LSTRCAT                 @ 89
+    LSTRLEN                 @ 90

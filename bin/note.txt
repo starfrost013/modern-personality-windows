@@ -1,0 +1,1 @@
+MASM, EXEMOD, IMPLIB AND CL (BECAUSE OF C2.EXE) MUST BE RUN with -E, otherwise it stack overflows at launch!!!!!

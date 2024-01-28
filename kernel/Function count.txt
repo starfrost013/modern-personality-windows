@@ -1,0 +1,33 @@
+Function count
+
+KERNEL					323
+GDI 					517
+USER					1112
+
+Driver: Communications (COMM)		199
+Driver: Keyboard (US)			15
+Driver: Mouse				21
+Driver: Printer (Epsom)			72
+Driver: Sound (Generic?)		85
+Driver: System (Timer, IRQ etc)		18
+
+Driver: CGA display			~77
+Driver: EGA high-res display		~89
+Driver: EGA high-res display (B&W)	~69
+Driver: EGA lo-res display		~84
+Driver: EGA lo-res display (B&W)	~68
+Driver: EGA (Tseng Labs ET2000)		~84
+Driver: Hercules			~86
+
+Shell (MSDOS)				293
+Windows Write (WRITE)			1063
+
+WINSTUB (DOS Stub)			1
+
+LINK4 (Linker)				259
+
+Required to boot			1952
+Required for runtime			2074
+Required for minimal actual OS		2337
+Everything				4535
+Full OS					????

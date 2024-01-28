@@ -1,0 +1,91 @@
+509838581 /ISG/TEST/WINDOWS/KERNEL
+February 26, 1986 21:49:41 UTC (13:49:41 Redmond)
+
+output folders:
+/KERNEL			Main kernel (debug) output
+/KERNSTUB		Kernel NE stub loader
+/HEAPWALK		Heap-walked kernel?
+/EI			Unknown
+/RETAIL			Retail config kernel
+/WIN			WIN.COM output
+/WINSTUB		WIN.CNF output?
+
+/ATOM.ASM		Atom Manager, cache frequently used strings so you don't have to go to slow asf 80s disks 		Split
+/CONTEXT.ASM		Manages context switching										Split
+/DISKIO.ASM		Disk I/O												Split
+/DOSINIT.ASM		Initialises DOS interrupt hooking (probably)								Split
+/GACHECK.C		Global allocator debug (heap?) checker 			(Also MDOS4)					Split, needs transpiling
+/GADUMP.C		Global allocator debug (heap?) dumper			(Also MDOS4)
+/GADEBUG.H		Global allocator debug (heap?) header files		(Also MDOS4)
+/GALLOC.ASM		Global allocator main file				(Also MDOS4)					Split
+/GALLOC.INC		Global allocator include file				(Also MDOS4)
+/GCOMPACT.ASM		Global allocator - compact memory			(Also MDOS4)					Split
+/GINTERF.ASM		Global allocator interface?				(Also MDOS4)					Split
+/GLRU.ASM		Global allocator - Least Recently Used algorithm	(Also MDOS4)					Split
+/GMEM.ASM		Global allocator - general allocation			(Also MDOS4)					Split
+/GMEM.INC		Global allocator include file				(Also MDOS4)
+/GWINTERF.INC		Global allocator interface include file?		(Also MDOS4? - is 'W' windows?)
+/GWMEM.INC		Global allocator general allocation include file?	(Also MDOS4? - is 'W' windows?)
+/HANDLE.ASM		File/memory handle?											Split
+/HANDLE.H		File/memory handle? C header
+/HANDLE.INC		File/memory handle? ASM header
+/KDATA.ASM		Kernel Data Segment											Split
+/KDEBUG.INC		Kernel debug code
+/KERNEL.CCS		Kernel part of makefile
+/KERNEL.DEF		Kernel ASM API defines											Split
+/KERNEL.H		Kernel C API defines
+/KERNEL.INC		Kernel ASM include file
+/KERNEL.LNK		Kernel linker file
+/KERNSTUB.ASM		KERNSTUB - Loads kernel NE header									Split
+/KPR.BAT		"""Build system"""
+/I21EXEC.INC		Executes INT21 calls (some of which are hooked)
+/I21EXIT.INC		Exits INT21 calls
+/I21MEM.ASM		INT21 memory management											Split
+/INT21.ASM		INT21 (DOS API) main file										Split
+/INT24.ASM		INT24 (fatal error) main file										Split
+/LACHECK.C		Local allocator debug (heap?) check code								Split, needs transpiling
+/LADEBUG.H		Local allocator debug header
+/LADUMP.C		Local allocator debug (heap?) dump code
+/LALLOC.ASM		Local allocator main file										Split
+/LALLOC.INC		Local allocator include file
+/LCOMPACT.ASM		Local allocator - compact memory									Split
+/LD.C			Executable loader											Split, needs transpiling
+/LD.CCS			Executable loader makefile
+/LDAUX.ASM		Executable loader utility functions									Split
+/LDBOOT.ASM		Slow-boot code												Split
+/LDDEBUG.ASM		Debugger interface											Split
+/LDFILE.ASM		File loader												Split
+/LDFASTB.ASM		Fast-boot (WIN100.BIN) code										Split
+/LDHEADER.ASM		NE parser							(Possibly also MDOS4)			Split
+/LDINIT.C		General OS init?
+/LDINT.ASM		Handles interrupts											Split
+/LDOPEN.ASM		File opening and deleting										Split
+/LDRELOC.ASM		Relocating chunks ("segments") memory				(Possibly also MDOS4)			Split
+/LDSEG.ASM		Memory chunk ("segment") management				(Possibly also MDOS4)			Split
+/LDSTACK.ASM		Stack management											Split
+/LDUTIL.ASM		Loader utilities											Split
+/LINTERF.ASM		Local memory allocator interface									Split				
+/LSTRING.ASM		Standard string manipulation functions									Split
+/MEM.CCS		Memory manager component makefile
+/MKKERNEL.BAT		"""Build system"""
+/MISC.CCS		"Miscellaneous" component makefile
+/NEWEXE.H		NE header C version
+/NEWEXE.DOC		NE header documentation
+/NEWEXE.INC		NE header ASM version
+/NULOBJ.ASM		What
+/PDB.INC		Process Data Block (process information structure) definition
+/RELKERN.BAT		"""Build system"""
+/RESAUX.ASM		Resource manager utility functions									Split
+/RESMAN.C		Resource manager											Split, not sure what is C/asm
+/RIP.C			Debug Support Routines											Split, not transpiled
+/RIPAUX.ASM		More Debugging support routines
+/SCHED.CCS		Scheduler makefile
+/SCHED.INC		Scheduler ASM defs
+/SCHEDULE.ASM		Scheduler (in a cooperative multitasked OS?)								Split
+/TASK.ASM		Task manager												Split
+/TDB.INC		Task Data Block (part of PDB?)
+/USERPRO.ASM		WIN.INI (originally User.pro, "user profile")								Split
+/WIN.ASM		WIN.COM stub
+/WIN.CCS		WIN.COM makefile
+/WINOBJ.CCS		WIN.COM makefile
+/WINSTUB.ASM		Also WIN.COM
