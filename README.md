@@ -2,9 +2,11 @@
 
 This project attempts to reverse engineer Microsoft Windows 1.x entirely to recompliable code, as well as research it and Multitasking MS-DOS 4.0 ("MT-DOS"). 
 
-The research repository is located here: [Research Repo](https://github.com/starfrost013/modernpersonality)
+The research repository is located here: 
+[Research Repo] (https://github.com/starfrost013/modern-personality-research)
 
-The runtime used to run the legacy toolchain on modern operating systems is here:[Runtime Repo](https://github.com/starfrost013/modern-personality-runtime)
+The runtime used to run the legacy toolchain on modern operating systems is here:
+[Runtime Repo] (https://github.com/starfrost013/modern-personality-runtime)
 
 ## Notes
 Still in a very early state, not rebuildable yet. The intention is to initially recreate Windows 1.03, compiled as a debug build (checked was not used until Windows NT), based on symbolic debugging inforamation and filenames found in slack space of final production builds of the OS, one "module" at a time, and slowly slipstream each component onto the OS more and more until the operating system has been entirely reversed.

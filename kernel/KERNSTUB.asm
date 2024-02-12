@@ -25,12 +25,9 @@
 ; Specifically, it validates the NE header, does paragraph alignment 
 ; and then loads the first code segment (which in KERNEL is the entry point) and jumps to it.
 
-.686p
-.mmx
-.model large
-
-include newexe.inc ; /libw/inc
-
+.model compact ; ????
+; /libw/inc
+include newexe.inc
 ; Segment type: Pure code
 seg000 segment byte public 'CODE' use16
 assume cs:seg000

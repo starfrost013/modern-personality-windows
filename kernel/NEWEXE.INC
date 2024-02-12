@@ -112,10 +112,10 @@ NEMODINROM	= NEEMSSEPINST	; Module loaded from ROM
 
 ; Target operating systems
 
-NE_UNKNOWN	= 0		; Unknown (any "new-format" OS)
+NE_UNKNOWN	= 0		; Unknown (any "new-format" OS), MT-DOS 11/26/85
 NE_OS2		= 1		; Microsoft/IBM OS/2 (default)
 NE_WINDOWS	= 2		; Microsoft Windows
-NE_DOS4 	= 3		; Microsoft MS-DOS 4.x
+NE_DOS4 	= 3		; Microsoft MS-DOS 4.x (11/17/86+)
 
 ifndef NO_APPLOADER
 NEAPPLOADER     = 0800h         ; set if application has its own loader

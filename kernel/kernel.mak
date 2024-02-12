@@ -3,11 +3,12 @@
 
 #
 # | | | KERNSTUB | | |
-#
+# yes the build output is in the kernel folder
 
-KERNSTUB.OBJ:	KERNSTUB.ASM
-	MASM KERNSTUB.ASM
 
-KERNSTUB.EXE:	KERNSTUB.OBJ
-	LINK KERNSTUB.EXE $@
+KERNSTUB.OBJ:	kernel\KERNSTUB.ASM
+	MASM kernel\KERNSTUB.ASM 
+
+KERNSTUB.EXE:	kernel\KERNSTUB.OBJ
+	LINK kernel\KERNSTUB.EXE $@
 #$@ = kernstub
