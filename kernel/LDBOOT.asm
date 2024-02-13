@@ -575,7 +575,7 @@ SLOWBOOT        proc far
                 jmp     short loc_842A
 ; ---------------------------------------------------------------------------
 
-set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the default app to start with windows (likely a <=DR3 reference) 
+set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the default app to start with windows (likely a <=DR3 remnant) 
                 mov     word ptr cs:, offset SZMSDOSEXE
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
