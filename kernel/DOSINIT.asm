@@ -227,6 +227,7 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 push    cs
                 pop     ds
                 assume ds:cseg01
+                ; Set up the kernel internal variables with MS-DOS INT 20h (terminate program), INT 21h (API), INT 24h (fatal error), and INT 27h (old TSR) procs.
                 mov     ax, 3520h
                 int     21h             ; DOS - 2+ - GET INTERRUPT VECTOR
                                         ; AL = interrupt number

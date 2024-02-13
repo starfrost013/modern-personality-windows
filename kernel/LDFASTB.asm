@@ -4,7 +4,9 @@
 ;
 ; LDFASTB.ASM
 ;
-; Implements fast-boot. Fast boot is a method of boo
+; Implements fast-boot. Fast boot is a method of booting involving a pack file and an overlay, containing the options the user selected in setup.
+; this is primarily done in order to speed up boot on very slow systems booting from MFM disks or even floppies, as it's always faster to load two large files
+; than many small files
 ;
 
 ; =============== S U B R O U T I N E =======================================
@@ -154,7 +156,7 @@ forward_ref_on_installed:               ; CODE XREF: FASTBOOT+105↑j
                 xor     bx, bx
                 mov     ax, 401h
                 push    ax
-                mov     ax, 886Ch       ; Forward reference not allowed in installed Windows
+                mov     ax, offset SZERRFORWARDREFERENCE ; Forward reference not allowed in installed Window
                 push    cs
                 push    ax
                 push    bx
@@ -537,7 +539,7 @@ loc_8B8A:                               ; CODE XREF: FASTBOOT+440↑j
 loc_8B97:                               ; CODE XREF: FASTBOOT+423↑j
                 cmp     word ptr cs:LPBOOTAPP+2, 0
                 jz      short loc_8BB3
-mov             bx, offset BOOTEXECBLOCK
+                mov     bx, offset BOOTEXECBLOCK
                 push    word ptr cs:LPBOOTAPP+2
                 push    word ptr cs:LPBOOTAPP
                 push    cs

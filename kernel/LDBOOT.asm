@@ -175,7 +175,7 @@ get_boot_default_filename:                               ; CODE XREF: BOOTSTRAP+
                 push    cs                  
                 pop     ds                      
                 assume ds:cseg01
-                mov     cx, 8296h
+                mov     cx, offset boot_failure_01
                 mov     si, offset SZWINPACKFILE; load win100.bin (fastboot) string          
                 sub     cx, si                  ; get +0x000b (size of "WIN100.BIN" string + drive letter)
                 mov     ax, cx                  
@@ -400,6 +400,8 @@ no_fastboot:                               ; CODE XREF: BOOTSTRAP+25E↑j
                 mov     ax, 83DDh
                 push    ax
                 jmp     INITLOADER
+
+; packfile for fastboot
 ; ---------------------------------------------------------------------------
 SZWINPACKFILE   db 'WIN100.BIN',0
 ; ---------------------------------------------------------------------------
@@ -411,6 +413,11 @@ boot_failure_01:                               ; CODE XREF: BOOTSTRAP:global_ini
                 nop
                 push    cs              ; restore code seg
                 call    EXITKERNEL      ; go back to dos
+
+; This is a null-termianted list of strings with the list of files to load during slowboot.
+; Only up to user.exe is loaded (by a compare of DI with the offset) in load_boot_file
+; then if byte 3 of boot execution block is NOT set to 0x80, rest is ignored and LPBOOTAPP and BOOTEXECBLOCK itself (?) are used
+; otherwise another function loops until msdos
 SZSYSTEMDRV     db 'SYSTEM.DRV',0
 SZKEYBOARDRV    db 'KEYBOARD.DRV',0
 SZMOUSEDRV      db 'MOUSE.DRV',0
@@ -426,7 +433,18 @@ SZMSDOSEXE      db 'MSDOS.EXE',0        ; DATA XREF: SLOWBOOT:loc_8412↓o
                 db 0
 ; ---------------------------------------------------------------------------
 
-loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
+; =============== S U B R O U T I N E =======================================
+
+; load_boot_file (Label)
+;
+; Purpose: Loads a core boot file from the null-terminated list above using the LOADMODULE function.
+;
+; Parameters: es:di -> pointer within the kernel (only a code segment, no segmentation needed) to the binary name to load. Null terminated.            
+;
+; Returns: If a boot file could not be found or was invalid.
+;
+; Notes: Internal only function. Not for C. Possibly needs debugging
+load_boot_file:                               ; CODE XREF: SLOWBOOT+51↓p
                                         ; SLOWBOOT+73↓p
                 push    bp
                 mov     bp, sp
@@ -439,10 +457,10 @@ loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
                 push    ax
                 nop
                 push    cs
-                call    near ptr LOADMODULE
+                call    near ptr LOADMODULE     ; attempt to load the binary by calling LOADMODULE
                 cmp     ax, 2                   ; LoadModule Error Code 2 - Invalid Binary
-                jnz     short loc_8360
-                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
+                jnz     short boot_failure_file_corrupted
+                cmp     word ptr [bp+4], offset SZMSDOSDEXE ; did we try to load MSDOSD.EXE?
                 jnb     short loc_8396
                 mov     ax, 401h
                 push    ax
@@ -452,19 +470,19 @@ loc_830F:                               ; CODE XREF: SLOWBOOT+51↓p
                 push    cs
                 push    word ptr [bp+4]
                 call    KERNELERROR
-                jmp     short loc_835D
+                jmp     short boot_failure_file_not_found
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTFINDFILE db 'BOOT: Unable to find file - ',0
                                         ; DATA XREF: BOOTSTRAP+327↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-loc_835D:                               ; CODE XREF: BOOTSTRAP+333↑j
+boot_failure_file_not_found:                               ; CODE XREF: BOOTSTRAP+333↑j
                 jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
                 align 2
 
-loc_8360:                               ; CODE XREF: BOOTSTRAP+31A↑j
+boot_failure_file_corrupted:                               ; CODE XREF: BOOTSTRAP+31A↑j
                 cmp     ax, 0Bh
                 jnz     short loc_8396
                 mov     ax, 401h
@@ -506,7 +524,7 @@ SZBOOTCANNOTLOAD db 'BOOT: Unable to load - ',0
                 db 24h
 ; ---------------------------------------------------------------------------
 
-boot_failure_02:                               ; CODE XREF: BOOTSTRAP:loc_835D↑j
+boot_failure_02:                               ; CODE XREF: BOOTSTRAP:boot_failure_file_not_found↑j
                                         ; BOOTSTRAP:loc_8393↑j ...
                 cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_83D5
@@ -557,7 +575,7 @@ SLOWBOOT        proc far
                 jmp     short loc_842A
 ; ---------------------------------------------------------------------------
 
-set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the 
+set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the default app to start with windows (likely a <=DR3 reference) 
                 mov     word ptr cs:, offset SZMSDOSEXE
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
@@ -566,54 +584,58 @@ set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j
 loc_842A:                               ; CODE XREF: SLOWBOOT+33↑j
                 mov     di, offset SZSYSTEMDRV ; "SYSTEM.DRV"
 
-loc_842D:                               ; CODE XREF: SLOWBOOT+62↓j
-                push    di
-                call    loc_830F
+; this part loads every core file that is not the shell
+load_file_loop:                               ; CODE XREF: SLOWBOOT+62↓j
+                push    di                    ; prepare next file to load
+                call    load_boot_file        ; load the next file
                 push    cs
-                pop     es
+                pop     es                      ; set es=cs, as 8086 string instructions copy from ES:SI to DS:DI and we want to copy from the kernel 
                 assume es:cseg01
                 mov     cx, 0FFFFh
-                xor     ax, ax
-                cld
-                repne scasb
-                cmp     di, 82F1h
-                jb      short loc_842D
-                cmp     word ptr cs:BOOTEXECBLOCK+2, 80h
-                jz      short loc_844F
-                call    near ptr INITFWDREF
-                jmp     short loc_8469
+                xor     ax, ax                  ; set terminator byte (buffer overflow - will copy up to 64kb)
+                cld                             ; load in the right direction!
+                repne scasb                     ; advance to next file in list above
+                cmp     di, offset SZUSEREXE    ; have we oaded user.exe yet (next file is msdos.exe)?
+                jb      short load_file_loop    ; load the next file  byte at a time until 0x00 found
+                cmp     word ptr cs:BOOTEXECBLOCK+2, 80h        ; is the 3rd byte of bootexecblock 0x80 (bit 0 and nothing else)?
+                jz      short load_default_shell          ; if it is 
+                call    near ptr INITFWDREF     ; initialise forward refernece
+                jmp     short load_user_specified_shell
 ; ---------------------------------------------------------------------------
 
-loc_844F:                               ; CODE XREF: SLOWBOOT+6B↑j
+; this part loads everything after USER.EXE and before MSDOS.EXE
+load_default_shell:                               ; CODE XREF: SLOWBOOT+6B↑j
                                         ; SLOWBOOT+84↓j
-                push    di
-                call    loc_830F
+                push    di                      ; advance to next file (in this case, always USER.EXE)
+                call    load_boot_file          ; load it
                 push    cs
                 pop     es
                 mov     cx, 0FFFFh
-                xor     ax, ax
+                xor     ax, ax                  ; terminate on a zero
                 cld
-                repne scasb
-                cmp     di, offset SZMSDOSEXE ; "MSDOS.EXE"
-                jb      short loc_844F
-                call    near ptr INITFWDREF
-                call    ENABLEINT21
+                repne scasb                     ; load next string byte at a time
+                cmp     di, offset SZMSDOSEXE    ; did we load msdos.exe yet?
+                jb      short load_default_shell    
+                call    near ptr INITFWDREF         ; if so, branch
+                call    ENABLEINT21                 ; turn on DOS
 
-loc_8469:                               ; CODE XREF: SLOWBOOT+70↑j
-                mov     ax, offset BOOTEXECBLOCK
-                push    word ptr cs:LPBOOTAPP+2
-                push    word ptr cs:LPBOOTAPP
+load_user_specified_shell:                               ; CODE XREF: SLOWBOOT+70↑j
+                mov     ax, offset BOOTEXECBLOCK         ; push the bootexecblock, to tell the OS what to load
+                push    word ptr cs:LPBOOTAPP+2          ; push 4 bytes of lpbootapp (not sure what this does)
+                push    word ptr cs:LPBOOTAPP  
                 push    cs
                 push    ax
                 nop
                 push    cs
-                call    near ptr LOADMODULE
+                call    near ptr LOADMODULE              ; load the user-specified shell
                 or      ax, ax
-                jz      short loc_8484
-                jmp     near ptr BOOTDONE
+                jz      short boot_failure_user_specified
+                jmp     near ptr BOOTDONE                ; boot is done
 ; ---------------------------------------------------------------------------
 
-loc_8484:                               ; CODE XREF: SLOWBOOT+A2↑j
+; Called when the user-specified shell (byte 3 of BOOTEXECBLOCK not 0x80h) is specified,
+; and the shell failed to load
+boot_failure_user_specified:                               ; CODE XREF: SLOWBOOT+A2↑j
                 mov     ax, 401h
                 push    ax
                 mov     ax, offset SZBOOTCANNOTLOADFILE ; "BOOT: unable to load - \x00$"
