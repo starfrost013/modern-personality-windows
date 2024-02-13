@@ -19,7 +19,7 @@
 ;
 ; Returns: KERNELERROR called and system exits if boot fails. Calls the function pointer (relative to current code segment) in AX if boot succeeds.
 ;
-; Notes: Internal only function. Not for C. Possibly needs debugging
+; Notes: Internal only function. Not for user apps. Possibly needs debugging
 
 FASTBOOT        proc near               ; CODE XREF: BOOTSTRAP+264↑j
 

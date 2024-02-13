@@ -98,7 +98,7 @@ GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 endp
 ; Returns: The task handle.
 ;          This function failing is a FATAL ERROR, and the OS EXITS.
 ;
-; Notes: Internal only function. Not for C. Possibly needs debugging
+; Notes: Internal only function. Not for user apps. Possibly needs debugging
 
 
 GETTASKHANDLE   proc near               ; CODE XREF: WAITEVENT+8↑p
@@ -271,6 +271,7 @@ set_priority:                               ; CODE XREF: SETPRIORITY+12↑j
                 cbw                                 ; sign extend it for calling convention
                 retf    4                           
 SETPRIORITY     endp
+
 
 ; =============== S U B R O U T I N E =======================================
 ; context.asm?

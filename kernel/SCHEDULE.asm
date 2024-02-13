@@ -1,4 +1,5 @@
-
+; ModernPersonality
+; Copyright © 2023-2024 starfrost
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -137,7 +138,7 @@ arg_2           = word ptr  6
                 mov     ah, 1Ah
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     ds, [bp+arg_2]
                 and     byte ptr ds:3Ah, 0BFh
                 mov     cx, [bp+arg_0]
@@ -172,7 +173,7 @@ loc_3ACA:                               ; CODE XREF: RESTORESTATE+86↑j
                 mov     ah, 50h ; 'P'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     si, ds:30h
                 or      si, si
                 jz      short loc_3AE0

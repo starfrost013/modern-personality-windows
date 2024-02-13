@@ -138,7 +138,7 @@ loc_1F3A:                               ; CODE XREF: OPENFILE+28↑j
                 jb      short loc_1F56
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 jnb     short loc_1F5B
 
 loc_1F53:                               ; CODE XREF: OPENFILE+66↓j

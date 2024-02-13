@@ -231,7 +231,7 @@ LAST_INT21_FUNCTION_NUMBER       db 0                    ; DATA XREF: INT21HANDL
 NOHOOKDOSCALL   proc far
                 pushf                   ; KERNEL_101
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 retf
 NOHOOKDOSCALL   endp
 
@@ -271,7 +271,7 @@ loc_3E65:                               ; CODE XREF: ENABLEDOS+3C↓j
                 mov     dl, 0FFh
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 jnz     short loc_3E65
                 pop     bx
                 mov     ah, 50h ; 'P'
@@ -401,7 +401,15 @@ DISABLEDOS      endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: ENABLEINT21
+;
+; Purpose: Enable Windows' INT 20h, INT 21h, and INT 27h handling.
+;
+; Parameters: None?                           
+;
+; Returns: Nothing, but the INT 20, 21 and 27h handling is set to Windows' own handling (which is sometimes sent out to DOS) instead of MS-DOS.
+;
+; Notes: Internal only function. Not for user apps. 
 ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                                         ; FASTBOOT+3E8↓p
                 mov     al, 1
@@ -416,7 +424,7 @@ ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                 assume es:cseg01
                 mov     bx, 80h
                 cli
-                mov     word ptr es:[bx], 408Ch
+                mov     word ptr es:[bx], offset INT20HANDLER
                 mov     word ptr es:[bx+2], cs
                 mov     word ptr es:[bx+4], offset INT21HANDLER
                 mov     word ptr es:[bx+6], cs
@@ -431,7 +439,15 @@ ENABLEINT21     endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Function Name: DISABLEINT21
+;
+; Purpose: Disable Windows' INT 20h, INT 21h, and INT 27h handling, and return MS-DOS' original handling.
+;
+; Parameters: None?                           
+;
+; Returns: Nothing, but the INT 20, 21 and 27h handling is reset to DOS' own handling (which is sometimes sent out to DOS) instead of MS-DOS.
+;
+; Notes: Internal only function. Not for user apps. 
 DISABLEINT21    proc near               ; CODE XREF: EXITKERNEL+24↓p
                 xor     ax, ax
                 xchg    al, cs:FINT21
@@ -785,7 +801,7 @@ DOSNetRedirectorHook:                   ; DATA XREF: cseg01:3DCE↑o
                 mov     byte ptr [si], 24h ; '$'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     word ptr [si]
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
@@ -800,7 +816,7 @@ DOSTruenameHook:                        ; DATA XREF: cseg01:3DD4↑o
                 mov     byte ptr [si], 24h ; '$'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     word ptr [si]
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
@@ -859,7 +875,7 @@ loc_41DF:                               ; CODE XREF: INT21HANDLER+14A↑j
                 mov     byte ptr [si], 0F0h
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     dx
                 mov     [si], dl
                 pop     si
@@ -936,7 +952,7 @@ PREVINT21RETURN_1 proc far              ; CODE XREF: INT21HANDLER+119↑p
                 mov     byte ptr [si], 24h ; '$'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     word ptr [si]
                 pop     si
                 retn
@@ -952,7 +968,7 @@ PREVINT21RETURN_2 proc near             ; CODE XREF: INT21HANDLER+124↑p
                 mov     dl, 0F0h
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     dx
 
 nullsub_3:                              ; CODE XREF: SftThing+B↓j
@@ -1017,7 +1033,7 @@ sub_4280        endp
 
 SftThing        proc near               ; CODE XREF: SftThing+16↓j
                                         ; SftThing+20↓j
-                jmp     jmp_previous_int21
+                jmp     jmp_msdos
 ; ---------------------------------------------------------------------------
 
 loc_428B:                               ; CODE XREF: DOSIoctlHook:loc_4458↓p
@@ -1081,12 +1097,12 @@ loc_42AA:                               ; CODE XREF: SftThing+11↑j
 loc_4301:                               ; CODE XREF: SftThing+6A↑j
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 lea     dx, ds:3Ch
                 mov     ah, 3Bh ; ';'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
 
 loc_4315:                               ; CODE XREF: SftThing+77↑j
                 pop     word ptr es:[bx+2]
@@ -1101,10 +1117,12 @@ loc_4315:                               ; CODE XREF: SftThing+77↑j
 loc_4325:                               ; CODE XREF: SftThing+2C↑j
                                         ; SftThing+34↑j
                 cmp     ah, 3Dh ; '='
-                jnz     short jmp_previous_int21
+                jnz     short jmp_msdos
                 call    GROWSFT
 
-jmp_previous_int21:                     ; CODE XREF: SftThing↑j
+; Disables interrupts and calls PREVINT21PROC.
+; PREVINT21PROC always stores the original, MS-DOS calls, so calling into PREVINT21PROC is basically ide
+jmp_msdos:                     ; CODE XREF: SftThing↑j
                                         ; SftThing+A0↑j ...
                 pop     ds
                 pop     bp
@@ -1283,7 +1301,7 @@ DOSDirectOutHook:                       ; DATA XREF: cseg01:3DD7↑o
                 jz      short loc_4458
                 cmp     dl, 0FFh
                 jz      short loc_4458
-                jmp     jmp_previous_int21
+                jmp     jmp_msdos
 ; ---------------------------------------------------------------------------
 
 loc_4458:                               ; CODE XREF: DOSIoctlHook+A8↑j
@@ -1447,7 +1465,7 @@ loc_450A:                               ; CODE XREF: DOSSelectDefaultDriveHook+7
                 mov     ah, 19h
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     ah, 0Eh
                 cmp     al, dl
                 pop     dx
@@ -1517,7 +1535,7 @@ DOSGeneralFileHook proc near            ; CODE XREF: DOSIoctlHook:loc_43C4↑j
 loc_456A:                               ; CODE XREF: DOSGeneralFileHook+F↑j
                 pop     di
                 pop     es
-                jmp     jmp_previous_int21
+                jmp     jmp_msdos
 DOSGeneralFileHook endp
 
 
@@ -1748,7 +1766,7 @@ DOSTerminateOldHook proc near           ; DATA XREF: cseg01:3E07↑o
                 mov     si, [si]
                 cmp     si, [bp+4]
                 jz      short near ptr DOSTerminateHook
-                jmp     jmp_previous_int21
+                jmp     jmp_msdos
 DOSTerminateOldHook endp
 
 
@@ -1823,7 +1841,7 @@ loc_475E:                               ; CODE XREF: DOSTerminateHook+39↑j
                 mov     ah, 4Ch ; 'L'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
 
 loc_478C:                               ; DATA XREF: BUILDPDB+8B↓o
                 mov     bp, sp

@@ -182,6 +182,7 @@ SZERRCURRENTDRIVENOTMATCH db 'Current drive does not match$'
                                         ; DATA XREF: INITDOSVARP:wrong_current_drive↓o
                 db 0Dh,0Ah,'$'
 ; ---------------------------------------------------------------------------
+int22_return:
                 iret
 
 ; =============== S U B R O U T I N E =======================================
@@ -227,7 +228,8 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 push    cs
                 pop     ds
                 assume ds:cseg01
-                ; Set up the kernel internal variables with MS-DOS INT 20h (terminate program), INT 21h (API), INT 24h (fatal error), and INT 27h (old TSR) procs.
+                ; Set up the kernel internal variables with MS-DOS INT 20h (terminate program), INT 21h (API), INT 24h (fatal error), and INT 27h (old TSR) procs,
+                ; this is so they can be restored after exiting from a legacy dos app
                 mov     ax, 3520h
                 int     21h             ; DOS - 2+ - GET INTERRUPT VECTOR
                                         ; AL = interrupt number
@@ -254,8 +256,8 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 mov     word ptr PREVINT27PROC+2, es ; ""
                 mov     ah, 52h ; 'R'
                 int     21h             ; DOS - 2+ internal - GET LIST OF LISTS
-                                        ; Return: ES:BX -> DOS list of lists
-                mov     ax, es:[bx+0Ch]
+                                        ; Return: ES:BX -> DOS list of lists (SYSVARS table)
+                mov     ax, es:[bx+0Ch] ; copy the pointer to the MS-DOS console device to the PREVBCON
                 mov     dx, es:[bx+0Eh]
                 mov     word ptr PREVBCON, ax
                 mov     word ptr PREVBCON+2, dx
@@ -433,7 +435,7 @@ INITDOSVARP     proc near               ; CODE XREF: BOOTSTRAP+D3↑p
                 int     21h             ; DOS - 2+ - GET INTERRUPT VECTOR
                                         ; AL = interrupt number
                                         ; Return: ES:BX = value of interrupt vector
-                mov     word ptr PREVINT21PROC, bx ; move it to kernel data segment for later WINOLDAP
+                mov     word ptr PREVINT21PROC, bx ; move it to kernel data segment for later use
                 mov     word ptr PREVINT21PROC+2, es
                 mov     ah, 30h ; '0'
                 int     21h             ; DOS - GET DOS VERSION
@@ -482,7 +484,7 @@ loc_8F84:                               ; CODE XREF: INITDOSVARP+59↓j
                                         ; Return: ES:BX = value of interrupt vector
                 mov     ah, 25h ; '%'
                 mov     al, 22h ; '"'
-                mov     dx, 8DD6h
+                mov     dx, offset int22_return
                 int     21h             ; DOS - SET INTERRUPT VECTOR
                                         ; AL = interrupt number
                                         ; DS:DX = new vector to be used for specified interrupt

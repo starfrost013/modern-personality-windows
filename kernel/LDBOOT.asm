@@ -443,7 +443,7 @@ SZMSDOSEXE      db 'MSDOS.EXE',0        ; DATA XREF: SLOWBOOT:loc_8412↓o
 ;
 ; Returns: If a boot file could not be found or was invalid.
 ;
-; Notes: Internal only function. Not for C. Possibly needs debugging
+; Notes: Internal only function. Not for user apps. Possibly needs debugging
 load_boot_file:                               ; CODE XREF: SLOWBOOT+51↓p
                                         ; SLOWBOOT+73↓p
                 push    bp
@@ -556,7 +556,7 @@ BOOTSTRAP       endp ; sp-analysis failed
 ; Returns: Probably not until the OS exits (either from an error ror somethnig else)
 ;          
 ;
-; Notes: Internal only function. Not for C. Possibly needs debugging
+; Notes: Internal only function. Not for user apps. Possibly needs debugging
 SLOWBOOT        proc far
                 mov     word ptr cs:BOOTEXECBLOCK+6, offset WIN_SHOW        
                 mov     word ptr cs:BOOTEXECBLOCK+8, cs                     

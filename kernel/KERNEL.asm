@@ -1,7 +1,4 @@
 
-; External Entry #3 into the Module
-; Attributes (0001): Fixed Exported
-;
 
 ;
 ; External Entry #44 into the Module

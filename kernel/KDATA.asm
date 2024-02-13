@@ -149,20 +149,31 @@ PTIMERPROC      dd 0                    ; DATA XREF: BOOTDONE+53↓r
                                         ; INITFWDREF+A4↓w ...
 PKEYPROC        dd 0                    ; DATA XREF: OPENFILE+BE↓r
                                         ; INITFWDREF+C2↓w ...
-PREVINT20PROC   db 0,0,0,0              ; DATA XREF: DISABLEINT21+1B↓r
+
+; MS-DOS's original INT 20h (old terminate) pointer - restored by DISABLEINT21, overwritten by ENABLEINT21, but stored here so they can be restored.
+PREVINT20PROC   dd 0                     ; DATA XREF: DISABLEINT21+1B↓r
                                         ; INITFWDREF+9↓w ...
+
+; MS-DOS's original INT 21h (DOS API) pointer - restored by DISABLEINT21, overwritten by ENABLEINT21, but stored here so they can be restored.
 PREVINT21PROC   dd 0                    ; DATA XREF: OPENFILE+59↓r
                                         ; RESTORESTATE+42↓r ...
+; MS-DOS's original INT 24h (fatal error) pointer - restored by DISABLEINT21, overwritten by ENABLEINT21, but stored here so they can be restored.
 PREVINT24PROC   dd 0                    ; DATA XREF: ENABLEDOS+67↓w
                                         ; DISABLEDOS+19↓r ...
-PREVINT27PROC   db 0,0,0,0              ; DATA XREF: DISABLEINT21+3C↓r
+; MS-DOS's original INT 27h (old TSR) pointer - restored by DISABLEINT21, overwritten by ENABLEINT21, but stored here so they can be restored.
+PREVINT27PROC   dd 0                    ; DATA XREF: DISABLEINT21+3C↓r
                                         ; INITFWDREF+30↓w ...
+
+; Original INT 3Fh (dynamic linking) pointer - may be present on MDOS4, if something like novell netware is running? Does windows change this itself?
 PREVINT3FPROC   dd 0                    ; DATA XREF: EXITKERNEL+D↓r
                                         ; PDB_CALL_SYSTEM_ENTRY+9↓r ...
+
+; Stores the seg address pointer to the internal MS-DOS console device within the SYSVARS table of MS-DOS by calling the GET LIST OF LISTS (SYSVARS) undocumented function.
+; Presumably so WINOLDAP can redirect console handling for "well behaved" apps like COMMAND.COM
 PREVBCON        dd 0                    ; DATA XREF: ENABLEDOS+54↓w
                                         ; DISABLEDOS+3E↓r ...
 
-; 1 if the kernel is still initialising, 0 if it isn't. Set to 0 during INITTASK phase, 1 by default.
+; 1 if the kernel is still initialising, 0 if it isn't. Set to 0 during INITTASK function phase of boot, 1 by default.
 FBOOTING        db 1                    ; DATA XREF: ALLOCSEG+16↓r
                                         ; ADDMODULE+35↓r ...
 CDEVAT          db 0                    ; DATA XREF: INT24HANDLER+1D↓w
@@ -177,8 +188,7 @@ BUFPOS          dw 0                    ; DATA XREF: INT24HANDLER+44↓w
 ; Buffer for reading from the user profile (WIN.INI file)
 USERPROBUF      db 50h dup(0)
 
-; Filename of the user profile. In Windows 1.0 DR5 and Windows 1.0 Alpha,
-; this file was called USER.PRO
+; Filename of the user profile. In Windows 1.0 DR4 (and possibly earlier), as well DR5 and Windows 1.0 Alpha, this file was called USER.PRO
 SZUSERPRO       db 'WIN.INI',0
 
 ; Start of the message telling you to insert a disk if, (usually in floppy-based Windows installations),

@@ -429,7 +429,7 @@ arg_8           = word ptr  0Eh
                 mov     ah, 0Eh
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     [bp+var_4], al
                 les     di, cs:PCURRENTPDB
                 push    word ptr es:[di]
@@ -437,7 +437,7 @@ arg_8           = word ptr  0Eh
                 mov     ah, 50h ; 'P'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     dx, [bp+arg_6]
                 mov     si, [bp+arg_0]
                 mov     ah, 55h ; 'U'
@@ -448,7 +448,7 @@ arg_8           = word ptr  0Eh
                 mov     ah, 50h ; 'P'
                 pushf
                 cli
-                call    cs:PREVINT21PROC
+                call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 mov     es, dx
                 add     si, dx
                 mov     ax, [bp+arg_8]
