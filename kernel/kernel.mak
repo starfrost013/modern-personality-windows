@@ -9,6 +9,6 @@
 KERNSTUB.OBJ:	kernel\KERNSTUB.ASM
 	MASM kernel\KERNSTUB.ASM 
 
-KERNSTUB.EXE:	kernel\KERNSTUB.OBJ
-	LINK kernel\KERNSTUB.EXE $@
+#KERNSTUB.EXE:	kernel\KERNSTUB.OBJ#
+#	LINK kernel\KERNSTUB.EXE $@
 #$@ = kernstub

@@ -27,7 +27,7 @@
 
 .model compact ; ????
 ; /libw/inc
-include newexe.inc
+;include newexe.inc
 ; Segment type: Pure code
 seg000 segment byte public 'CODE' use16
 assume cs:seg000
