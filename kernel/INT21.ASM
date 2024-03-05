@@ -300,7 +300,7 @@ loc_3E96:                               ; CODE XREF: ENABLEDOS+47↑j
                 push    cs
                 pop     ds
                 assume ds:cseg01
-                mov     dx, 48E2h
+                mov     dx, offset INT24HANDLER
                 mov     ax, 2524h
                 int     21h             ; DOS - SET INTERRUPT VECTOR
                                         ; AL = interrupt number
@@ -1823,8 +1823,8 @@ loc_473E:                               ; CODE XREF: DOSTerminateHook+48↑j
                 mov     cx, cs:HEADTDB
                 jcxz    short loc_47A8
                 mov     es, si
-                mov     bx, cs:INT22BASE
-                mov     word ptr es:[bx], 478Ch
+                mov     bx, cs:INT22BASE ; set int 22h handler in ISR to int22 handler below
+                mov     word ptr es:[bx], offset int22_handler
                 mov     word ptr es:[bx+2], cs
                 xchg    ax, di
 
@@ -1843,7 +1843,9 @@ loc_475E:                               ; CODE XREF: DOSTerminateHook+39↑j
                 cli
                 call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
 
-loc_478C:                               ; DATA XREF: BUILDPDB+8B↓o
+; terminates...a legacy dos app?
+
+int22_handler:                               ; DATA XREF: BUILDPDB+8B↓o
                 mov     bp, sp
                 add     bp, 10h
                 mov     ds, cs:CURTDB
@@ -1861,5 +1863,5 @@ loc_478C:                               ; DATA XREF: BUILDPDB+8B↓o
 loc_47A8:                               ; CODE XREF: DOSTerminateHook+69↑j
                 push    si
                 push    si
-                call    cs:PEXITPROC
+                call    cs:PEXITPROC ; exit windows????
 DOSTerminateHook endp ; sp-analysis failed

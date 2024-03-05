@@ -55,7 +55,7 @@ CHECKSEGCHKSUM  proc near               ; CODE XREF: LOADSEGMENT+155↓p
                 push    ax
                 call    GETCHKSUMADDR
                 pop     ax
-                jcxz    short locret_E1F
+                jcxz    short check_seg_done
                 shl     cx, 1
                 shl     cx, 1
                 shl     cx, 1
@@ -68,16 +68,16 @@ CHECKSEGCHKSUM  proc near               ; CODE XREF: LOADSEGMENT+155↓p
 
 loc_DDE:                                ; CODE XREF: CHECKSEGCHKSUM+19↓j
                 lodsw
-                xor     dx, ax
+                xor     dx, ax          ; check 1 word of the segment until we are done
                 loop    loc_DDE
                 mov     ax, ds
                 pop     si
                 pop     ds
                 mov     cx, dx
-                xchg    cx, es:[bx]
-                jcxz    short locret_E1F
-                cmp     cx, dx
-                jz      short locret_E1F
+                xchg    cx, es:[bx] ; segaddr pointer to segment (probably)
+                jcxz    short check_seg_done
+                cmp     cx, dx              
+                jz      short check_seg_done
 
 BADSEGCONT:
                 mov     bx, ax
@@ -89,14 +89,14 @@ BADSEGCONT:
                 push    es
                 push    bx
                 call    KERNELERROR
-                jmp     short locret_E1F
+                jmp     short check_seg_done
 ; ---------------------------------------------------------------------------
 SZSEGMENTCONTENTSTRASHED db 'Segment contents trashed ',0
                                         ; DATA XREF: CHECKSEGCHKSUM+30↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-locret_E1F:                             ; CODE XREF: CHECKSEGCHKSUM+5↑j
+check_seg_done:                             ; CODE XREF: CHECKSEGCHKSUM+5↑j
                                         ; CHECKSEGCHKSUM+24↑j ...
                 retn
 CHECKSEGCHKSUM  endp

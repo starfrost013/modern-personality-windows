@@ -26,7 +26,7 @@ YIELD           proc far                ; CODE XREF: STARTTASK+69↑p
                 mov     ds, cs:CURTDB   ; get the current task data block
                 cmp     word ptr ds:7Eh, 4454h ; is 0x7E in the TDB 'MZ' header?
                 jnz     short not_task_handle
-                mov     ax, 3C85h
+                mov     ax, offset loc_3C85
                 inc     word ptr ds:6
                 push    cs
                 push    ax

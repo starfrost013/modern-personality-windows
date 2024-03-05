@@ -102,6 +102,139 @@ DECEXEUSAGE     endp
 
 ; Attributes: bp-based frame
 
+; EntProcAddress
+;
+; Purpose: Returns the address of a function (procedure technically) referenced by an exported ordinal ID within a module.
+; Internal function for GetProcAddress, which performs basic parameter validation and determines the module to load from (as hModule can be NULL to indicate laod fromt he calling module)
+;
+; Parameters (see calling convention!): 
+;   si (hModule) -> module handle pointer to the module to find the function within.
+;   bx (wOrdinal) -> the ordinal to find (converted from a function name by a call to the FINDORDINAL function by GETPROCADDRESS)
+; 
+; Returns: 
+;     A segment:offset pointer to the function requested if successful, in the ax:dx register pair.
+;     If, at this point, an invalid ordinal was provided to the function, a fatalexit code 403 - "Invalid ordinal reference to <module name>" - is triggered and Windows quits.
+ENTPROCADDRESS  proc near               ; CODE XREF: SEGRELOC+BB↓p
+                                        ; GETPROCADDRESS+3F↓p
+
+arg_0           = word ptr  4
+arg_2           = word ptr  6
+
+                push    bp
+                mov     bp, sp
+                push    si
+                push    di
+                mov     es, [bp+arg_2]
+                mov     cx, [bp+arg_0]
+                jcxz    short loc_85D
+                dec     cx
+                mov     si, es:4
+
+loc_82B:                                ; CODE XREF: ENTPROCADDRESS+27↓j
+                                        ; ENTPROCADDRESS+33↓j ...
+                xor     ax, ax
+                lods    byte ptr es:[si]
+                or      ax, ax
+                jz      short loc_85D
+                cmp     ax, cx
+                jg      short loc_894
+                sub     cx, ax
+                mov     bx, ax
+                lods    byte ptr es:[si]
+                cmp     al, 0
+                jz      short loc_82B
+                cmp     al, 0FFh
+                jz      short loc_84D
+                add     si, bx
+                shl     bx, 1
+                add     si, bx
+                jmp     short loc_82B
+; ---------------------------------------------------------------------------
+
+loc_84D:                                ; CODE XREF: ENTPROCADDRESS+2B↑j
+                mov     ax, bx
+                shl     bx, 1
+                shl     bx, 1
+                add     bx, ax
+                shl     bx, 1
+                add     bx, ax
+                add     si, bx
+                jmp     short loc_82B
+; ---------------------------------------------------------------------------
+
+loc_85D:                                ; CODE XREF: ENTPROCADDRESS+B↑j
+                                        ; ENTPROCADDRESS+19↑j ...
+                xor     bx, bx
+                mov     ax, 403h ; errCode for kernelerror
+                push    ax
+                mov     ax, offset SZINVALIDORDINAL ; "Invalid ordinal reference to "
+                push    cs
+                push    ax
+                push    es  ; pointer to module that called this function (so kernelerror can put it in the error message)
+                push    bx
+                call    KERNELERROR
+                jmp     short loc_88E
+; ---------------------------------------------------------------------------
+SZINVALIDORDINAL db 'Invalid ordinal reference to ',0
+                                        ; DATA XREF: ENTPROCADDRESS+4B↑o
+                db 24h
+; ---------------------------------------------------------------------------
+
+loc_88E:                                ; CODE XREF: ENTPROCADDRESS+55↑j
+                xor     dx, dx
+                xor     ax, ax
+                jmp     short loc_8D0
+; ---------------------------------------------------------------------------
+
+loc_894:                                ; CODE XREF: ENTPROCADDRESS+1D↑j
+                lods    byte ptr es:[si]
+                cmp     al, 0
+                jz      short loc_85D
+                mov     bx, cx
+                cmp     al, 0FFh
+                jz      short loc_8BF
+                add     si, bx
+                shl     bx, 1
+                mov     si, es:[bx+si+1]
+                mov     cx, 0FFFFh
+                push    es
+                push    ax
+                push    cx
+                push    cx
+                call    LOADSEGMENT ; load segment containing function
+                xor     dx, dx
+                or      ax, ax
+                jz      short loc_85D
+                mov     dx, ax
+                mov     ax, si
+                jmp     short loc_8D0
+; ---------------------------------------------------------------------------
+                db 90h
+; ---------------------------------------------------------------------------
+
+loc_8BF:                                ; CODE XREF: ENTPROCADDRESS+86↑j
+                mov     ax, bx
+                shl     bx, 1
+                shl     bx, 1
+                add     bx, ax
+                shl     bx, 1
+                add     bx, ax
+                mov     dx, es
+                lea     ax, [bx+si+1]
+
+loc_8D0:                                ; CODE XREF: ENTPROCADDRESS+7A↑j
+                                        ; ENTPROCADDRESS+A4↑j
+                pop     di
+                pop     si
+                mov     sp, bp
+                pop     bp
+                retn    4
+ENTPROCADDRESS  endp
+
+; =============== S U B R O U T I N E =======================================
+
+; Attributes: bp-based frame
+
 STARTPROCADDRESS proc near              ; CODE XREF: STARTMODULE+4F↑p
 
 arg_0           = word ptr  4

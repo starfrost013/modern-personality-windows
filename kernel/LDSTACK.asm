@@ -437,11 +437,11 @@ loc_3535:                               ; CODE XREF: SEARCHSTACK+109↑j
                 mov     ax, es:[bx-2]
                 mov     cs:INT3FSAVEDDS, ax
                 mov     word ptr es:[bx+4], cs
-                mov     word ptr es:[bx+2], 1798h
+                mov     word ptr es:[bx+2], offset INT3FSAVEDFRAME
                 push    cs
                 pop     es
                 assume es:cseg01
-                mov     bx, 178Ch
+                mov     bx, offset SZSEARCHSTACKINVALIDBPCHAIN
                 jmp     loc_34C7
 ; ---------------------------------------------------------------------------
 

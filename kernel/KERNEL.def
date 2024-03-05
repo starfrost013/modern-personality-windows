@@ -2,7 +2,7 @@
 
  DESCRIPTION 'Microsoft Windows Kernel Interface for 2.x and 3.x' ; Singletasking DOS
  EXETYPE WINDOWS
- STUB 'KERNSTUB.EXE ; this must be built with regular LINK!
+ STUB 'KERNSTUB.EXE' ; this must be built with regular LINK!
 
 LIBRARY KERNEL
 

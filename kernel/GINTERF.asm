@@ -300,7 +300,7 @@ loc_6E3B:                               ; CODE XREF: XHANDLE+1D↓j
                 push    di
                 mov     ds, cs:PGLOBALHEAP
                 xor     di, di
-                inc     word ptr [di+18h]
+                inc     word ptr [di+18h] ; increment (global heap)+0x0018
                 push    dx
                 jmp     GHANDLE
 ; ---------------------------------------------------------------------------

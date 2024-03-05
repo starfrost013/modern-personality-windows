@@ -343,63 +343,81 @@ COPYNAME        endp
 
 ; Attributes: bp-based frame
 
+; GetProcAddress (Calling convention: probably PASCAL)
+;
+; Purpose: Returns the address of a function (procedure technically) within a module.
+;
+; Parameters (see calling convention!): 
+;   si (hModule) -> module handle pointer to the module to find the function within.
+;   bx (lpProcName) -> pointer to a string containing the function to obtain a pointer to.
+;       Remarks:
+;       - The function must be exported.
+;       - The addresses of functions that are only exported ordinally can be obtained with a string starting with "#",
+;       - and then the ordinal number, as you would write a numbered list.
+;       - If NULL, the current module is used. This must also be the same for GETEXEPTR...
+;   (seg register, cs or any actually as cs=ds=es=ss in a single segment/small model app like kernel for example, should also contain the segment of this string )
+; 
+; Returns: 
+;     A segment:offset pointer to the function requested if successful, in the dx:ax register pair (see ENTPROCADDRESS).
+;     Otherwise, none.
+
                 public GETPROCADDRESS
 GETPROCADDRESS  proc far                ; CODE XREF: RETTHUNK+82↑p
                                         ; INITFWDREF+5F↓p ...
 
 var_42          = byte ptr -42h
-arg_0           = word ptr  6
-arg_2           = word ptr  8
-arg_4           = word ptr  0Ah
+arg_0           = word ptr  6           ; calling module
+arg_2           = word ptr  8           ; hModule
+arg_4           = word ptr  0Ah         ; lpProcName
 
-                inc     bp              ; KERNEL_50
+                inc     bp              ; KERNEL_50 (stack frame)
                 push    bp
-                mov     bp, sp
-                push    ds
-                sub     sp, 40h
-                push    si
-                push    [bp+arg_4]
-                call    GETEXEPTR
-                xor     dx, dx
-                jcxz    short loc_1A43
+                mov     bp, sp          ; setup stack???
+                push    ds              ; get the segment of the string containing the module name.
+                sub     sp, 40h         ; allocate stack?
+                push    si              ; push hModule
+                push    [bp+arg_4]      ; push
+                call    GETEXEPTR       ; get pointer to binary represented by hModule handle
+                xor     dx, dx          ; was it successful?
+                jcxz    short get_proc_address_done  ; no, return NULL
                 mov     si, ax
-                cmp     [bp+arg_2], 0
-                jnz     short loc_1A21
-                mov     ax, [bp+arg_0]
-                jmp     short loc_1A3E
+                cmp     [bp+arg_2], 0   ; was hModule null?
+                jnz     short loc_1A21  ; no, we're getting another module's ProcAddress
+                mov     ax, [bp+arg_0]  ; it was null, so we're getting a procaddress inside the current module
+                jmp     short actually_get_proc_address ; go get it
 ; ---------------------------------------------------------------------------
 
-loc_1A21:                               ; CODE XREF: GETPROCADDRESS+19↑j
-                lea     bx, [bp+var_42]
+get_other_module_proc_address:                               ; CODE XREF: GETPROCADDRESS+19↑j
+                lea     bx, [bp+var_42] 
                 mov     dx, 0FFh
                 mov     dx, 1A00h
                 push    [bp+arg_2]
                 push    [bp+arg_0]
                 push    bx
                 push    dx
-                call    COPYNAME
+                call    COPYNAME ; copy name
                 lea     bx, [bp+var_42]
                 push    si
                 push    ss
                 push    bx
-                call    FINDORDINAL
+                call    FINDORDINAL ; attempt to find the function represented by an ordinal argument
 
-loc_1A3E:                               ; CODE XREF: GETPROCADDRESS+1E↑j
-                push    si
-                push    ax
-                call    ENTPROCADDRESS
+actually_get_proc_address:                               ; CODE XREF: GETPROCADDRESS+1E↑j
+                push    si                 ; hModule
+                push    ax                 ; lpProcName
+                call    ENTPROCADDRESS     ; go (returns ax:dx)
 
-loc_1A43:                               ; CODE XREF: GETPROCADDRESS+11↑j
-                mov     cx, ax
-                or      cx, dx
+get_proc_address_done:                               ; CODE XREF: GETPROCADDRESS+11↑j
+                mov     cx, ax          ; ax -> offset
+                or      cx, dx          ; set up long pointer
                 pop     si
                 sub     bp, 2
                 mov     sp, bp
                 pop     ds
-                pop     bp
+                pop     bp              ; restore regs
                 dec     bp
-                retf    6
-GETPROCADDRESS  endp
+                retf    6               ; 6 stack frames (we called a lot of kernel functions)
+GETPROCADDRESS  endp   
 
 ;
 ; External Entry #49 into the Module
@@ -442,7 +460,7 @@ loc_1A7E:                               ; CODE XREF: GETMODULEFILENAME+25↑j
                 cld
                 mov     ax, cx
                 rep movsb
-                mov     byte ptr es:[di], 0
+                mov     byte ptr es:[di], 0 ; es->[di] = where the filename is going
 
 loc_1A87:                               ; CODE XREF: GETMODULEFILENAME+D↑j
                 mov     cx, ax

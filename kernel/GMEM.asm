@@ -473,7 +473,7 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 shr     cx, 1   ; *2
                 shr     cx, 1   ; *4
                 shr     cx, 1   ; *8
-                shr     cx, 1   : 16
+                shr     cx, 1   ; *16 (segaddr?)
                 sub     cx, dx
                 neg     cx
                 and     cl, 0FEh

@@ -190,14 +190,26 @@ HEND            endp
 
 ; Attributes: bp-based frame
 
+
+; GetModuleHandle (Calling convention: probably PASCAL)
+;
+; Purpose: Returns the segaddress of a module handle to a specified module.
+;
+; Parameters (see calling convention!): 
+;   bx (hModule) -> pointer to a string containing the module name to retrieve the module handle for.
+;
+; Returns: 
+;     A segaddress pointer (hModule) to the handle for the requested module name requested if successful.
+;     Otherwise, NULL.
+
                 public GETMODULEHANDLE
 GETMODULEHANDLE proc far                ; CODE XREF: RETTHUNK+78↑p
                                         ; INITFWDREF+52↓p ...
 
 var_42          = byte ptr -42h
 var_41          = byte ptr -41h
-arg_0           = word ptr  6
-arg_2           = word ptr  8
+arg_0           = word ptr  6           ; Calling module
+arg_2           = word ptr  8           ; hModule
 
                 inc     bp              ; KERNEL_47
                 push    bp

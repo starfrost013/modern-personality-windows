@@ -230,3 +230,138 @@ RESCHEDULE      proc far                ; CODE XREF: WAITEVENT+29↓j
                 push    di
                 push    ax              ; this function is DESIGNED to run into BOOTSCHEDULE!!!!
 RESCHEDULE      endp ; sp-analysis failed
+
+      
+; =============== S U B R O U T I N E =======================================
+
+
+BOOTSCHEDULE    proc far                ; CODE XREF: BOOTSCHEDULE+A↓j
+                                        ; BOOTSCHEDULE+E3↓j ...
+                mov     ax, cs:HEADTDB
+
+loc_3B10:                               ; CODE XREF: BOOTSCHEDULE+16↓j
+                                        ; BOOTSCHEDULE+51↓j
+                or      ax, ax
+                jnz     short loc_3B18
+                int     28h             ; DOS 2+ internal - KEYBOARD BUSY LOOP
+                jmp     short near ptr BOOTSCHEDULE
+; ---------------------------------------------------------------------------
+
+loc_3B18:                               ; CODE XREF: BOOTSCHEDULE+6↑j
+                mov     ds, ax
+                mov     ax, ds:0
+                cmp     word ptr ds:6, 0
+                jz      short loc_3B10
+                mov     di, ds
+                mov     si, cs:CURTDB
+                cmp     di, si
+                jnz     short loc_3B36
+                pop     ax
+                pop     di
+                pop     si
+                pop     ds
+                pop     bp
+                dec     bp
+                retf
+; ---------------------------------------------------------------------------
+
+loc_3B36:                               ; CODE XREF: BOOTSCHEDULE+21↑j
+                push    cx
+                mov     cx, cs:LOCKTDB
+                jcxz    short loc_3B42
+                cmp     cx, di
+                jnz     short loc_3BB5
+
+loc_3B42:                               ; CODE XREF: BOOTSCHEDULE+30↑j
+                push    es
+                push    bx
+                les     bx, cs:PINDOS
+                cmp     byte ptr es:[bx], 0
+                jnz     short loc_3B5A
+                les     bx, cs:PERRMODE
+                cmp     byte ptr es:[bx], 0
+                jz      short loc_3B5F
+
+loc_3B5A:                               ; CODE XREF: BOOTSCHEDULE+41↑j
+                pop     bx
+                pop     es
+                pop     cx
+                jmp     short loc_3B10
+; ---------------------------------------------------------------------------
+
+loc_3B5F:                               ; CODE XREF: BOOTSCHEDULE+4C↑j
+                inc     cs:INSCHEDULER
+                push    dx
+                inc     byte ptr ds:8
+                push    ds
+                call    DELETETASK
+                push    ds
+                call    INSERTTASK
+                dec     byte ptr ds:8
+                cli
+                mov     es, si
+                xor     si, si
+                cmp     word ptr es:7Eh, 4454h
+                jnz     short loc_3B93
+                mov     word ptr es:4, ss
+                mov     es:2, sp
+                mov     si, es
+                push    si
+                call    SAVESTATE
+
+loc_3B93:                               ; CODE XREF: BOOTSCHEDULE+75↑j
+                push    ds
+                push    si
+                call    RESTORESTATE
+                mov     ss, word ptr ds:4
+                mov     sp, ds:2
+                mov     cs:CURTDB, ds
+                dec     cs:INSCHEDULER
+                sti
+                cmp     word ptr ds:16h, 0
+                jnz     short loc_3BBD
+
+loc_3BB2:                               ; CODE XREF: BOOTSCHEDULE+D5↓j
+                pop     dx
+                pop     bx
+                pop     es
+
+loc_3BB5:                               ; CODE XREF: BOOTSCHEDULE+34↑j
+                pop     cx
+                pop     ax
+                pop     di
+                pop     si
+                pop     ds
+                pop     bp
+                dec     bp
+                retf
+; ---------------------------------------------------------------------------
+
+loc_3BBD:                               ; CODE XREF: BOOTSCHEDULE+A4↑j
+                mov     ax, 10h
+                mov     bp, sp
+                add     bp, 10h
+                mov     cx, 1
+                xchg    cx, ds:6
+                dec     cx
+                push    cx
+                push    ds
+                push    ax
+                push    si
+                push    cx
+                push    word ptr ds:12h
+                call    dword ptr ds:14h
+                pop     cx
+                add     ds:6, cx
+                or      ax, ax
+                jz      short loc_3BB2
+                push    ds
+                call    DELETETASK
+                push    ds
+                call    INSERTTASK
+                pop     dx
+                pop     bx
+                pop     es
+                pop     cx
+                jmp     near ptr BOOTSCHEDULE
+BOOTSCHEDULE    endp ; sp-analysis failed

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "LACHECK.C": "cpp"
+        "LACHECK.C": "cpp",
+        "RIP.C": "cpp"
     }
 }

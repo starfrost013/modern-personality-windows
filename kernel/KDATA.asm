@@ -44,52 +44,88 @@
 cseg01          segment para public 'CODE' use16
                 assume cs:cseg01
                 assume es:nothing, ss:nothing, ds:nothing, fs:nothing, gs:nothing
+
+; The handle of the master object (system-wide, far pointer) heap. Offset address within the kernel(?) code segment.
 HGLOBALHEAP     dw 0                    ; DATA XREF: GLOBALMASTERHANDLE↓r
                                         ; GLOBALINIT+93↓w
+                                        
+; The physical address (segaddr) of the master object (i.e. head) of the global (system-wide, far-pointer) heap. 
 PGLOBALHEAP     dw 0                    ; DATA XREF: ALLOCALLSEGS+6E↓r
                                         ; FREEMODULE+60↓r ...
 PSWAPHOOK       dd 0                    ; DATA XREF: EXITKERNEL+6C↓r
                                         ; GHANDLE+7E↓r ...
+; Pointer (likely segaddress) to the module list.
+; The module list contains all of the loaded modules in the system.
 HEXEHEAD        dw 0                    ; DATA XREF: FINDEXEINFO+9↓r
                                         ; ADDMODULE+3↓r ...
+; The first module for the memory manager's Least Recently Used (LRU)
+; algorithm to examine (possibly least recently loaded module?)
 HEXESWEEP       dw 0                    ; DATA XREF: ADDMODULE+1C↓r
                                         ; ADDMODULE+2C↓w ...
+
 HTHUNKS         dw 0                    ; DATA XREF: MAKEPROCINSTANCE+6↓r
                                         ; MAKEPROCINSTANCE+1E↓r ...
 HHANDLE         dw 0                    ; DATA XREF: PATCHTHUNKS+B↓r
                                         ; PATCHTHUNKS+109↓r ...
 
-; The top of the Process Data Block (PDB) list.
+; The top of the Process Data Block (PDB) list on Windows start. See BOOTSTRAP function!
 TOPPDB          dw 0                    ; DATA XREF: CREATETASK+9A↓r
                                         ; ENABLEDOS+28↓r ...
-; The current head of the PDB list.
+; Pointer to the current head of the PDB linked list.
 HEADPDB         dw 0                    ; DATA XREF: CREATETASK+B2↓w
                                         ; CLOSEOPENFILES+65↓r ...
+; The size of the MS-DOS PDB on Windows entry.
+; I don't know if this is used, as IDA struggles to determine offsets and I didn't do the manual analysis yet.
+; Might be used in STARTPROCADDRESS.
 TOPSIZEPDB      db 2 dup(0)
+
+; A (most likely segaddress) pointer to the current head of the task queue.
+; Aka, the next task to run.
 HEADTDB         dw 0                    ; DATA XREF: PATCHSTACK+B↓r
                                         ; SEARCHSTACK+7↓r ...
+
+;  A (most likely segaddress) pointer to the The current task that is running.
 CURTDB          dw 0                    ; DATA XREF: GETCURRENTTASK↓r
                                         ; INSERTTASK+F↓w ...
+
+; Something to do with task locking
 LOCKTDB         dw 0                    ; DATA XREF: LOCKCURRENTTASK:loc_3993↓w
                                         ; BOOTSCHEDULE+2B↓r
 FWINX           dw 0                    ; DATA XREF: ISSCREENGRAB↓r
                                         ; BOOTSTRAP+67↓w ...
+; This is an interesting case.
+; Windows calls the FNINIT function to try and determine if the 8087 is present.
+; But then never sets this to anything (todo: check it's not just fucked up offsets)?
+
 F8087           dw 0                    ; DATA XREF: STATEXJUMP+A↓r
+
+; 1 if the scheduler is running.
+; RESCHEDULE -> BOOTSCHEDULE is the scheduler.
 INSCHEDULER     db 0                    ; DATA XREF: BOOTSCHEDULE:loc_3B5F↓w
                                         ; BOOTSCHEDULE+99↓w ...
 FEMM            db 0                    ; DATA XREF: CREATETASK+22↓r
                                         ; CREATETASK+8B↓r ...
+; idk what these do yet
 BUFFER          dw 0                    ; DATA XREF: BUFFERINIT+2↓r
                                         ; BUFFERINIT+55↓w ...
 BUFADDR         dw 0                    ; DATA XREF: BUFFERINIT+63↓r
                 dw 0
+; Handle to WIN.INI file.
 HFILE           dw 0FFFFh               ; DATA XREF: BUFFERINIT+38↓w
+
+; Address within the x86 Interrupt Service Table (0x4*0x22=0x88) to the INT 22h (terminate address - where execution goes when a DOS program exits) handler
+; Needs debugging to see if it's into PSP pointer though.
+
 INT22BASE       dw 88h                  ; DATA XREF: DOSTerminateHook+6D↓r
                                         ; INITDOSVARP+78↓r ...
+
+; The
 PDMAADD         dd 0                    ; DATA XREF: SAVESTATE:loc_39CA↓r
 
 ; Is DOS INT 21 running?
 PINDOS          dd 0                    ; DATA XREF: BOOTSCHEDULE+38↓r
+
+; The current state of the Control+C (break) keys (DOS?)
 PCNTCFLAG       dd 0                    ; DATA XREF: SAVESTATE+42↓r
                                         ; RESTORESTATE+24↓r ...
 PCURRENTPDB     dd 0                    ; DATA XREF: SEARCHPATH+12↓r
@@ -100,12 +136,20 @@ PERRMODE        dd 0                    ; DATA XREF: SAVESTATE+4D↓r
                                         ; RESTORESTATE+2F↓r ...
 PSFTLINK        dd 0                    ; DATA XREF: EXITKERNEL+4C↓r
                                         ; INITDOSVARP+5B↓w ...
+
+; Segaddress (paragraph aligned) pointer to the start of the MS-DOS system file table linked list (which windows also uses - the only major part of dos left is the fat12 driver.)
 PFILETABLE      dd 0                    ; DATA XREF: GROWSFT+8↓r
                                         ; GROWSFT+82↓r ...
+
+; Size of a single MS-DOS system file table entry (I believe this depends on DOS version...)
 FILEENTRYSIZE   dw 0                    ; DATA XREF: GROWSFT+D↓r
                                         ; CLOSEOPENFILES:loc_397A↓r ...
+
+; Drive letter of the last drive that experienced a disk swap (change).
 LASTDRIVESWAPPED db 0                   ; DATA XREF: PROMPT+3C↓w
                                         ; GETLASTDISKCHANGE+2↓w
+
+; Value of MS-DOS break key flag (when DOS is enabled...)
 FBREAK          db 0                    ; DATA XREF: ENABLEDOS+1C↓w
                                         ; DISABLEDOS+23↓r
 ; Holds the major version of DOS that Windows is running on. 
@@ -121,6 +165,10 @@ DOS_REVISION    db 0                    ; DATA XREF: sub_4338+55↓r
 ; by microsoft. Very few bothered after the first few years, but Windows 1.0 is early enough
 ; to store it here. Woo!
 DOS_OEM         db 0                    ; DATA XREF: INITDOSVARP+29↓w
+
+; Determines if Windows INT 21 handling (mostly thunks) is installed
+; Set to 0 by ENABLEINT21,
+; 1 by DISABLEINT21
 FINT21          db 0                    ; DATA XREF: OPENFILE+B2↓r
                                         ; OPENFILE+150↓r ...
 FEVENT          db 0
@@ -133,20 +181,29 @@ KEYINFO         db 0,0,0,0,0,0,0,0,0,0,0,0 ; DATA XREF: ISKANJI+8↓r
                                         ; KEYINFO IS A STRUCT
 
 ; set to 1 (using inc) by CHECKFAREAST if keyinfo[1] <= keyinfo[0]
-; or keyinfo[3] > keyinfo[2]
+; or keyinfo[3] > keyinfo[2] (presumably checks for Japanese Kanji?)
 FFAREAST        db 0                    ; DATA XREF: ANSIPREV+8↓r
                                         ; ISKANJI↓r ...
+
+; Seg:off pointer to the USER function that spawns message boxes.
 PMBOXPROC       dd 0                    ; DATA XREF: SHOWDIALOGBOX2+12↓r
                                         ; INITFWDREF+62↓w ...
 
 ; Holds the segment-offset address of the function used to exit the kernel.
 ; Set to EXITKERNEL function pointer during init.
+; Then set to (via a hardcoded grab of ordinal #2 in a call to getprocaddress) USER's ExitWindows function in INITFWDREF if forward references are enabled later in boot
 PEXITPROC       dd 0                    ; DATA XREF: DOSTerminateHook+C8↓r
                                         ; BOOTSTRAP+D9↓w ...
+
+; Pointer to SYSTEM.DRV's InquireSystem (get capabilities?) function.
 PSYSPROC        dd 0                    ; DATA XREF: ISFLOPPY+5↓r
                                         ; ENABLEDOS+83↓r ...
+
+; Pointer to SYSTEM.DRV's create timer function.
 PTIMERPROC      dd 0                    ; DATA XREF: BOOTDONE+53↓r
                                         ; INITFWDREF+A4↓w ...
+
+; Pointer to KEYBOARD.DRV's ANSIToOem function - to convert ansi strings to current OEM codepage strings.
 PKEYPROC        dd 0                    ; DATA XREF: OPENFILE+BE↓r
                                         ; INITFWDREF+C2↓w ...
 
@@ -173,13 +230,13 @@ PREVINT3FPROC   dd 0                    ; DATA XREF: EXITKERNEL+D↓r
 PREVBCON        dd 0                    ; DATA XREF: ENABLEDOS+54↓w
                                         ; DISABLEDOS+3E↓r ...
 
-; 1 if the kernel is still initialising, 0 if it isn't. Set to 0 during INITTASK function phase of boot, 1 by default.
+; 1 if the kernel is still initialising, 0 if it isn't. Set to 0 during INIITASK function phase of boot, 1 by default.
 FBOOTING        db 1                    ; DATA XREF: ALLOCSEG+16↓r
                                         ; ADDMODULE+35↓r ...
 CDEVAT          db 0                    ; DATA XREF: INT24HANDLER+1D↓w
                                         ; INT24HANDLER+5B↓r ...
 
-; stores the previous MS-DOS INT 24 error.
+; stores the previous MS-DOS INT 24 error number.
 OLDERRNO        dw 0                    ; DATA XREF: INT24HANDLER+78↓w
                                         ; INT24HANDLER+EA↓r
 OUTBUF          db 32h dup(0)
@@ -199,7 +256,7 @@ SZDISKMSG1      db 'Insert ',0
 SZDISKMSG2      db ' disk in drive '
 
 ; Placeholder drive letter for (usually in floppy-based Windows installations) telling you to insert a disk
-; when it can't find a file
+; when it can't find a file, as well as some other purposes
 DRVLET          db 'X:',0               ; DATA XREF: PROMPT+E↓r
                                         ; PROMPT+39↓w
                                         ; placeholder

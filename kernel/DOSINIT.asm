@@ -209,27 +209,62 @@ arg_2           = dword ptr  6
 BOOTFAILUREEXIT endp
 
 ; ---------------------------------------------------------------------------
+; user module name used in INITFWDREF.
 SZUSER          db 'USER',0             ; DATA XREF: INITFWDREF+4B↓o
+
+; system module name used in INITFWDREF.
 SZSYSTEM        db 'SYSTEM',0           ; DATA XREF: INITFWDREF+7B↓o
+
+; Ordinal number 1 used to call to GETPROCADDRESS to get the MessageBox proc in USER.EXE during INITFWDREF.
+; Wtf?
 SZNO1           db '#1',0               ; DATA XREF: INITFWDREF+57↓o
                                         ; INITFWDREF+87↓o ...
+
+; Ordinal number for MessageBox proc and a few others (used during forward reference initialisation).
+; Wtf?
 SZNO2           db '#2',0               ; DATA XREF: INITFWDREF+69↓o
                                         ; INITFWDREF+99↓o
+
+; Keyboard driver module name used in INITFWDREF.
 SZKEYBOARD      db 'KEYBOARD',0         ; DATA XREF: INITFWDREF+AB↓o
+
+; Ordinal number intended to be for AnsiToOem function in keyboard.drv. 
 SZNO5           db '#5',0               ; DATA XREF: INITFWDREF+B7↓o
 
 ; =============== S U B R O U T I N E =======================================
 
+; Initialises a 'forward reference' (only in non-installed windows, aka slowboot.) structure - which is far pointers to various functions in other modules the kernel needs
+; - USER, KERNEL, SYSTEM
+; It also sets up kernel global variables to all of the functions listed below and MS-DOS's old INT 20h (terminate program), 21h (API), 24h (fatal error) and 27h (TSR, DOS 1.x).
+; handlers so Windows can use them while running a legacy DOS app, and restore them to those variables when it exits.
 
+; It also pushes these to the stack (so they can be used later I guess)
+    ; KEYBOARD.DRV INQUIRE function ordinal number
+    ; KERNEL CHECKFAREAST function ordinal number
+    ; KEYBOARD.DRV AnsiToOem function ordinal number
+    ; KERNEL KEYINFO structure
+    ; KEYBOARD.DRV module handle pointer
+    ; SYSTEM.DRV CreateSystemTimer function ordinal number. 
+    ; SYSTEM.DRV InquireSystem function ordinal number.    
+    ; SYSTEM.DRV module handle pointer.
+    ; USER.EXE ExitWindows function ordinal number.
+    ; USER.EXE MessageBox function ordinal number.
+    ; USER.EXE module handle pointer.
+
+    ; I assume this is an optimisation, so instead of having to copy it to a global variable ro 
+
+; Note that all the functions are obtained by their ordinal number, so the kernel is dependent on the ordering of functions exported from the above modules
+; to even boot. If you overwrite these in runtime (which is easy because they are always at the same offset from the kernel's CS start and it only has one segment),
+; you can control the system when it calls system timer/exit/etc.
 INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                                         ; SLOWBOOT+86↑p ...
                 push    si
                 push    di
                 push    cs
-                pop     ds
+                pop     ds ; DS=CS
                 assume ds:cseg01
                 ; Set up the kernel internal variables with MS-DOS INT 20h (terminate program), INT 21h (API), INT 24h (fatal error), and INT 27h (old TSR) procs,
-                ; this is so they can be restored after exiting from a legacy dos app
+                ; this is so they can be restored when entering into a legacy dos app (they are then set to the windows ones and returned when the DOS app exits)
                 mov     ax, 3520h
                 int     21h             ; DOS - 2+ - GET INTERRUPT VECTOR
                                         ; AL = interrupt number
@@ -261,87 +296,97 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 mov     dx, es:[bx+0Eh]
                 mov     word ptr PREVBCON, ax
                 mov     word ptr PREVBCON+2, dx
-                mov     bx, offset SZUSER ; "USER"
+            
+                ; This code is really stupid. Wtf were microsoft thinking? 
+                ; It gets hardcoded ordinals from system drivers and USER (basically a DLL)
+                ; in order to call some wanted functions (ANSIToOem, create timer, and USER'S MESSAGEBOX functions)
+                ; If the ordinal numbers are changed, random code is called with incorrect parameters. Wtf?
+                mov     bx, offset SZUSER ; "USER" ; setup module name
                 push    cs
-                push    bx
+                push    bx ; push params to getmodulehandle
                 nop
                 push    cs
-                call    near ptr GETMODULEHANDLE
-                mov     si, ax
-                mov     bx, offset SZNO1 ; "#1"
-                push    si
-                push    cs
-                push    bx
+                call    near ptr GETMODULEHANDLE ; get the handle
+                mov     si, ax ; ax returns module handle
+                mov     bx, offset SZNO1 ; "#1" ; get the ordinal number (this function is MESSAGEBOX)
+
+                ;
+                ; MAKE THIS A C-STYLE (OR PASCAL??? - PUBLIC API uses pascal) CALL MACRO!!!!!!
+                ;
+
+                push    si; module handle segptr
+                push    cs ; kernel code segment?????? user???
+                push    bx ; setup params
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS
+                call    near ptr GETPROCADDRESS ; get proc address of the messagebox proc (or ordinal #1 in user.exe to be precise)
                 mov     word ptr PMBOXPROC, ax
-                mov     word ptr PMBOXPROC+2, dx
-                mov     bx, offset SZNO2 ; "#2"
+                mov     word ptr PMBOXPROC+2, dx ; copy it to PMBOXPROC
+                mov     bx, offset SZNO2 ; get ordinal 2 from USER.EXE
                 push    si
                 push    cs
-                push    bx
+                push    bx ; si -> module handle to user.exe obtained earlier
                 nop
                 push    cs
                 call    near ptr GETPROCADDRESS
-                mov     word ptr PEXITPROC, ax
+                mov     word ptr PEXITPROC, ax ; set PEXITPROC to EXIT WINDOWS if forward reference enabled
                 mov     word ptr PEXITPROC+2, dx
-                mov     bx, offset SZSYSTEM ; "SYSTEM"
+                mov     bx, offset SZSYSTEM ; "SYSTEM" ; get SYSTEM module name
                 push    cs
-                push    bx
+                push    bx ; module name
                 nop
                 push    cs
-                call    near ptr GETMODULEHANDLE
+                call    near ptr GETMODULEHANDLE ; get module handle of SYSTEM.DRV
                 mov     si, ax
-                mov     bx, offset SZNO1 ; "#1"
-                push    si
+                mov     bx, offset SZNO1 ; "#1" ; get ordinal number 1 exported from SYSTEM.DRV (InquireSystem)
+                push    si ; module handle segptr
                 push    cs
-                push    bx
+                push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS
-                mov     word ptr PSYSPROC, ax
-                mov     word ptr PSYSPROC+2, dx
-                mov     bx, offset SZNO2 ; "#2"
-                push    si
-                push    cs
-                push    bx
+                call    near ptr GETPROCADDRESS ; get pointer to inquiresystem 
+                mov     word ptr PSYSPROC, ax ; copy it to PSYSPROC (global variable)
+                mov     word ptr PSYSPROC+2, dx ; 
+                mov     bx, offset SZNO2 ; "#2" ; same thing for ordinal 2 (CreateSystemTimer)
+                push    si ; module handle segptr
+                push    cs ; calling program???
+                push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS
+                call    near ptr GETPROCADDRESS ; get t
                 mov     word ptr PTIMERPROC, ax
                 mov     word ptr PTIMERPROC+2, dx
-                mov     bx, offset SZKEYBOARD ; "KEYBOARD"
+                mov     bx, offset SZKEYBOARD ; get module name of KEYBOARD
                 push    cs
-                push    bx
+                push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETMODULEHANDLE
-                mov     si, ax
-                mov     bx, offset SZNO5 ; "#5"
-                push    si
-                push    cs
-                push    bx
+                call    near ptr GETMODULEHANDLE ; get the module handle of KEYBOARD.DRV
+                mov     si, ax ; move module handle segptr to si
+                mov     bx, offset SZNO5 ; "#5" ; get ordinal number 5 (AnsiToOem) 
+                push    si ; module handle segptr
+                push    cs 
+                push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS
-                mov     word ptr PKEYPROC, ax
+                call    near ptr GETPROCADDRESS ; get AnsiToOem seg:off pointer
+                mov     word ptr PKEYPROC, ax ; copy to PKEYPROC
                 mov     word ptr PKEYPROC+2, dx
-                mov     bx, 55h ; 'U'
+                mov     bx, offset KEYINFO ; push pointer to KEYINFO structure
                 push    cs
                 push    bx
-                mov     bx, offset CHECKFAREAST
+                mov     bx, offset CHECKFAREAST ; push checkfareast function
                 push    cs
-                push    bx
-                mov     bx, offset SZNO1 ; "#1"
-                push    si
+                push    bx ; push pointer
+                mov     bx, offset SZNO1 ; "#1" ; get keyboard.drv INQUIRE function ordinal (#1)
+                push    si ; module handle segptr
                 push    cs
-                push    bx
+                push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS
+                call    near ptr GETPROCADDRESS ; get proc address of INQUIRE function
                 push    dx
-                push    ax
+                push    ax ; push the pointer to it
                 retf
 INITFWDREF      endp ; sp-analysis failed
 
@@ -363,7 +408,7 @@ CHECKFAREAST    proc near               ; DATA XREF: INITFWDREF+CE↑o
                 mov     si, offset KEYINFO ; 'U'   ; load first word of KEYINFO
                 lodsw
                 cmp     al, ah          ; is the second byte of keyinfo lower or equal to the first?
-                jbe     short is_far_east   ; if so, branch, set far est
+                jbe     short is_far_east   ; if so, branch, set far east mode
                 lodsw                   ; check second word
                 cmp     al, ah          ; is the fourth byte of keyinfo above the third?
                 ja      short far_east_check_done
