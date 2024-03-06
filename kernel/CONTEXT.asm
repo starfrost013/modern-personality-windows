@@ -110,7 +110,7 @@ GETTASKHANDLE   proc near               ; CODE XREF: WAITEVENT+8↑p
 verify_and_return_handle:                               
                 mov     es, ax                          ; convert to segaddress so it can be referenced as a segment
                 cmp     word ptr es:7Eh, 4454h          ; is 0x7E of the task data block the string "TD"? (same as MDOS4!)
-                jnz     short invalid_task_handle       ; If not, this is considered a fatal error. Branch
+                jnz     short invalid_task_handle       ; If not, this is considered a fatal error (as it can't be a TDB). 
                 retn
 ; ---------------------------------------------------------------------------
 

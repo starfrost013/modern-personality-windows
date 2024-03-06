@@ -1,0 +1,3 @@
+loadmodule error codes:
+
+2 = invalid binary (actually file not found?)

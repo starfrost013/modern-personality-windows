@@ -1,0 +1,1 @@
+all exported kernel functions have an implicit first argument with a segaddress (?) pointer to the module handle (hModule) of the calling module

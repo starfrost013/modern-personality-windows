@@ -1,0 +1,12 @@
+each windows application's data segment has to start with an 16 byte structure (based off 3.1 kernel source code and symbols):
+
+- the stack pointer on entry (!)
+- stack segment on entry (!...to restore windows stack i guess???)
+- pointer to the local application heap
+- pointer to the atom table (string cache so you don't have to load from disk)
+- pointer to the top of the stack (kernel: gmove_stack_top)
+- "stackmin" and "stackbot" (kernel: same, not sure hwat the difference is)
+
+then a stack signature
+the idea is if it gets corrupted you can kill the application
+without the damage getting worse

@@ -814,6 +814,13 @@ loc_91EB:                               ; CODE XREF: INITDOSVARP+2AC↑j
 ; ---------------------------------------------------------------------------
                 align 2
 
+; These are error messages for the MS-DOS version check. To prevent the DOS version from being spoofed, Windows
+; makes a series of checks on the SYSVARS 
+;
+; In debug builds, as well as Windows 1.0 Beta, these strings exist.
+; In retail Windows 1.01, they removed the code, and the code that set up the registers to point at the strings, but forgot to remove the code to actually print the strings.
+; Therefore, it prints random code.
+
 incorrect_dos_version:                  ; CODE XREF: INITDOSVARP:loc_8F51↑j
                 mov     ax, offset SZERRDOSWRONGVERSION ; "DOS 2.0 or greater required$"
                 jmp     short print_boot_error

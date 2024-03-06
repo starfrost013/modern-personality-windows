@@ -452,13 +452,13 @@ load_boot_file:                               ; CODE XREF: SLOWBOOT+51↓p
                 push    di
                 xor     ax, ax          ; ax->0
                 push    cs
-                push    word ptr [bp+4]
+                push    word ptr [bp+4] ; push the binary name
                 push    ax
                 push    ax
                 nop
                 push    cs
                 call    near ptr LOADMODULE     ; attempt to load the binary by calling LOADMODULE
-                cmp     ax, 2                   ; LoadModule Error Code 2 - Invalid Binary
+                cmp     ax, 2                   ; LoadModule Error Code 2 - File Not Found
                 jnz     short boot_failure_file_corrupted
                 cmp     word ptr [bp+4], offset SZMSDOSDEXE ; did we try to load MSDOSD.EXE?
                 jnb     short loc_8396

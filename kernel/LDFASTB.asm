@@ -156,7 +156,7 @@ forward_ref_on_installed:               ; CODE XREF: FASTBOOT+105↑j
                 xor     bx, bx
                 mov     ax, 401h
                 push    ax
-                mov     ax, offset SZERRFORWARDREFERENCE ; Forward reference not allowed in installed Window
+                mov     ax, offset SZERRFORWARDREFERENCE ; Forward reference not allowed in installed Windows
                 push    cs
                 push    ax
                 push    bx

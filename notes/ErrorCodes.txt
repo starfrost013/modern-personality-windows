@@ -1,0 +1,117 @@
+Windows 1.03 debug FatalExit codes (very similar to bugcheck codes) and other error messages
+
+Later versions call these Fatal Kernel Errors (FKEs)
+
+Early version error format:
+NOTE THAT NEITHER OF THESE ARE CONFIRMED BECAUSE 
+FatalExit code = (message) (error number?)
+
+Stack trace = xxxxx
+
+Later version error:
+
+**** Fatal Kernel Error ****:
+
+FatalExit code = (message) (error nubmer?)
+
+Stack trace = xxxxx
+
+These are only exposed to the user in debug builds of Windows - in release, these codes are not printed on KERNELERROR exit, as KERNELERROR is defined as FATALEXIT on release (which KERNELERROR calls after determining the faulting module and printing the message), and in any case FATALEXIT doesn't print the error codes on release, although they might still be generated and passed to either function in release builds.
+
+Usually, these will include the faulting module (if KERNELERROR can find it - usually provided as a segment register by the calling function), the error code, and a message. They might also include an optional parameter with something useful.
+
+There are also several debug strings obtained with 
+As far as I can tell, these have never been documented. Some error codes have multiple messages for the same root cause (they are more like a category).
+
+Code	Message							Cause
+0x100	LocalAlloc: Invalid global heap				A local heap* was corrupted,. This is very bad. For some reason, you need to know that the error was detected during an allocation.
+0x100	LocalCompact: Invalid global heap			A local heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a compact.**
+0x100	LocalFree: Invalid global heap				A local heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a free.
+0x100	LocalFreeAll: Invalid global heap			A local heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a free of all of a module's global objects.****
+0x100	LocalRealloc: Invalid global heap			A local heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during an reallocation/resize.
+0x140	EnterCrit: local heap is busy				Tried to enter a critical section when the local heap is busy. Not entirely sure?
+0x140	LeaveCrit: local heap is NOT busy			Tried to leave a critical section when the local heap is not busy. Not entirely sure?
+0x180	LDREF: Invalid local handle				Tried to dereference an invalid handle within the data segment of a module. Most likely caused by invalid call to Local* functions (realloc/free/lock/unlock/size/flags)
+0x1C0 	LocalLock: Object usage count overflow			A local object was used (e.g. GlobalLocked) over 255 times. I don't know how this could happen without an OS bug or recursion gone VERY wrong.
+0x1c0	LocalUnlock: Object usage count underflow		A local object was somehow used under 0 times. Maybe a double free - certainly a double LocalUnlock could cause this?
+0x200	GlobalAlloc: Invalid global heap			A global heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during an allocation.
+0x200	GlobalCompact: Invalid global heap			A global heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a compact.**
+0x200	GlobalFree: Invalid global heap				A global heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a free.
+0x200	GlobalFreeAll: Invalid global heap			A global heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during a free of all of a module's global objects.****
+0x200	GlobalRealloc: Invalid global heap			A global heap* was corrupted. This is very bad. For some reason, you need to know that the error was detected during an reallocation/resize.
+0x2C0 	GlobalLock: Object usage count overflow			A global object was used (e.g. GlobalLocked) over 255 times. I don't know how this could happen without an OS bug or recursion gone VERY wrong.
+0x2F0	GlobalUnlock: Object usage count underflow		A global object was somehow used under 0 times. Maybe a double free - certainly a double GlobalUnlock could cause this?
+0x2F0	GlobalFree: freeing locked object			You tried to free an object that has been locked - i.e. not freeable. It's a bug in your code or in Windows.
+0x301	YIELD: Invalid task handle				The OS tried to yield to a non-existent task - somehow, one of these ended up in the task queue and/or module list.
+0x301	GetTaskHandle: Invalid task handle			The OS tried to get a non-existent task - somehow, one of these ended up in the module list (it's called a bug)
+0x303	PatchStack - invalid BP chain				Stack corruption? Needs more research. (may be debug build only functions)
+0x303	SearchStack - invalid BP chain				Stack corruption? Needs more research.
+
+0x401	BOOT: Unable to find file - (file name)			The OS couldn't find a required file to boot. Installation damaged or OS bug; slowboot only, see below for caveats and the list of files required to boot.
+0x401	BOOT: Invalid .EXE file - (file name)			The OS found a required boot file, but it wasn't valid. Most likely a corrupt installation; slowboot only, see below for caveats and the list of files required to boot.
+0x401	BOOT: Unable to load - (file name)			The OS found a required boot file, and it failed to load for some reason other than being invalid (i.e. LoadModule during slowboot didn't succeed, but didn't return 0x02 for file not found or 0x0A for invalid EXE). wrong Windows version specified, or in later versions, MDOS4 or OS/2 app. Could be a bug or a corrupt installation.
+0x401	BOOT: Unable to load - (file name) (again)		The user specified a custom shell or custom apps to load with Windows, and those files failed to load. User error or a bug. Not sure how to determine from the message above without debugging.
+0x401 	Forward reference not allowed in installed Windows	INITFWDREF was called during fastboot. Not sure how to trigger this.
+0x403	Invalid ordinal reference to (name) (module)		FINDORDINAL was passed an invalid ordinal. OS bug, as GetProcAddress etc are supposed to validate parameters to prevent this.
+0x404	Invalid procedure name: (name) (in module?)***		FINDORDINAL (called by GetProcAddress etc) couldn't map the ordinal it was passed to a name in the non-resident name table. OS bug, as GetProcAddress etc are supposed to validate their parameters to prevent this.
+0x406	Invalid module handle					A module handle (in the kernel module list) didn't point to a Task Data Block (in GETEXEPTR). Kernel memory corruption, OS bug, or possibly invalid parameters.
+0x409	Segment contents trashed 				An application corrupted a segment*****
+0x409 	Error reading segment contents from (module)		An application has a defined segment that doesn't refer to valid code or data on the disk. Badly made application or invalid arguments to SEGLOAD (could also be OS bug).
+0x409	Segment contents invalid 				Not sure what's different here from "invalid" but could be invalid type? Needs more research
+0x409	Error reading relocation records from (module)		The relocation records of a segment of an application could not be read (e.g. number of relocation records higher than actual count), and therefore can't be loaded.
+0x409	Invalid relocation record in (module) (segment)		A segment of an application has a specific invalid relocation record and can't be loaded.	
+0x409	Invalid entry point name in (module) (segment)		A segment of an application has an invalid entry point and can't be loaded.
+0x412	Unable to load non-resident name table from (module)	The non-resident name table (listing exports) couldn't be loaded from the module module. OS bug, linker bug, or corrupt file.
+0x4FF	INT 3F handler unable to load segment from (module)	The INT 3F (dynamic link library) manager failed to load a segment. I'm not sure if Windows uses INT 3F for regular DLLs. OS bug, or invalid DLL.
+0x504	Error loading from resource file			An error occurred loading resource files (invalud type/name/in <=alpha .res files?)					
+0x505	Unable to read resource from (module)			A pointer to a resource was corrupted and there was no resource there. Application linking(?) issue or OS bug.
+
+You can also get a stack overflow with no error code.
+
+* LOCAL heap - Basically just the application's data segment as allocated by Windows - functions return near pointers into the applications' code segment.
+* GLOBAL heap is where the functions return a far pointer (officially defined as "all memory not already allocated to Windows or an app") and therefore can be shared between modules, if you know the "HINSTANCE" (Windows-allocated data segment of the current module). It was needed to, say, pass pointers to DLLs (which did exist in 1.x, but named as .EXEs with different NE flags), as the local heap returned a near pointer within the application's HINSTANCE. Yes, this can be abused to corrupt OS memory, as there is no memory protection inr eal mode.
+ 
+**Yes you can do this manually. It throws away blocks of memory marked discardable (and not locked by GlobalLock, so it can't be moved or discarded in order to not screw up applications with pointers) and moves other parts of the global heap into high memory in order to generate the amount of contiguous free memory space that you want.
+
+***0x404 for procedure name not found lmfao
+
+****Undocumented
+
+*****In this case, an arbitrary 64kb part of an application loaded from disk to bypass the 64kb x86 segment limit I believe.
+
+Note that if alloc functions are provided *invalid parameters* the OS won't crash, and instead will simply return a function-specific failure return code. 
+
+These error codes are ONLY used on debug builds for corrupted heaps, but might still be useful for application development considering the lack of any memory protection at all - which means application crashing bugs can crash the entire OS or corrupt its internal structures in odd ways (i.e. figuring out WHO DUN FUCKED UP).
+
+Required boot files list (in order of load) for error 0x401:
+SYSTEM.DRV (system driver)
+KEYBOARD.DRV (user-selected keyboard driver in Setup)
+MOUSE.DRV (user-selected mouse driver in setup)
+DISPLAY.DRV (user-selected display driver in setup)
+SOUND.DRV (PC Speaker driver, no sound ccard support)
+COMM.DRV (serial, possibly also parallel communications driver)
+FONTS.FON (core fonts)
+GDI.EXE (Graphics Device Interface - performs graphics...)
+USER.EXE (User Interface library, utility functions, IPC, keyboard/mouse support and many other things - see graph I made lol)
+
+If the shell is not overriden by a command line argument (possibly also INI files? need to see how far back that feature goes...), these files are also required:
+MSDOSD.EXE (MS-DOS Executive System-Specific Functionality)
+MSDOS.EXE (MS-DOS Executive / Shell)
+This is only practically accessible in slowboot, in fastboot these are packed into WIN100.BIN/OVL and are verified by the WIN.COM launcher.
+
+Appendix A. DOS version check detailed error messages:
+First, windows checks that it is running on specifically MS-DOS 2.x or 3.x (as "4.0" at that time referred to Multitasking DOS 4.0, which Windows had a specific build config for - Windows 2.0 checks for 'DOS 5' or OS/2 and skips int 21h calls, but its DOS box reports DOS 10 so it doesn't work). In order to prevent the DOS version from being spoofed, Windows checks specific DOS SYSVARS structure elements. To diagnose the check (and maybe to help out MS-DOS/MDOS4 devs), they added specific error messages to say what specific check failed; the messages are present and correct in Windows debug builds and in Windows 1.0 Beta), but in release builds, Microsoft removed the strings and the code that set up parameters to the string call function. However, they forgot to remove the code to actually *print* those messages, which means they were pointing at random pieces of memory which caused random garbage to be printed instead and the infamous "BSOD" in Windows 1.x
+
+These messages are printed after "Incorrect DOS version" instead of garbage in beta and debug final builds:
+
+DOS 2.0 or later required.
+Disk transfer address does not match
+Control-C flag does not match
+CurrentPDB not found
+CurrentPDB does not match
+DOS int 22h not found
+Error mode flag does not match
+Current drive does not match
+
+If any of these areas of the SYSVARS data structure are not correct, or Windows versions are below 2 and above 4 Windows will not run. Early MDOS4 (1985, build 6.7) rejects Windows 1.x anyway, because it interprets New Executable flags differently and thinks the Windows Kernel is actually a DLL. If you force it to run, it prints garbage (after the version check passes) and crashes. Later builds run, but by runtime patching. I need to find the patch strings. Funnily enough, as a proof of how obscure MDOS4 was, it tells you to "Contact MICROSOFT" if it can't identify a patch string.
+

@@ -48,7 +48,7 @@ cseg01          segment para public 'CODE' use16
 ; The handle of the master object (system-wide, far pointer) heap. Offset address within the kernel(?) code segment.
 HGLOBALHEAP     dw 0                    ; DATA XREF: GLOBALMASTERHANDLE↓r
                                         ; GLOBALINIT+93↓w
-                                        
+
 ; The physical address (segaddr) of the master object (i.e. head) of the global (system-wide, far-pointer) heap. 
 PGLOBALHEAP     dw 0                    ; DATA XREF: ALLOCALLSEGS+6E↓r
                                         ; FREEMODULE+60↓r ...
@@ -276,6 +276,8 @@ SZERRCANNOTREAD db 'Cannot read from device ',0
 SZERRCANNOTWRITE db 'Cannot write to device ',0
                 db 8 dup(0)
 SZERRPRINTERNOTREADY db 'Printer not ready',0
+
+; These strings are used by GETDEBUGSTRING
 SZERRFAILEDLOADING db 'KERNEL: Failed loading - ',0
 SZERRFAILEDLOADINGNEWINSTANCE db 'KERNEL: Failed loading new instance of - ',0
 SZERRFAILEDLOADINGRESOURCE db 'Error loading from resource file - ',0
@@ -290,4 +292,4 @@ SZERRABORT      db 7,0Dh,0Ah
 SZERRINVALIDBPCHAIN db 'Invalid BP chain',7,0Dh,0Ah,0
                 db ': ',0
                 align 2
-;
+;end

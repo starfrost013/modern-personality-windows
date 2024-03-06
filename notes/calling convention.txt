@@ -1,0 +1,7 @@
+calling convention:
+
+bx used for strings
+si for pointers (segaddr)
+dx:ax pointer pair for far pointers
+
+first parameter is always implicitly the calling module
