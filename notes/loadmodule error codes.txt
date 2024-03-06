@@ -1,3 +1,4 @@
 loadmodule error codes:
 
-2 = invalid binary (actually file not found?)
+2 = file not found 
+11 (0x0A) = invalid binary
