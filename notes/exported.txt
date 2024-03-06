@@ -1,1 +1,31 @@
 all exported kernel functions have an implicit first argument with a segaddress (?) pointer to the module handle (hModule) of the calling module
+
+getprocaddress (assembly call, C uses PASCAL i think)
+
+si -> module handle segptr (therefore parargraph aligned)
+bx -> pointer to string containing function name
+	-> can start with "#" and be a number to get an index instead
+	-> NULL = calling module (GETEXEPTR must be same)
+cs -> program calling it code segment??????????????????????????????
+
+returns ax:dx pair containing offset and segment respectively (i think) as a seg:off pointer to the function...
+
+
+getmodulehandle
+
+bx -> pointer to string containing module to get handle of
+
+returns
+ax -> seg pointer (paragraph aligned) to module handle.
+
+ENTPROCADDRESS actually gets procaddress - GETPROCADDRESS just performs preprocessing (checking if hmodule is null and therefore if we should get the calling hModule, and parameter valiation)
+getexeptr:
+dx->0 = not found
+
+findordinal:
+- must also take ordinal numbers as strings?
+
+entprocaddress:
+	SI -> 
+	AX -> *local* kernel pointer
+ 
