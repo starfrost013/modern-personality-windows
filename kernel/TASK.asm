@@ -267,8 +267,8 @@ loc_3763:                               ; CODE XREF: CREATETASK+F8↑j
                 mov     word ptr es:[di+10h], 0
                 mov     word ptr ds:34h, 80h
                 mov     ds:36h, ax
-                mov     word ptr ds:6, 1
-                mov     word ptr ds:7Eh, 4454h
+                mov     word ptr ds:6, 1 ; set event count to 1
+                mov     word ptr ds:7Eh, 4454h ; create 'TD' signature required to be a 
                 mov     ax, ds
 
 loc_378F:                               ; CODE XREF: CREATETASK+43↑j
@@ -362,7 +362,7 @@ arg_0           = word ptr  4
 
 loc_3808:                               ; CODE XREF: DELETETASK+F↑j
                                         ; DELETETASK+25↓j
-                mov     ds, ax
+                mov     ds, ax ; ax->tdb
                 mov     ax, ds:0
                 or      ax, ax
                 jz      short loc_381E

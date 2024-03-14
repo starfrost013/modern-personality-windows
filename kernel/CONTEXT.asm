@@ -4,7 +4,63 @@
 ; External Entry #30 into the Module
 ; Attributes (0001): Fixed Exported
 ;
-; [0000003E BYTES: COLLAPSED FUNCTION WAITEVENT. PRESS CTRL-NUMPAD+ TO EXPAND]
+; =============== S U B R O U T I N E =======================================
+
+; Attributes: bp-based frame
+
+                public WAITEVENT
+WAITEVENT       proc far
+
+arg_0           = word ptr  6
+
+                inc     bp              ; KERNEL_30
+                push    bp
+                mov     bp, sp
+                push    ds
+                mov     ax, [bp+arg_0]
+                call    GETTASKHANDLE
+                mov     ds, ax
+                xor     ax, ax
+loc_3C01:
+                pushf
+                cli
+                dec     word ptr ds:6 ; decrement remaining event count
+                jge     short loc_3C1E ; is it FF, then leave
+                mov     word ptr ds:6, 0
+                jmp     short loc_3C12
+; ---------------------------------------------------------------------------
+
+ret1:                                   ; CODE XREF: WAITEVENT+21↓p
+                iret
+; ---------------------------------------------------------------------------
+
+loc_3C12:                               ; CODE XREF: WAITEVENT+1D↑j
+                push    cs
+                call    ret1
+                mov     ax, offset loc_3C01
+                push    cs
+                push    ax
+                jmp     near ptr RESCHEDULE
+; ---------------------------------------------------------------------------
+
+loc_3C1E:                               ; CODE XREF: WAITEVENT+15↑j
+                jmp     short loc_3C21
+; ---------------------------------------------------------------------------
+
+ret2:                                   ; CODE XREF: WAITEVENT+30↓p
+                iret
+; ---------------------------------------------------------------------------
+
+loc_3C21:                               ; CODE XREF: WAITEVENT:loc_3C1E↑j
+                push    cs
+                call    ret2
+                sub     bp, 2
+                mov     sp, bp
+                pop     ds
+                pop     bp
+                dec     bp
+                retf    2
+WAITEVENT       endp
 ;
 ; External Entry #29 into the Module
 ; Attributes (0001): Fixed Exported
@@ -22,7 +78,7 @@ YIELD           proc far                ; CODE XREF: STARTTASK+69↑p
                 push    ds
                 xor     ax, ax
                 cmp     cs:INSCHEDULER, al
-                jnz     short loc_3C8C
+                jnz     short yield_done ; if we are currently scheduling, don't bother yielding
                 mov     ds, cs:CURTDB   ; get the current task data block
                 cmp     word ptr ds:7Eh, 4454h ; is 0x7E in the TDB 'MZ' header?
                 jnz     short not_task_handle
@@ -54,7 +110,7 @@ loc_3C85:                               ; CODE XREF: YIELD+37↑j
                 dec     word ptr ds:6
                 mov     ax, 0FFFFh
 
-loc_3C8C:                               ; CODE XREF: YIELD+C↑j
+yield_done:                               ; CODE XREF: YIELD+C↑j
                 sub     bp, 2
                 mov     sp, bp
                 pop     ds
@@ -93,7 +149,7 @@ GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 endp
 ; Purpose: Gets a handle to a running task.
 ;
 ; Parameters: ax (optional): A pointer (likely segaddr handle) to a hTask object.
-;                            If zero, gets the handle to the currently running task.
+;                            If NULL, gets the handle to the currently running task.
 ;
 ; Returns: The task handle.
 ;          This function failing is a FATAL ERROR, and the OS EXITS.
@@ -173,7 +229,7 @@ GETTASKQUEUE    endp
 
                 public SETTASKSIGNALPROC
 SETTASKSIGNALPROC:
-                mov     cl, 14h
+                mov     cl, 14h ; probably tdb offset
 ; ---------------------------------------------------------------------------
                 db 0BBh
 ; ---------------------------------------------------------------------------
@@ -184,7 +240,7 @@ SETTASKSIGNALPROC:
 
                 public SETTASKINTERCHANGE
 SETTASKINTERCHANGE:
-                mov     cl, 1Ch
+                mov     cl, 1Ch ; probably tdb offset
 ; ---------------------------------------------------------------------------
                 db 0BBh
 ;
@@ -245,8 +301,8 @@ SETTASKQUEUE    endp
 
                 public SETPRIORITY
 SETPRIORITY     proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; get the task from hTask, this will fatalexit if the task is wrong
-                add     bl, es:8                    ; bl = old task priority, es:0008 = nChangeAmount
+                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; get the TDB from hTask, this will fatalexit if the task is wrong
+                add     bl, es:8                    ; get new task priority by adding the old task priority (TDB:0008h) to bl (nChangeAmount)
                 cmp     bl, 0E0h                    ; is new priority above or equal to -15?
                 jge     short check_priority_high   ; branch   
                 mov     bl, 0E0h                    ; set it to -15 if it's below -15 
@@ -259,18 +315,179 @@ check_priority_high:                                ; CODE XREF: SETPRIORITY+B�
 set_priority:                               ; CODE XREF: SETPRIORITY+12↑j
                 push    bx                          ; bx contains task priority
                 inc     bx                          ; increment by 1
-                mov     es:8, bl                    ; set priority?
+                mov     es:8, bl                    ; set priority (TDB:0x08)
                 push    es                          
-                push    es                          ; push task (why are there two pushes here)
+                push    es                          ; push task (why are there two pushes here, probably for insert and delete)
                 call    DELETETASK                  ; delete the entire god damn task
                 push    ax                          ; ax->task pointer for inserttask call
-                call    INSERTTASK                  ; recreate the task
+                call    INSERTTASK                  ; recreate the task (the purpose of this is to push it down the queue)
                 pop     es                          ; get new task 
-                dec     byte ptr es:8               ; decrement nChangeAmount by 1 for some reason (we incremented it ealrier)
+                dec     byte ptr es:8               ; decrement the priority by 1 for some reason (we incremented it ealrier)
                 pop     ax                          ; return value from INSERTTASK 
                 cbw                                 ; sign extend it for calling convention
                 retf    4                           
 SETPRIORITY     endp
+
+
+; =============== S U B R O U T I N E =======================================
+
+; Attributes: bp-based frame
+
+; This is the main loop and handles scheduling all tasks.
+; When no task is running, this functions runs.
+RESCHEDULE      proc far                ; CODE XREF: WAITEVENT+29↓j
+                                        ; YIELD+24↓j
+                inc     bp
+                ; interrupt to 1427:xxxx normally happens here?
+                push    bp
+                mov     bp, sp
+                push    ds
+                push    si
+                push    di
+                push    ax              
+RESCHEDULE      endp ; sp-analysis failed
+
+      
+; =============== S U B R O U T I N E =======================================
+
+; is actually the second half of RESCHEDULE, this is called during boot
+; TODO: CHANGE TO LABEL
+BOOTSCHEDULE    proc far                ; CODE XREF: BOOTSCHEDULE+A↓j
+                                        ; BOOTSCHEDULE+E3↓j ...
+                mov     ax, cs:HEADTDB  ; get currently running process
+; nothing to do...so sleep :)
+
+idle_loop:                               ; CODE XREF: BOOTSCHEDULE+16↓j
+                                        ; BOOTSCHEDULE+51↓j
+                or      ax, ax          ; is there a curerntly running task (this is a segaddress paragraph-aligned pointer)
+                jnz     short loc_3B18  ; if HEADTDB is NULL (i.e. no task currently running, as in boot), we have to reschedule and get a currently running task
+                int     28h             ; DOS 2+ internal - KEYBOARD BUSY LOOP (wait state)
+                jmp     short near ptr BOOTSCHEDULE ; loop
+; ---------------------------------------------------------------------------
+
+loc_3B18:                               ; CODE XREF: BOOTSCHEDULE+6↑j
+                mov     ds, ax          ; set DS to current task data block
+                mov     ax, ds:0        ; set up regs for compare
+                cmp     word ptr ds:6, 0 ; are there any events to process for our current process?
+                jz      short idle_loop ; no, go back to sleep
+                mov     di, ds          ; there are, let's set up more registers
+                mov     si, cs:CURTDB   ; get current process tdb pointer
+; this basically checks if CurTDB != HeadTDB (i.e. is the head of the task queue - the next process to run 
+; *not* the actually running process. basically, is there more than one process running)
+; if there is only one process running we don't need to reschedule ever
+; apparently despite being LOADMODULE'd, GDI and USER etc aren't processes (the shell is)
+; todo: do GDI/USER change the calculation here
+                cmp     di, si          
+                jne     short reschedule_check_supertask  ; yes, time to resched
+                pop     ax              ; restore the registers
+                pop     di
+                pop     si
+                pop     ds
+                pop     bp
+                dec     bp
+                retf                    ; go back to whatever we were doing before
+; ---------------------------------------------------------------------------
+
+reschedule_check_supertask:                               ; CODE XREF: BOOTSCHEDULE+21↑j
+                push    cx
+                mov     cx, cs:LOCKTDB  ; is there a supertask (task that blocks all other processes)
+                jcxz    short reschedule_check_dos  ; pointer to supertask TDB is NULL, so don't bother  
+                cmp     cx, di
+                jne     short reschedule_abort
+
+reschedule_check_dos:                               ; CODE XREF: BOOTSCHEDULE+30↑j
+                push    es
+                push    bx
+                les     bx, cs:PINDOS               ; load into es:[bx] 
+                cmp     byte ptr es:[bx], 0
+                jnz     short loc_3B5A
+                les     bx, cs:PERRMODE
+                cmp     byte ptr es:[bx], 0
+                jz      short loc_3B5F
+
+loc_3B5A:                               ; CODE XREF: BOOTSCHEDULE+41↑j
+                pop     bx
+                pop     es
+                pop     cx
+                jmp     short idle_loop
+; ---------------------------------------------------------------------------
+
+loc_3B5F:                               ; CODE XREF: BOOTSCHEDULE+4C↑j
+                inc     cs:INSCHEDULER ; tell the OS that we are in the scheduler
+                push    dx
+                inc     byte ptr ds:8 ; increment task priority
+                push    ds
+                call    DELETETASK ; delete it from the task queue
+                push    ds
+                call    INSERTTASK ; put it back (this shoves it down to the bottom of the queue and has the effect of shutting it out)
+                dec     byte ptr ds:8 ; decrement task priority
+                cli
+                mov     es, si
+                xor     si, si
+                cmp     word ptr es:7Eh, 4454h ; check TDB signature (offset 0x7E), is it 'TD'?
+                jne     short loc_3B93 ; no, branch
+                mov     word ptr es:4, ss
+                mov     es:2, sp
+                mov     si, es
+                push    si
+                call    SAVESTATE
+
+loc_3B93:                               ; CODE XREF: BOOTSCHEDULE+75↑j
+                push    ds
+                push    si
+                call    RESTORESTATE
+                mov     ss, word ptr ds:4
+                mov     sp, ds:2
+                mov     cs:CURTDB, ds
+                dec     cs:INSCHEDULER
+                sti
+                cmp     word ptr ds:16h, 0
+                jnz     short loc_3BBD
+
+loc_3BB2:                               ; CODE XREF: BOOTSCHEDULE+D5↓j
+                pop     dx
+                pop     bx
+                pop     es
+
+reschedule_abort:                               ; CODE XREF: BOOTSCHEDULE+34↑j
+                pop     cx
+                pop     ax
+                pop     di
+                pop     si
+                pop     ds
+                pop     bp
+                dec     bp
+                retf
+; ---------------------------------------------------------------------------
+
+loc_3BBD:                               ; CODE XREF: BOOTSCHEDULE+A4↑j
+                mov     ax, 10h
+                mov     bp, sp
+                add     bp, 10h
+                mov     cx, 1
+                xchg    cx, ds:6
+                dec     cx
+                push    cx
+                push    ds
+                push    ax
+                push    si
+                push    cx
+                push    word ptr ds:12h
+                call    dword ptr ds:14h ; call signal handler
+                pop     cx
+                add     ds:6, cx
+                or      ax, ax
+                jz      short loc_3BB2
+                push    ds
+                call    DELETETASK
+                push    ds
+                call    INSERTTASK
+                pop     dx
+                pop     bx
+                pop     es
+                pop     cx
+                jmp     near ptr BOOTSCHEDULE
+BOOTSCHEDULE    endp ; sp-analysis failed
 
 
 ; =============== S U B R O U T I N E =======================================

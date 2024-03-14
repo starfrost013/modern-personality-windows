@@ -104,8 +104,8 @@ SZERRGLOBALREALLOC db 'GlobalReAlloc: Invalid global heap',0
 loc_6CE3:                               ; CODE XREF: GLOBALREALLOC+C↑j
                                         ; GLOBALREALLOC+1E↑j
                 call    GENTER
-                mov     dx, [bp+arg_6]
-                mov     ax, [bp+arg_0]
+                mov     dx, [bp+arg_6] ; segment(?)
+                mov     ax, [bp+arg_0] ; offset(?)
                 lea     bx, [bp+arg_2]
                 call    GBTOP
                 call    GREALLOC

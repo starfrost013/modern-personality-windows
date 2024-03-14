@@ -1,0 +1,13 @@
+TDB size in 1.03 is 128 bytes.
+
+Signature is placed at the end 'TD' (actually 'DT' little endian). see MDOS4, which uses the same 
+
+Offset		Size		Purpose
+0x00		WORD		Segaddress pointer to next task
+0x06		WORD		Number of events remaining to be processed (incremented by postevent, also YIELD as yielding counts as a task)
+0x08		BYTE		Priority (-15 to 15)
+0x12		WORD		
+0x14		DWORD		seg:off pointer to user-installed (but in reality just syatem as this is an undocumented function) Signal Handler
+0x1C		DWORD		Something to do with IPC ("SETTASKINTERCHANGE")
+0x7E		WORD		'TD' ('DT' little endian) string indicating end of task block
+After this the NE header is stored

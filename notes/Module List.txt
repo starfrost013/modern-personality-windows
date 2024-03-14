@@ -1,0 +1,3 @@
+Module list head is pointed to by HEXEHEAD 
+
+Header is 'NE' (New Executable) at least for NEs for an entry.
