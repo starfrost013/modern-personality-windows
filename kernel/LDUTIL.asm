@@ -1,4 +1,8 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
+; LDUTIL.ASM: Provides various loading-related utils e.g. reference counting loaded binaries so we know when to free them and getting pointers to NE headers.
 
 ; =============== S U B R O U T I N E =======================================
 

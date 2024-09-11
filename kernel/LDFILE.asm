@@ -1,4 +1,24 @@
 
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDFILE.ASM
+; Mostly handles loading files and interfacing . It also provides functions for demand-loading segments.
+;
+; Due to an extreme lack of memory space owing to the 1MB address space limitation and 64KB segmentation limit of the 808x processor family,
+; Windows provides an ability to manage splitting apps up into multiple segments. A series of segments with an arbitrary below 64K size
+; are placed in a "non-resident name table" either by ordinal or name, and are loaded on demand from the disk when they are called. 
+;
+; When an app starts, the "DGROUP" segment of up to 64kb is loaded, where it is recommended to place global functions. This segment is also loaded.
+;
+; This requires the programmer to either keep their code small-model (128kb, 64k code+64k data), exploit the stack segment and ES to get more space, or carefully 
+; (and manually!) place functions in segments, which requires minimising the number of demand-loaded segments and therefore cross-dependencies between modules that aren't DGROUP, 
+; if you fuck this up you can have an app that is not only very slow on 1980s hard drives but can easily take up the entire address space of the 8086..."the good old days"
+; or use dynamic linking (DLLs exist, but are labelled as EXEs) in order to force Windows to manage it for you.
+
+; This concept seems to have originated in Multitasking DOS 4 and showed up around Windows 1.0 alpha.
+
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame

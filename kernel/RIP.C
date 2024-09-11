@@ -1,8 +1,14 @@
+/* ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; RIP.C: Handles the kernel crashing on debug builds with a bugcheck-like error code. Yes, "rip.c" was what microsoft called it back then. */
 
 
 /* THIS IS A C FILE!!!!!
 / IT MUST BE TRANSPILED TO C!!!!
-; Figure out what is NOT c and put it in RIPAUX.ASM!!! 
+
+; Some of this is not C - it goes in RIPAUX.ASM!!! 
 
 K&R C NO // !!!!
 */
@@ -16,6 +22,8 @@ takes:
     - optional useful info like NT
     tries to determine module name. 
 */
+
+#ifdef DEBUG
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
@@ -548,3 +556,4 @@ loc_7F2A:                               ; CODE XREF: __lshl+8↓j
 locret_7F30:                            ; CODE XREF: __lshl+2↑j
                 retn
 __lshl          endp
+#endif

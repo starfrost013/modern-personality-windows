@@ -1,13 +1,19 @@
-; ---------------------------------------------------------------------------
-                db 6 dup(0)
 
-;
+
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
 ; LDFASTB.ASM
 ;
-; Implements fast-boot. Fast boot is a method of booting involving a pack file and an overlay, containing the options the user selected in setup.
+; Implements fast-boot. Fast boot is a method of booting involving a pack file, containing a blob containing KERNEL, GDI, and USER,
+; and an overlay, containing the options the user selected in setup.
 ; this is primarily done in order to speed up boot on very slow systems booting from MFM disks or even floppies, as it's always faster to load two large files
 ; than many small files
 ;
+; ---------------------------------------------------------------------------
+                db 6 dup(0)
+
 
 ; =============== S U B R O U T I N E =======================================
 

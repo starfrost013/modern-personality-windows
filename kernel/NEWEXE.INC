@@ -1,3 +1,4 @@
+; Stolen from some SDK
 TITLE				Assembly definitions for NE header
 
 

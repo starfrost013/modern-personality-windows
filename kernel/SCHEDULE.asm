@@ -1,5 +1,8 @@
-; ModernPersonality
-; Copyright © 2023-2024 starfrost
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; SCHEDULE.ASM. Context switching for the all-powerful cooperative multitasking system
 
 ; =============== S U B R O U T I N E =======================================
 

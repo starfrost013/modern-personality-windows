@@ -1,3 +1,9 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; GLRU.ASM: Implements a least recently used algorithm for memory segments so that unused memory segments can be freed or moved around to prioritise more commonly used segments.
+
 ; =============== S U B R O U T I N E =======================================
 
 

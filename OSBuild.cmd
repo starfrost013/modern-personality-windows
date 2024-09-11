@@ -8,7 +8,7 @@ path=%~dp0bin\;%path%
 call :echobuild
 echo Building Kernel...
 
-msdos -d -e -m make kernel\kernel.mak
+msdos -e -x make kernel\kernel.mak
 
 goto :eof
 

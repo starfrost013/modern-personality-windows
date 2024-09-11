@@ -1,3 +1,15 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; USERPRO.ASM: Provides routines to retrieve and update data in the WIN.INI file (user profile).
+; as well as the kernel's internal I/O with that file
+;
+; Called userpro.asm, because the file is internally called the "User profile" (even though windows is single user and it's just an ini file)
+; In Windows 1.0 Alpha (January 1985) and earlier, this file used to be called USER.PRO.
+;
+; Maybe they thought people would like keep folders full of them for different users or something lmao
+
 ;
 ; External Entry #57 into the Module
 ; Attributes (0001): Fixed Exported

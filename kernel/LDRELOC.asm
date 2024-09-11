@@ -1,3 +1,11 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDRELOC.ASM:
+; When the aforementioned memory manager needs to relocate a segment, references in that segment to other segments within the application must be manually fixed up
+; (or it would crash immediately due to jumping to garbage)
+; This file provides routines to achieve that, and has some debug code to crash Windows with FATALEXIT code 409h if it fails to checksum a segment properly.
 
 ; =============== S U B R O U T I N E =======================================
 

@@ -1,3 +1,9 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDOPEN.ASM: Provides routines for applications to perform file-based I/O.
+
 
 ;
 ; External Entry #76 into the Module

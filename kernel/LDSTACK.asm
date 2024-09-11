@@ -1,3 +1,10 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDSTACK.ASM: This performs relocations for the program stack when a relocatable segment is mvoed.
+; It also provides macros for exception-like functionality which was not supported by MSVC or MASM at this time (neither were supported until some version of Visual C++) 
+; with the CATCH and THROW functions 
 
 ; =============== S U B R O U T I N E =======================================
 

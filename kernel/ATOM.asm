@@ -1,3 +1,9 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; ATOM.ASM: The Atom Manager, a nice string cache so we don't have to endlessly read off of MFM disks.
+
 ;
 ; External Entry #68 into the Module
 ; Attributes (0001): Fixed Exported

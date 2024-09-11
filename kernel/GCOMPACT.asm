@@ -1,3 +1,8 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; GCOMPACT.ASM: Provides global memory manager routines that rearrange memory when it is freed in order to prevent fragmentation of memory 
 
 
 ; =============== S U B R O U T I N E =======================================

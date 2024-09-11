@@ -1,9 +1,8 @@
-;
-; modern:personality
-; © 2023-2024 starfrost         October 30, 2023
-;                               January 27, 2024
- 
-; KDATA.ASM : KERNEL global variables
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; KDATA.ASM : KERNEL global variables 
 
 ;
 ; +-------------------------------------------------------------------------+

@@ -1,4 +1,10 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
+; LDINT.ASM: Handles non-DOS related interrupts that are needed by the kernel, but not handled by drivers (e.g. BIOS INT 08h, which is hooked by SYSTEM.DRV.) 
+;
+; Mostly this is just the INT 3F MS dynamic linking interface...
 
 ; ---------------------------------------------------------------------------
 INT3FBP         dw 0                    ; DATA XREF: INT3FHANDLER+3B↓w

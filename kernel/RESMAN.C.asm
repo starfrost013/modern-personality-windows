@@ -1,3 +1,13 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; RESMAN.c: Provides routines to find, load and use executable resources.
+; This is anything you can really see in an app. Menus, buttons, cursors, strings, bitmaps, bitmaps with encrypted easter eggs from the dev team...can be anything!
+
+; In Windows 1.x, this is a C file. In later versions of Windows, it was rewritten in assembly.
+; Currently, for the purposes of bootstrapping the kernel, it's an assembly file because it's critical for system operation.
+; Later on in the project, it will be rewritten
 
 ;
 ; External Entry #60 into the Module

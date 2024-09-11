@@ -1,3 +1,12 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDAUX.ASM: Auxillary functions for LD.C that need to be fast and are hence written in assembly:
+;               - Ordinal lookup for dynamic linking
+;               - Validation
+;               - GetProcAddress
+;               - Getting various procedure instance data
 
 ; =============== S U B R O U T I N E =======================================
 

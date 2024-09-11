@@ -1,3 +1,8 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; KERNEL.def: LDDISK.ASM - Provides filename parsing and disk I/O services.
 
 ;
 ; External Entry #76 into the Module

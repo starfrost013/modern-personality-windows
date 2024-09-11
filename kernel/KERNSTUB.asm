@@ -1,4 +1,10 @@
-﻿
+﻿; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; KERNSTUB.ASM:
+; An app prepended to the Kernel during compilation
+; It verifies that the kernel is legitimate and that it has a valid New Executable header before booting it.
 
 ;
 ; +-------------------------------------------------------------------------+
@@ -85,20 +91,20 @@ load_segment:
 	mov     cx, [si].ne_align ; alignment shift count (so that segments can be aligned on a paragraph boundary)
 	sub     cx, 4 ; segment table address is in paragraphs (16-bytes)
 	shl     ax, cl
-		mov     dx, cs
-sub     dx, 20h 
-add     dx, ax
-push    dx
-push    word ptr [si].ne_csip ; initial CSIP value from our first code segment
-mov     ds, di
-assume ds:nothing
-mov     cx, si
-add     cx, 200h, ; NE header location added to initial CS value (so that we don't execute the header)
-jmp     short boot
-align 10h
+	mov     dx, cs
+	sub     dx, 20h 
+	add     dx, ax
+	push    dx
+	push    word ptr [si].ne_csip ; initial CSIP value from our first code segment
+	mov     ds, di
+	assume ds:nothing
+	mov     cx, si
+	add     cx, 200h, ; NE header location added to initial CS value (so that we don't execute the header)
+	jmp     short boot
+	align 10h
 
 boot:
-retf ; return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
+	retf ; return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
 
 call_boot_failure:
 call	boot_failure
@@ -106,22 +112,23 @@ start endp ; sp-analysis failed
 ; Attributes: noreturn
 
 ; Run on invalid NE header present during boot (no code segments or no NE magic). 
-Prints message using DOS API and exits.
-boot_failure proc near
+; Prints message using DOS API and exits.
+
 ; error message
-db 'KERNSTUB: Error during boot',13,10,'$' ; terminated
-pop     dx
-push    cs
-pop     ds
-assume ds:seg000
-mov     ah, 9
-int     21h             ; DOS - PRINT STRING
+boot_failure_msg	db 'KERNSTUB: Error during boot',13,10,'$' ; terminated
+boot_failure proc near
+	pop     dx
+	push    cs
+	pop     ds
+	assume ds:seg000
+	mov     ah, 9
+	int     21h             ; DOS - PRINT STRING
                         ; DS:DX -> string terminated by "$"
-mov     ax, 4C01h		; exit code is 1
-int     21h             ; DOS - 2+ - QUIT WITH EXIT CODE (EXIT)
+	mov     ax, 4C01h		; exit code is 1
+	int     21h             ; DOS - 2+ - QUIT WITH EXIT CODE (EXIT)
 boot_failure endp ; sp-analysis failed ; AL = exit code
 
-db 4Ch, 0
+	db 4Ch, 0
 seg000 ends
 
 end start

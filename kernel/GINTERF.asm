@@ -1,3 +1,12 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; GINTERF.asm: Shims the Multitasking DOS 4 memory allocation routines (G*) with Windows NE exports (GLOBAL*) so that apps can use them in a relatively safe way.
+
+; gfree probably needs to be moved to gmem.asm or something
+
+
 ;
 ; External Entry #15 into the Module
 ; Attributes (0001): Fixed Exported

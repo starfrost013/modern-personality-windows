@@ -1,4 +1,7 @@
-
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+; This code intercepts MS-DOS int 24h (fatal error) and indicates it to the user so we can at least try to handle it safely.
 
 ; =============== S U B R O U T I N E =======================================
 

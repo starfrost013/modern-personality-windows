@@ -1,3 +1,10 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDSEG.ASM:
+; This file handles loading either allocated memory segments (using GlobalAlloc...?) or segments of loaded NE files. It also handles fixed (unmovable e.g. by the LRU system)
+; and finding a place to load new segments.
 
 ; =============== S U B R O U T I N E =======================================
 

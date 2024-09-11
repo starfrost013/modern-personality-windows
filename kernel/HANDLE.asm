@@ -1,5 +1,9 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
-
+; HANDLE.ASM: This file implements an object handling system to abstract various forms of resources (files, global segments, local segments...) 
+; behind a single "HANDLE" structure,
 
 
 ; =============== S U B R O U T I N E =======================================

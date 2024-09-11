@@ -1,4 +1,8 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
+; RESAUX.ASM: Memory allocation for executable resource loading, which needs to be fast, so it's written in assembly...
 
 ; =============== S U B R O U T I N E =======================================
 

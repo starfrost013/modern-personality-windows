@@ -1,10 +1,8 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
-
-;
-; External Entry #44 into the Module
-; Attributes (0001): Fixed Exported
-;
-
+; kernel.asm: Misc unidentified crap.
 
 ;
 ; External Entry #43 into the Module
@@ -27,6 +25,7 @@ unk_48C0        db    0                 ; DATA XREF: sub_48C1+C↓w
 
 ; =============== S U B R O U T I N E =======================================
 
+; NOT A FUNCTION! THIS IS DATA AND MIGHT ACUALLY JUST BE GARBAGE
 
 sub_48C1        proc far
                 add     [bp+di], al     ; these are all also different interrupt handlers.

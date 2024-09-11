@@ -1,3 +1,9 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LDDEBUG.ASM: SYMDEB interop, system validation, and binary symbol loading.
+
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r
                                         ; DEBUGDEFINESEGMENT+27↓r ...

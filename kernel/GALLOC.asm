@@ -1,3 +1,10 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; GALLOC.ASM: Defines a global object and provides routines to allocate memory shared across processes.
+
+
 GALIGN          proc near               ; CODE XREF: GREALLOC+7↓p
                                         ; GFREE+1↓p ...
                 xor     cx, cx

@@ -1,5 +1,12 @@
+/* ; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; Local (per-task, near pointer) heap checking for debug builds of windows */
+
 /* THIS IS A C FILE */
 
+#ifdef DEBUG
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
@@ -272,3 +279,5 @@ loc_72A9:                               ; CODE XREF: CHECKLOCALHEAP+17↑j
                 pop     bp
                 retn
 CHECKLOCALHEAP  endp
+
+#endif

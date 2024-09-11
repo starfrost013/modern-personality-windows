@@ -1,4 +1,11 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
 
+; CONTEXT.ASM: Context management for processes (events, yielding, handles...)
+;
+; Also has the main loop of the scheduler in the RESCHEDULE function (that handles task priority and waits for the processes to yield)
+; No, it's not in SCHEDULE.ASM...Why microsoft?
 
 ;
 ; External Entry #30 into the Module
@@ -398,6 +405,7 @@ reschedule_check_supertask:                               ; CODE XREF: BOOTSCHED
 reschedule_check_dos:                               ; CODE XREF: BOOTSCHEDULE+30↑j
                 push    es
                 push    bx
+                ; See if an unsafe DOS API is running (DOS is not re-entrant)
                 les     bx, cs:PINDOS               ; load into es:[bx] 
                 cmp     byte ptr es:[bx], 0
                 jnz     short loc_3B5A
@@ -450,6 +458,7 @@ loc_3BB2:                               ; CODE XREF: BOOTSCHEDULE+D5↓j
                 pop     es
 
 reschedule_abort:                               ; CODE XREF: BOOTSCHEDULE+34↑j
+                ; We're done whatever we need to do
                 pop     cx
                 pop     ax
                 pop     di

@@ -1,3 +1,10 @@
+; ****** modern:personality project ******
+; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Original code            © 1982-1986 Microsoft Corporation
+
+; LCREAT.ASM: C pseudo-stdlib stuff
+
+
 ;
 ; External Entry #85 into the Module
 ; Attributes (0001): Fixed Exported
