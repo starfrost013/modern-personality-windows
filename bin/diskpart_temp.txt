@@ -1,0 +1,8 @@
+select vdisk file="C:\Users\mario\ModernPersonality\WIN103\bin\latest.vhd" 
+attach vdisk 
+clean 
+convert mbr  
+create partition primary 
+select partition 1 
+format quick fs=fat 
+assign letter=W 

@@ -1,0 +1,11 @@
+latest.vhd
+.vhd
+compiletemp_exclude.txt
+Function*.txt 
+kernelsrc.txt 
+notes\
+diskpart_temp.txt
+compiletemp.cmd 
+VhdTool.exe
+.vscode
+.git
