@@ -1,3 +1,11 @@
 *.bin
 *.bak
 *.obj
+
+# IDA stuff (debug)
+*.i64*
+*.id0*
+*.id1*
+*.idb*
+*.nam*
+*.til*

@@ -110,12 +110,12 @@ FWINX           dw 0                    ; DATA XREF: ISSCREENGRAB↓r
 ; But then never sets this to anything (todo: check it's not just fucked up offsets)?
 ; Kernel CS:001E
 F8087           dw 0                    ; DATA XREF: STATEXJUMP+A↓r
-; Kernel CS:001F
+; Kernel CS:0020
 ; 1 if the scheduler is running.
 ; RESCHEDULE -> BOOTSCHEDULE is the scheduler.
 INSCHEDULER     db 0                    ; DATA XREF: BOOTSCHEDULE:loc_3B5F↓w
                                         ; BOOTSCHEDULE+99↓w ...
-; Kernel CS:0020 (related to expanded memory)
+; Kernel CS:0021 (related to expanded memory)
 FEMM            db 0                    ; DATA XREF: CREATETASK+22↓r
                                         ; CREATETASK+8B↓r ...
 ; Kernel CS:0022 idk what these do yet. May be master object
