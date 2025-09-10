@@ -1,5 +1,5 @@
 ; ****** modern:personality project ******
-; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; LDSTACK.ASM: This performs relocations for the program stack when a relocatable segment is mvoed.

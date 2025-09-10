@@ -1,5 +1,5 @@
 ; ****** modern:personality project ******
-; Reverse engineered code  © 2022-2024 starfrost. See licensing information in the licensing file
+; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; LDBOOT.ASM: Windows slow-boot code. Most of this is only in debug builds, but has been kept on for the purposes of validation and debugging
