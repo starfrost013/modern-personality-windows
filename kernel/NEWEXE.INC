@@ -1,34 +1,32 @@
-; Stolen from some SDK
-TITLE				Assembly definitions for NE header
-
+; Stolen from some Windows 3.x SDK, but with stuff not relevant to 1.x removed
 
 savedCS = 4
 savedIP = 2
 savedBP = 0
 savedDS = -2
 
-EMAGIC  = 05A4Dh ; 'MZ' header
+EMAGIC  = 05A4Dh
 ERESWDS =  0010h
 ENEWHDR =  003Eh
 ENEWEXE =  0040h
 
 EXE_HDR     STRUC
-e_magic     DW  ?               ; magic in same location		0x00
-e_cblp      DW  ?				; 0x02
-e_cp        DW  ?				; 0x04
-e_crlc      DW  ?				; 0x06
-e_cparhdr   DW  ?				; 0x08 
-e_minalloc  DW  ?				; 0x0A
-e_maxalloc  DW  ?				; 0x0C
-e_ss        DW  ?				; 0x0E
-e_sp        DW  ?				; 0x10
-e_csum      DW  ?				; 0x12
-e_cs        DW  ?				; 0x14
-e_ip        DW  ?				; 0x16 (cs:ip 0x14-0x18)
-e_lfarlc    DW  ?				; 0x18
-e_ovno      DW  ?				; 0x20 
-e_res       DW  ERESWDS DUP (?)	; 0x22?
-e_lfanew    DD  ?				; 0x26
+e_magic     DW  ?               ; magic in same location
+e_cblp      DW  ?
+e_cp        DW  ?
+e_crlc      DW  ?
+e_cparhdr   DW  ?
+e_minalloc  DW  ?
+e_maxalloc  DW  ?
+e_ss        DW  ?
+e_sp        DW  ?
+e_csum      DW  ?
+e_cs        DW  ?
+e_ip        DW  ?
+e_lfarlc    DW  ?
+e_ovno      DW  ?
+e_res       DW  ERESWDS DUP (?)
+e_lfanew    DD  ?
 EXE_HDR     ENDS
 
 
@@ -36,45 +34,44 @@ NEMAGIC     = 454Eh
 NERESBYTES  = 0
 
 NEW_EXE         STRUC
-ne_magic        DW  ?           ; Magic value 'NE'												0x00
-ne_ver          DB  ?           ; linker version number											0x02
-ne_rev          DB  ?           ; linker revision number										0x03
-ne_enttab       DW  ?           ; offset to entry table											0x04
-ne_cbenttab     DW  ?           ; number of bytes in entry table								0x06
+ne_magic        DW  ?           ; Magic value 'NE'
+ne_ver          DB  ?           ; version number
+ne_rev          DB  ?           ; revision number
+ne_enttab       DW  ?           ; offset to entry table
+ne_cbenttab     DW  ?           ; number of bytes in entry table
 
-ne_timestamp    DD  ?           ; DOS-format timestamp. This is a CRC in later versions			0x08
+ne_crc          DD  ?           ; CRC of file
 
-ne_flags        DW  ?           ; flag word														0x0C
-ne_autodata     DW  ?           ; segment number of auto data segment							0x0E
-ne_heap         DW  ?           ; initial size of local heap									0x10
-ne_stack        DW  ?           ; initial size of stack											0x12
+ne_flags        DW  ?           ; flag word
+ne_autodata     DW  ?           ; segment number of auto data segment
+ne_heap         DW  ?           ; initial size of local heap
+ne_stack        DW  ?           ; initial size of stack
 
-ne_csip         DD  ?           ; CS:IP start address											0x14
-ne_sssp         DD  ?           ; SS:SP initial stack pointer.  0 if							0x18
+ne_csip         DD  ?           ; CS:IP start address
+ne_sssp         DD  ?           ; SS:SP initial stack pointer.  0 if
                                 ; stack size word non-zero
 
-ne_cseg         DW  ?           ; number of segment in segment table							0x1C
-ne_cmod         DW  ?           ; number of entries in module reference table					0x1E
-ne_cbnrestab    DW  ?           ; number of bytes in non-resident name table					0x20
+ne_cseg         DW  ?           ; number of segment in segment table
+ne_cmod         DW  ?           ; number of entries in module reference table
+ne_cbnrestab    DW  ?           ; number of bytes in non-resident name table
 
-ne_segtab       DW  ?           ; NE relative offset to segment table							0x22
-ne_rsrctab      DW  ?           ; NE relative offset to resource table							0x24
-ne_restab       DW  ?           ; NE relative offset to resident name table						0x26
-ne_modtab       DW  ?           ; NE relative offset to module reference table					0x28
-ne_imptab       DW  ?           ; NE relative offset to imported name table						0x2A
-ne_nrestab      DD  ?           ; file offset to non-resident name table						0x2C
-ne_cmovent      DW  ?           ; Count of movable entries										0x30
-ne_align        DW  ?           ; Alignment shift count for segment data						0x32
-ne_cres         DW  ?           ; Count of resource segments									0x34
-ne_exetyp		DB  ?			; Target operating system										0x36
-ne_flagsothers	DB  ?			; Other .EXE flags												0x37
-ne_pretthunks   DW  ?           ; offset to return thunks										0x39
-ne_psegrefbytes DW  ?           ; offset to segment ref. bytes									0x3A
-; These are probably not present in 1.03
-;ne_reserved1	DW  ?			; win3.0+ gangload area. not used in 1.03						0x3C
-;ne_reserved2	DW	?			; offset for win3.0+ gangload. not used in 1.03					0x3E
-;ne_swaparea     DW  ?           ; Minimum code swap area size									0x41
-;ne_expver       DW  ?           ; Expected Windows version number								0x43
+ne_segtab       DW  ?           ; NE relative offset to segment table
+ne_rsrctab      DW  ?           ; NE relative offset to resource table
+ne_restab       DW  ?           ; NE relative offset to resident name table
+ne_modtab       DW  ?           ; NE relative offset to module reference table
+ne_imptab       DW  ?           ; NE relative offset to imported name table
+ne_nrestab      DD  ?           ; file offset to non-resident name table
+ne_cmovent      DW  ?           ; Count of movable entries
+ne_align        DW  ?           ; Alignment shift count for segment data
+ne_cres         DW  ?           ; Count of resource segments
+ne_exetyp	DB  ?		; Target operating system
+
+; NOT USED BY WINDOWS 1.03 BUT KEPT HERE SO WE CAN LOAD """FUTURE""" FILES
+ne_flagsothers	DB  ?		; Other .EXE flags (not used by Windows 1.03)
+ne_pretthunks   DW  ?           ; offset to return thunks
+ne_psegrefbytes DW  ?           ; offset to segment ref. bytes
+ne_swaparea     DW  ?           ; Minimum code swap area size
+ne_expver       DW  ?           ; Expected Windows version number
 NEW_EXE         ENDS
 
 ; Chksum not supported unless ne_psegcsum defined in NEW_EXE structure
@@ -99,24 +96,18 @@ NENOTWINCOMPAT  = 0100h         ; Not compatible with P.M. Windowing
 NEWINCOMPAT     = 0200h         ; Compatible with P.M. Windowing
 NEWINAPI        = 0300h         ; Uses P.M. Windowing API
 NEFLTP          = 0080h         ; Floating-point instructions
-NEI286          = 0020h         ; 286 instructions
 NEI086          = 0010h         ; 8086 instructions
 NEPROT          = 0008h         ; Runs in protected mode only
 NEPPLI          = 0004h         ; Per-Process Library Initialization
 NEINST          = 0002h         ; Instance data
 NESOLO          = 0001h         ; Solo data
 
-; Following private bit is a runtime only flag used only ROM Windows.
-
-NEMODINROM	= NEEMSSEPINST	; Module loaded from ROM
-
-
 ; Target operating systems
 
-NE_UNKNOWN	= 0		; Unknown (any "new-format" OS), MT-DOS 11/26/85
+NE_UNKNOWN	= 0		; Unknown (any "new-format" OS)
 NE_OS2		= 1		; Microsoft/IBM OS/2 (default)
 NE_WINDOWS	= 2		; Microsoft Windows
-NE_DOS4 	= 3		; Microsoft MS-DOS 4.x (11/17/86+)
+NE_DOS4 	= 3		; Microsoft (Multitasking) MS-DOS 4.x. ut not used by it
 
 ifndef NO_APPLOADER
 NEAPPLOADER     = 0800h         ; set if application has its own loader
@@ -144,9 +135,7 @@ NSSHARE         =  0020h    ; Shareable segment
 NSPRELOAD       =  0040h    ; Preload this segment
 NSERONLY        =  0080h    ; EXECUTE ONLY code/READ ONLY data segment
 NSRELOC         =  0100h    ; Relocation information following segment data
-NSDPL           =  0C00h    ; 286 DPL bits
 NSDISCARD       =  1000h    ; Discard priority bits
-NS286DOS        = 0EE06h    ; These bits only used by 286DOS
 
 NSALIGN         = 9         ; Default alignment shift count for seg. data
 
@@ -163,8 +152,6 @@ NSKCACHED	= 0800h		; cached by kernel
 NSPRIVLIB	= NSITER
 NSNOTP		= 8000h
 
-NSINROM 	= NSINDIRECT	; segment is loaded in ROM
-NSCOMPR 	= NSGETHIGH	; segment is compressed in ROM
 
 ifndef NO_APPLOADER
 NSCACHED	= 8000h		;* in AppLoader Cache
@@ -196,6 +183,8 @@ RNPURE          = 00020h    ; Pure resource (read only)
 RNPRELOAD       = 00040h    ; Preload this resource
 RNDISCARD       = 01000h    ; Discard bit
 RNLOADED	= 00004h    ; True if handler proc return handle
+RNCOMPR 	= 00200h    ; Resource is compressed in ROM
+RNINROM 	= 02000h    ; Resource is loaded in ROM (run time flag)
 
 RNUNUSED	= 0CD8Bh    ; Unused resource flags
 
@@ -246,7 +235,7 @@ ENTSWAPPED	ENDS
 
 endif		; if swap profiler
 
-errnz <SIZE ENTMOVEABLE - SIZE ENTSWAPPED>
+.errnz SIZE ENTMOVEABLE - SIZE ENTSWAPPED
 
 PENT		STRUC
 penttype	DB  ?
