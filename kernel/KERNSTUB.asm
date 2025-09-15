@@ -98,7 +98,14 @@ load_segment:
 	add     cx, 200h ; NE header location added to initial CS value (so that we don't execute the header)
 	jmp     short boot
 
+; DEBUG message so that we can see if we booted properly.
 boot:
+	push cs
+	pop ds
+	mov dx, word ptr lol_msg
+	mov ah, 9
+	int 21h
+	
 	; this is RETF because this is a far proc
 	ret ; return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
 
@@ -113,7 +120,8 @@ call	boot_failure
 boot_failure_msg	db 'KERNSTUB: Error during boot',13,10,'$'
 
 ; funny message
-lol_msg				db 'ModernPersonality (c)2025 starfrost',13,10,'$'
+lol_msg				db 'KERNSTUB: ModernPersonality trying to boot (c)2025 starfrost',13,10,'$'
+
 boot_failure:
 	pop     dx
 	push    cs
