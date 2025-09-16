@@ -17,12 +17,17 @@
 ;.model compact ; ????
 SWAPPRO = 0
 
+; for cmacros
+WIN=1 
+?DF=1 ; Prevent implicit creation of segments
+
+
 INCLUDE cmacros.inc
 INCLUDE NEWEXE.inc
 
 ; Disassembled binary has a _TEXT section
 createSeg   STACK,STACK,PARA,STACK,STACK
-;createSeg   _TEXT,CODE,PARA,PUBLIC,CODE doesn't work? does sBegin macro below create segment?
+createSeg   _TEXT,CODE,PARA,PUBLIC,CODE 
 
 
 sBegin STACK

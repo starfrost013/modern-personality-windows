@@ -2,6 +2,10 @@
 ; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; kernel.inc - core includes
 
+; Prevent implicit creation of segments
+?NODATA = 1
+?DF = 1
+
 ; Include CMACROS
 include CMACROS.inc
 
