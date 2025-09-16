@@ -7,6 +7,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p
                 push    ds
@@ -897,16 +901,6 @@ loc_9236:                               ; CODE XREF: INITDOSVARP+2BF↑j
                 retn
 INITDOSVARP     endp
 
+sEnd CODE
 
-; ---------------------------------------------------------------------------
-                align 8
-                db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
-                db 28h, 16h dup(0)
-word_93FA       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
-word_93FC       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
-word_93FE       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
-                db 470h dup(0), 20h dup(0FFh)
-cseg01          ends
-
-
-                end BOOTSTRAP
+end

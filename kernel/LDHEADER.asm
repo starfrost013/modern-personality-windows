@@ -9,6 +9,11 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 LOADEXEHEADER   proc near               ; CODE XREF: LOADMODULE+F4↑p
                                         ; BOOTSTRAP+15D↓p ...
 
@@ -487,3 +492,7 @@ loc_28E0:                               ; CODE XREF: TRIMEXEHEADER+F↑j
                 pop     bp
                 retn    2
 TRIMEXEHEADER   endp
+
+sEnd CODE
+
+end

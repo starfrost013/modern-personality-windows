@@ -20,6 +20,11 @@
 ; This concept seems to have originated in Multitasking DOS 4 and showed up around Windows 1.0 alpha.
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
@@ -507,3 +512,7 @@ loc_397A:                               ; CODE XREF: CLOSEOPENFILES+2E↑j
 ; ---------------------------------------------------------------------------
                 retn
 CLOSEOPENFILES  endp
+
+sEnd CODE
+
+end

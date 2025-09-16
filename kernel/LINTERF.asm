@@ -4,6 +4,10 @@
 
 ; LINTERF.asm: Shims the Windows near pointer / per-task L* alloc functions with Windows NE exports (LOCAL*) so that apps can use them in a relatively safe way.
 INCLUDE KERNEL.inc
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 ;
 ; External Entry #5 into the Module
@@ -912,3 +916,7 @@ loc_5DC5:                               ; CODE XREF: LOCALINIT+3C↑j
                 dec     bp
                 retf    6
 LOCALINIT       endp
+
+sEnd CODE
+
+end

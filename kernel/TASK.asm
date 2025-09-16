@@ -5,6 +5,12 @@
 ; TASK.ASM: Everything to do with processes. Initalising them, setting up their dummy PDB (Process Data Block), inserting them into the task queue, removing them again... */
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
+
 ;
 ; External Entry #91 into the Module
 ; Attributes (0001): Fixed Exported
@@ -553,3 +559,22 @@ GETCURRENTPDB   proc far
                 pop     ds
                 retf
 GETCURRENTPDB   endp
+
+; no real good place to put this for now
+;
+; External Entry #43 into the Module
+; Attributes (0001): Fixed Exported
+;
+
+; =============== S U B R O U T I N E =======================================
+
+
+                public ISSCREENGRAB
+ISSCREENGRAB    proc far
+                mov     ax, cs:FWINX    ; KERNEL_43
+                retf
+ISSCREENGRAB    endp
+
+sEnd CODE
+
+end

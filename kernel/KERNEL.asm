@@ -5,19 +5,12 @@
 ; kernel.asm: Misc unidentified crap.
 INCLUDE KERNEL.inc
 
-;
-; External Entry #43 into the Module
-; Attributes (0001): Fixed Exported
-;
+sBegin CODE
 
-; =============== S U B R O U T I N E =======================================
+assumeS CS,CODE
+assumeS DS,CODE
 
 
-                public ISSCREENGRAB
-ISSCREENGRAB    proc far
-                mov     ax, cs:FWINX    ; KERNEL_43
-                retf
-ISSCREENGRAB    endp
 
 ; ---------------------------------------------------------------------------
 unk_48BE        db    0                 ; DATA XREF: sub_48D3+2↓r
@@ -50,3 +43,7 @@ sub_48D3        proc far
                 pop     ds
                 retf
 sub_48D3        endp
+
+sEnd CODE
+
+end

@@ -7,6 +7,11 @@
 ; gfree probably needs to be moved to gmem.asm or something
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ;
 ; External Entry #15 into the Module
 ; Attributes (0001): Fixed Exported
@@ -604,3 +609,7 @@ GLOBALMASTERHANDLE proc far
                 mov     dx, cs:PGLOBALHEAP
                 retf
 GLOBALMASTERHANDLE endp
+
+sEnd CODE
+
+end

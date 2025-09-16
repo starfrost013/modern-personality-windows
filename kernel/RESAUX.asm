@@ -9,6 +9,11 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 MYRESALLOC      proc near               ; CODE XREF: LOADRESOURCE+11A↑p
 
 arg_0           = word ptr  4
@@ -266,3 +271,7 @@ loc_2FA7:                               ; CODE XREF: RESALLOC+32↑j
                 pop     bp
                 retn    8
 RESALLOC        endp
+
+sEnd CODE
+
+end

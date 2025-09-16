@@ -13,6 +13,11 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 FINDORDINAL     proc near               ; CODE XREF: SEGRELOC+AF↓p
                                         ; GETPROCADDRESS+3A↓p
 
@@ -1143,3 +1148,7 @@ FUSEDBP         dw 0                    ; DATA XREF: PATCHSTACK+12↓w
 loc_32A9:                               ; CODE XREF: PATCHSTACK+18↓j
                 jmp     loc_3349
 ; END OF FUNCTION CHUNK FOR PATCHSTACK
+
+sEnd CODE
+
+end

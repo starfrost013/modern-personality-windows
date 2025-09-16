@@ -5,6 +5,11 @@
 ; KERNEL.def: LDDISK.ASM - Provides filename parsing and disk I/O services.
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ;
 ; External Entry #76 into the Module
 ; Attributes (0001): Fixed Exported
@@ -888,3 +893,7 @@ loc_239C:                               ; CODE XREF: SEARCHPATH+73↑j
                 pop     bp
                 retn    0Ah
 SEARCHPATH      endp
+
+sEnd CODE
+
+end

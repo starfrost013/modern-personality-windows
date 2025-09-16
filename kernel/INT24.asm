@@ -5,6 +5,10 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 
 INT24HANDLER    proc far
@@ -183,3 +187,7 @@ SHOWDIALOGBOX2  proc near               ; CODE XREF: PROMPT:loc_217D↑p
 locret_4A25:                            ; CODE XREF: SHOWDIALOGBOX2+7↑j
                 retn
 SHOWDIALOGBOX2  endp
+
+sEnd CODE
+
+end

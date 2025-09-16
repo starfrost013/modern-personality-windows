@@ -14,6 +14,11 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
                 public INITATOMTABLE
 INITATOMTABLE   proc far                ; CODE XREF: LOOKUPATOM+2F↓p
 
@@ -522,4 +527,7 @@ GETATOMNAME     endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
                 db '[]',0Dh,0Ah,'='
-;
+sEnd CODE
+
+end
+; Anti-MASM empty line

@@ -11,6 +11,11 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 GETSTACKPTR     proc near               ; CODE XREF: STARTMODULE+90↑p
 
 arg_0           = word ptr  4
@@ -589,3 +594,7 @@ loc_3651:                               ; CODE XREF: THROW+42↑j
                 mov     ax, di
                 jmp     short loc_35EB
 THROW           endp
+
+sEnd CODE
+
+end

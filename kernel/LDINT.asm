@@ -7,6 +7,11 @@
 ; Mostly this is just the INT 3F MS dynamic linking interface...
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ; ---------------------------------------------------------------------------
 INT3FBP         dw 0                    ; DATA XREF: INT3FHANDLER+3B↓w
                                         ; SEARCHSTACK+BF↓r ...
@@ -267,3 +272,7 @@ done:                                   ; CODE XREF: TESTDSAX+4↑j
                                         ; TESTDSAX+F↑j ...
                 retn
 TESTDSAX        endp
+
+sEnd CODE
+
+end

@@ -8,6 +8,11 @@
 ; Todo: Check 1.02 JPN, probably depends on the specified language in KERNEL.MAK(?)
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ;
 ; External Entry #90 into the Module
 ; Attributes (0001): Fixed Exported
@@ -481,3 +486,6 @@ loc_4A3A:                               ; CODE XREF: APPEND+11↓j
                 retn
 APPEND          endp
 
+sEnd CODE
+
+end

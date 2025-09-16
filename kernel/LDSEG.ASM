@@ -11,6 +11,10 @@
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 FINDFREESEG     proc near               ; CODE XREF: FASTBOOT+AA↓p
                                         ; FASTBOOT+192↓p ...
 
@@ -1224,3 +1228,7 @@ loc_13D2:                               ; CODE XREF: LOADSEGMENT+1A7↑j
                 pop     bp
                 retn    8
 LOADSEGMENT     endp
+
+sEnd CODE
+
+end

@@ -17,6 +17,12 @@
 
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
+
                 public WAITEVENT
 WAITEVENT       proc far
 
@@ -526,3 +532,8 @@ GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p
                 mov     ax, 301h        ; 0103h = Windows 1.03
                 retf
 GETVERSION      endp
+
+sEnd CODE
+
+end
+; Anti-MASM empty line

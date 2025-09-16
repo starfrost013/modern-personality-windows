@@ -8,6 +8,10 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 INCEXEUSAGE     proc near               ; CODE XREF: LOADMODULE+249↑p
                                         ; LOADMODULE+3AC↑p ...
@@ -514,3 +518,7 @@ loc_C20:                                ; CODE XREF: MYFREE+6↑j
                 pop     bp
                 retn    2
 MYFREE          endp
+
+sEnd CODE
+
+end

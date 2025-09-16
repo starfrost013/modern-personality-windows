@@ -1,11 +1,15 @@
-*.bin
-*.bak
-*.obj
+.[Bb][Ii][Nn]
+.bak
+.BAK
+.obj
+.OBJ
+KERNSTUB.exe
+KERNEL.exe
 
 # IDA stuff (debug)
-*.i64*
-*.id0*
-*.id1*
-*.idb*
-*.nam*
-*.til*
+.i64*
+.id0*
+.id1*
+.idb*
+.nam*
+.til*

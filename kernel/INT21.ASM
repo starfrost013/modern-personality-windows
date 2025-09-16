@@ -10,6 +10,11 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 
 ; Function Name: dos3call
 ;
@@ -1865,3 +1870,7 @@ loc_47A8:                               ; CODE XREF: DOSTerminateHook+69↑j
                 push    si
                 call    cs:PEXITPROC ; exit windows????
 DOSTerminateHook endp ; sp-analysis failed
+
+sEnd CODE
+
+end

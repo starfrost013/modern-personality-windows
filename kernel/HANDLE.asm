@@ -7,6 +7,11 @@
 
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ; =============== S U B R O U T I N E =======================================
 
 
@@ -337,3 +342,7 @@ loc_1EA0:                               ; CODE XREF: DEFINEHANDLETABLE+C↑j
                 dec     bp
                 retf    2
 DEFINEHANDLETABLE endp
+
+sEnd CODE
+
+end

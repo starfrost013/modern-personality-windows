@@ -7,6 +7,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 LJOIN           proc near               ; CODE XREF: LFREE+22↓p
                                         ; LFREE+2E↓p ...
@@ -419,3 +423,6 @@ loc_5806:                               ; CODE XREF: LNOTIFY+4↑j
                 or      ax, ax
                 retn
 LNOTIFY         endp
+sEnd CODE
+
+end

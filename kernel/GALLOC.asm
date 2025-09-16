@@ -5,6 +5,10 @@
 ; GALLOC.ASM: Defines a global object and provides routines to allocate memory shared across processes.
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 GALIGN          proc near               ; CODE XREF: GREALLOC+7↓p
                                         ; GFREE+1↓p ...
@@ -1551,3 +1555,7 @@ loc_6912:                               ; CODE XREF: GDISCARD+45↑j
                 pop     es
                 retn
 GDISCARD        endp
+
+sEnd CODE
+
+end

@@ -7,6 +7,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 LBESTFIT        proc near               ; CODE XREF: LCOMPACT:loc_5685↓p
                 push    bx
@@ -291,3 +295,8 @@ loc_5702:                               ; CODE XREF: LCOMPACT+163↑j
                 mov     cx, ax
                 retn
 LCOMPACT        endp
+
+sEnd CODE
+
+end
+

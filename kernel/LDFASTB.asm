@@ -15,6 +15,11 @@
                 db 6 dup(0)
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -652,3 +657,6 @@ loc_8BDF:                               ; CODE XREF: BIGMOVE+F↑j
                 retn
 BIGMOVE    endp
 
+sEnd CODE
+
+end

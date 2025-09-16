@@ -8,6 +8,11 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 GCOMPACT        proc near               ; CODE XREF: GREALLOC+17A↑p
                                         ; GREALLOC+1F3↑p ...
                 push    si
@@ -158,3 +163,7 @@ loc_6808:                               ; CODE XREF: GBESTFIT+C↑j
 locret_6816:                            ; CODE XREF: GBESTFIT+3C↑j
                 retn
 GBESTFIT        endp
+
+sEnd CODE
+
+end

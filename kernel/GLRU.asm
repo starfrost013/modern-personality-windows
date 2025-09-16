@@ -7,6 +7,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 LRUSWEEP_MODE1  proc far
                 pop     cx
@@ -81,3 +85,7 @@ loc_6988:                               ; CODE XREF: LRUSWEEP+F↑j
                 pop     ds
                 retf
 LRUSWEEP        endp
+
+sEnd CODE
+
+end

@@ -5,6 +5,11 @@
 ; LDDEBUG.ASM: SYMDEB interop, system validation, and binary symbol loading.
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r
                                         ; DEBUGDEFINESEGMENT+27↓r ...
@@ -915,3 +920,7 @@ loc_7D6F:                               ; CODE XREF: STACKWALK+34↑j
                 pop     bp
                 retn    2
 STACKWALK       endp
+
+sEnd CODE
+
+end

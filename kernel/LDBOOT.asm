@@ -26,9 +26,6 @@ externW CURTDB
 externW HEXEHEAD
 
 ; Figure out what these are
-externW word_93FA
-externW word_93FC
-externW word_93FE
 externNP INITFWDREF
 externW FWINX
 externNP GLOBALINIT
@@ -716,7 +713,14 @@ SLOWBOOT        endp ; sp-analysis failed
 word_84B8       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)
-
+; ---------------------------------------------------------------------------
+                align 8
+                db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
+                db 28h, 16h dup(0)
+word_93FA       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
+word_93FC       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
+word_93FE       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
+                db 470h dup(0), 20h dup(0FFh)
 sEnd CODE
 
 END BOOTSTRAP

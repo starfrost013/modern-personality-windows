@@ -10,6 +10,11 @@
 INCLUDE KERNEL.inc
 
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 INT21ALLOC      proc near               ; CODE XREF: DOSAllocMemoryHook+3↑p
                 call    GENTERCURRENTPDB
                 call    GALLOC
@@ -47,3 +52,7 @@ INT21FREE       proc near
                 call    GFREE
                 jmp     short GLEAVE
 INT21FREE       endp
+
+sEnd CODE
+
+end

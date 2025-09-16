@@ -7,6 +7,12 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
+
 ; Attributes: bp-based frame
 
 SAVESTATE       proc near               ; CODE XREF: CREATETASK+EF↑p
@@ -219,3 +225,6 @@ STATEXJUMP      proc near               ; CODE XREF: SAVESTATE+2D↑p
                 retn
 STATEXJUMP      endp
 
+sEnd CODE
+
+end

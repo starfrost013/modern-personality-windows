@@ -11,6 +11,11 @@
 ; Maybe they thought people would like keep folders full of them for different users or something lmao
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ;
 ; External Entry #57 into the Module
 ; Attributes (0001): Fixed Exported
@@ -993,3 +998,7 @@ loc_51D4:                               ; CODE XREF: BUFFERWRITE+1A↓j
                 add     cx, di
                 retn
 BUFFERWRITE     endp ; sp-analysis failed
+
+sEnd CODE
+
+end

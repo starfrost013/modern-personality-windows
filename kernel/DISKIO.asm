@@ -13,6 +13,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
                 public _LOPEN
 _LOPEN          proc near
@@ -144,3 +148,8 @@ loc_5256:                               ; CODE XREF: _LWRITE+19↑j
                 pop     ds
                 retf    8
 _LWRITE         endp
+
+sEnd CODE
+
+end
+; Anti-MASM empty line

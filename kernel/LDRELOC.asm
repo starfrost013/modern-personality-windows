@@ -10,6 +10,10 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 GETCHKSUMADDR   proc near               ; CODE XREF: CHECKSEGCHKSUM+1↓p
                                         ; PATCHPROLOG+2C↓p
@@ -1548,3 +1552,7 @@ loc_177C:                               ; CODE XREF: SEGRELOC+D4↑j
                 pop     bp
                 retn    10h
 SEGRELOC        endp
+
+sEnd CODE
+
+end

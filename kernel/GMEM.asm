@@ -7,6 +7,11 @@
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 
 GENTERCURRENTPDB proc near              ; CODE XREF: INT21ALLOC↓p
                                         ; INT21REALLOC↓p ...
@@ -665,3 +670,7 @@ loc_93BD:                               ; CODE XREF: GLOBALINIT+34↑j
                 dec     bp
                 retf    8
 GLOBALINIT      endp
+
+sEnd CODE
+
+end

@@ -11,6 +11,11 @@
 ;
 INCLUDE KERNEL.inc
 
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 ; =============== S U B R O U T I N E =======================================
 
 
@@ -1186,3 +1191,7 @@ GETTEMPFILENAME endp
 
 
 ; =============== S U B R O U T I N E =======================================
+
+sEnd CODE
+
+end
