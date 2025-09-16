@@ -1,5 +1,9 @@
-# Modern Personality makefile for KERNEL
-# Requires: MASMv4, MSCv4
+# Modern Personality makefile for KERNEL 1.03
+# Requires: 
+#		MASM 4.0 (1985)
+#		Microsoft C 4.0 (1986)
+#		Microsoft LINK ("Overlay Linker") 3.51
+# 		Microsoft Link4 ("Segmented-Executable Linker") 5.00.12
 
 #
 # | | | KERNSTUB | | |

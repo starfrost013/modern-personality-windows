@@ -5,6 +5,7 @@
 ; LDINT.ASM: Handles non-DOS related interrupts that are needed by the kernel, but not handled by drivers (e.g. BIOS INT 08h, which is hooked by SYSTEM.DRV.) 
 ;
 ; Mostly this is just the INT 3F MS dynamic linking interface...
+INCLUDE KERNEL.inc
 
 ; ---------------------------------------------------------------------------
 INT3FBP         dw 0                    ; DATA XREF: INT3FHANDLER+3B↓w

@@ -5,6 +5,7 @@
 ; GMEM.ASM: Initialises the global memory subsystem (allocating "segments" of cross-process memory using far pointers)
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 GENTERCURRENTPDB proc near              ; CODE XREF: INT21ALLOC↓p

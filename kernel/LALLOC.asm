@@ -5,6 +5,7 @@
 ; LALLOC.ASM: Handles per-task memory object/segment allocation (uses short pointers)
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 LJOIN           proc near               ; CODE XREF: LFREE+22↓p

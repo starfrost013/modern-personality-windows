@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; KDATA.ASM : KERNEL global variables 
+INCLUDE KERNEL.inc
 
 ;
 ; +-------------------------------------------------------------------------+

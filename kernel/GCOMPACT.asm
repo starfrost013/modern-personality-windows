@@ -6,7 +6,7 @@
 
 
 ; =============== S U B R O U T I N E =======================================
-
+INCLUDE KERNEL.inc
 
 GCOMPACT        proc near               ; CODE XREF: GREALLOC+17A↑p
                                         ; GREALLOC+1F3↑p ...

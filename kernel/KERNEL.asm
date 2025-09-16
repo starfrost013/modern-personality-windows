@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; kernel.asm: Misc unidentified crap.
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #43 into the Module

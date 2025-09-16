@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; GALLOC.ASM: Defines a global object and provides routines to allocate memory shared across processes.
+INCLUDE KERNEL.inc
 
 
 GALIGN          proc near               ; CODE XREF: GREALLOC+7↓p

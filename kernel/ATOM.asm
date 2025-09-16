@@ -12,6 +12,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
                 public INITATOMTABLE
 INITATOMTABLE   proc far                ; CODE XREF: LOOKUPATOM+2F↓p

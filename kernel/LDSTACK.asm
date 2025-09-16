@@ -9,6 +9,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 GETSTACKPTR     proc near               ; CODE XREF: STARTMODULE+90↑p
 

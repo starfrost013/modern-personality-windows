@@ -4,6 +4,7 @@
 ; This code intercepts MS-DOS int 24h (fatal error) and indicates it to the user so we can at least try to handle it safely.
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 INT24HANDLER    proc far

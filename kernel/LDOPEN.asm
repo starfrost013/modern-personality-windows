@@ -9,6 +9,7 @@
 ; External Entry #76 into the Module
 ; Attributes (0001): Fixed Exported
 ;
+INCLUDE KERNEL.inc
 
 ; =============== S U B R O U T I N E =======================================
 

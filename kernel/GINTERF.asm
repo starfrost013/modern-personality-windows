@@ -5,7 +5,7 @@
 ; GINTERF.asm: Shims the Multitasking DOS 4 memory allocation routines (G*) with Windows NE exports (GLOBAL*) so that apps can use them in a relatively safe way.
 
 ; gfree probably needs to be moved to gmem.asm or something
-
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #15 into the Module

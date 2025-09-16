@@ -11,6 +11,7 @@
 ;
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
                 public _LOPEN

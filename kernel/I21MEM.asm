@@ -7,6 +7,7 @@
 ; IN ORDER TO MATCH, THIS MUST BE LINKED <64K AWAY FRMOM GMEM.ASM!
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 INT21ALLOC      proc near               ; CODE XREF: DOSAllocMemoryHook+3↑p

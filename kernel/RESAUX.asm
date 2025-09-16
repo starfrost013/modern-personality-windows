@@ -7,6 +7,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 MYRESALLOC      proc near               ; CODE XREF: LOADRESOURCE+11A↑p
 

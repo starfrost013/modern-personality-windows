@@ -7,6 +7,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 INCEXEUSAGE     proc near               ; CODE XREF: LOADMODULE+249↑p
                                         ; LOADMODULE+3AC↑p ...

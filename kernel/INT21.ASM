@@ -8,6 +8,7 @@
 ; Attributes (0001): Fixed Exported
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 ; Function Name: dos3call

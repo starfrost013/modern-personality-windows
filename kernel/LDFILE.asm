@@ -18,6 +18,7 @@
 ; or use dynamic linking (DLLs exist, but are labelled as EXEs) in order to force Windows to manage it for you.
 
 ; This concept seems to have originated in Multitasking DOS 4 and showed up around Windows 1.0 alpha.
+INCLUDE KERNEL.inc
 
 ; =============== S U B R O U T I N E =======================================
 

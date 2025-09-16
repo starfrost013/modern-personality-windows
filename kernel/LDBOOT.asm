@@ -4,6 +4,7 @@
 
 ; LDBOOT.ASM: Windows slow-boot code. Most of this is only in debug builds, but has been kept on for the purposes of validation and debugging
 ; until Setup has been reversed.
+INCLUDE KERNEL.inc
 
 ; ---------------------------------------------------------------------------
 HINITMEM        dw 0                    ; DATA XREF: BOOTSTRAP+CC↓w

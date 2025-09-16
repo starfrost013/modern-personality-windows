@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; TASK.ASM: Everything to do with processes. Initalising them, setting up their dummy PDB (Process Data Block), inserting them into the task queue, removing them again... */
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #91 into the Module

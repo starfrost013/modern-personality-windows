@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; LDDEBUG.ASM: SYMDEB interop, system validation, and binary symbol loading.
+INCLUDE KERNEL.inc
 
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r

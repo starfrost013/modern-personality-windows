@@ -7,6 +7,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 LOADEXEHEADER   proc near               ; CODE XREF: LOADMODULE+F4↑p
                                         ; BOOTSTRAP+15D↓p ...

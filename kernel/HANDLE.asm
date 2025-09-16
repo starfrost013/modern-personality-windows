@@ -5,6 +5,7 @@
 ; HANDLE.ASM: This file implements an object handling system to abstract various forms of resources (files, global segments, local segments...) 
 ; behind a single "HANDLE" structure,
 
+INCLUDE KERNEL.inc
 
 ; =============== S U B R O U T I N E =======================================
 

@@ -9,6 +9,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 FINDFREESEG     proc near               ; CODE XREF: FASTBOOT+AA↓p
                                         ; FASTBOOT+192↓p ...

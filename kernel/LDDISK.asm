@@ -3,6 +3,7 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; KERNEL.def: LDDISK.ASM - Provides filename parsing and disk I/O services.
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #76 into the Module

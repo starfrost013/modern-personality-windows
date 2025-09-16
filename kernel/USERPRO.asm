@@ -9,6 +9,7 @@
 ; In Windows 1.0 Alpha (January 1985) and earlier, this file used to be called USER.PRO.
 ;
 ; Maybe they thought people would like keep folders full of them for different users or something lmao
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #57 into the Module

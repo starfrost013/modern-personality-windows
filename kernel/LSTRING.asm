@@ -6,6 +6,7 @@
 ; Although the code to check for Kanji isn't even called...it's probably based on KBINFO
 ;
 ; Todo: Check 1.02 JPN, probably depends on the specified language in KERNEL.MAK(?)
+INCLUDE KERNEL.inc
 
 ;
 ; External Entry #90 into the Module

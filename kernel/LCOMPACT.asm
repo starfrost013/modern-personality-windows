@@ -5,6 +5,7 @@
 ; LCOMPACT.ASM: Compacts a task memory objects and updates the pointers within the task to point to it
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 LBESTFIT        proc near               ; CODE XREF: LCOMPACT:loc_5685↓p

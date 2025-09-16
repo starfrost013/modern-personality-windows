@@ -5,6 +5,7 @@
 ; GLRU.ASM: Implements a least recently used algorithm for memory segments so that unused memory segments can be freed or moved around to prioritise more commonly used segments.
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 LRUSWEEP_MODE1  proc far

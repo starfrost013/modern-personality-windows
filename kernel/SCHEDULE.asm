@@ -5,6 +5,7 @@
 ; SCHEDULE.ASM. Context switching for the all-powerful cooperative multitasking system
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 ; Attributes: bp-based frame
 

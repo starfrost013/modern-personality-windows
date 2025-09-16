@@ -5,6 +5,7 @@
 ; DOSINIT.ASM: Bootstrapping and initialising stuff (like user profile/win.ini loading) that has to go through dos 
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
 
 
 INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p

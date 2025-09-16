@@ -15,6 +15,8 @@
 
 ; Attributes: bp-based frame
 
+INCLUDE KERNEL.inc
+
                 public WAITEVENT
 WAITEVENT       proc far
 

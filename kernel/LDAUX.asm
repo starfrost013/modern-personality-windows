@@ -11,6 +11,7 @@
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
+INCLUDE KERNEL.inc
 
 FINDORDINAL     proc near               ; CODE XREF: SEGRELOC+AF↓p
                                         ; GETPROCADDRESS+3A↓p
