@@ -6,6 +6,56 @@
 ; until Setup has been reversed.
 INCLUDE KERNEL.inc
 
+
+; Externs used here. Yes this is how microsoft structured the code
+; TODO: Move everything in KDATA to KERNEL.INC!
+externNP GETPROFILEINT
+externW PGLOBALHEAP
+externNP LRUSWEEP
+externNP LRUSWEEPFREQUENCY
+externNP DELETETASK
+externNP BOOTSCHEDULE
+externNP GLOBALREALLOC
+externNP PTIMERPROC
+externNP VALIDATECODESEGMENTS
+externW TOPPDB
+externW HEADPDB
+externW HEADTDB ; Windows tdb
+externW CURTDB
+
+externW HEXEHEAD
+
+; Figure out what these are
+externW word_93FA
+externW word_93FC
+externW word_93FE
+externNP INITFWDREF
+externW FWINX
+externNP GLOBALINIT
+externNP DEBUGINIT
+externNP INITDOSVARP
+externNP EXITKERNEL
+externNP PEXITPROC ; FP?
+
+ife KDEBUG
+    externNP FASTBOOT
+endif
+
+externNP LOADMODULE
+externNP LOADSEGMENT
+externNP INITLOADER
+externNP SAVESTATE
+externNP OPENFILE
+externNP ALLOCALLSEGS
+externNP PREVINT3FPROC
+externNP ENABLEINT21
+externNP GLOBALFREE
+externNP LOADEXEHEADER
+
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 ; ---------------------------------------------------------------------------
 HINITMEM        dw 0                    ; DATA XREF: BOOTSTRAP+CC↓w
       
@@ -113,7 +163,7 @@ loc_7FE6:                               ; CODE XREF: BOOTDONE+4B↑j
                 jmp     near ptr GLOBALREALLOC
 BOOTDONE        endp
 
-                assume ss:cseg01
+                assume ss:STACK
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -163,7 +213,6 @@ fwinx_found:                                    ; CODE XREF: BOOTSTRAP+60↑j
                 inc     cs:FWINX
                 jmp     short loc_80AF
 ; ---------------------------------------------------------------------------
-                align 2
 
 global_init_fail:                               ; CODE XREF: BOOTSTRAP+CA↓j
                 jmp     boot_failure_01
@@ -182,7 +231,7 @@ get_boot_default_filename:                               ; CODE XREF: BOOTSTRAP+
                 lea     di, [si+1]              ; load next byte?
                 push    cs                  
                 pop     ds                      
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     cx, offset boot_failure_01
                 mov     si, offset SZWINPACKFILE; load win100.bin (fastboot) string          
                 sub     cx, si                  ; get +0x000b (size of "WIN100.BIN" string + drive letter)
@@ -224,7 +273,7 @@ loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 push    ds
                 mov     ax, cs
                 mov     ds, ax
-                assume ds:cseg01
+                assume ds:_TEXT
                 ; set up the 8087 control word
                 ; set it to 0x001E (0b0000000000011110):
                 ; bit15-13: ignored
@@ -373,7 +422,7 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 push    ax
                 mov     ax, 8234h
                 push    ax
-                retf
+                ret ; far return
 ; ---------------------------------------------------------------------------
                 push    ss
                 call    SAVESTATE
@@ -381,7 +430,7 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 mov     cs:HEADTDB, ss
                 xor     ax, ax
                 mov     es, ax
-                assume es:cseg01
+                assume  es:_TEXT
                 mov     bx, 0FCh
                 mov     ax, 180Ah
                 xchg    ax, es:[bx]
@@ -392,10 +441,12 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 mov     es, cs:SEGINITMEM
                 assume es:nothing
                 cmp     word ptr es:0Ah, 0
+ife KDEBUG
                 jnz     short no_fastboot
                 mov     ax, offset BOOTDONE                 ; function to run after fastboot
                 push    ax
-                jmp     FASTBOOT                            ; unpack win100.bin              
+                jmp     FASTBOOT                            ; unpack win100.bin             
+endif ; Debug builds run straight into no_fastboot below 
 ; ---------------------------------------------------------------------------
 
 no_fastboot:                               ; CODE XREF: BOOTSTRAP+25E↑j
@@ -488,7 +539,7 @@ SZBOOTCANNOTFINDFILE db 'BOOT: Unable to find file - ',0
 boot_failure_file_not_found:                               ; CODE XREF: BOOTSTRAP+333↑j
                 jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 boot_failure_file_corrupted:                               ; CODE XREF: BOOTSTRAP+31A↑j
                 cmp     ax, 0Bh
@@ -511,7 +562,7 @@ SZBOOTINVALIDEXE db 'BOOT: Invalid .EXE file - ',0
 loc_8393:                               ; CODE XREF: BOOTSTRAP+36B↑j
                 jmp     short boot_failure_02
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_8396:                               ; CODE XREF: BOOTSTRAP+321↑j
                                         ; BOOTSTRAP+359↑j
@@ -548,7 +599,7 @@ loc_83D5:                               ; CODE XREF: BOOTSTRAP+38E↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret    2
 BOOTSTRAP       endp ; sp-analysis failed
 
 
@@ -584,7 +635,7 @@ SLOWBOOT        proc far
 ; ---------------------------------------------------------------------------
 
 set_default_boot_app:                               ; CODE XREF: SLOWBOOT+13↑j      ; Sets the default app to start with windows (likely a <=DR3 remnant) 
-                mov     word ptr cs:, offset SZMSDOSEXE
+                mov     word ptr cs:LPBOOTAPP, offset SZMSDOSEXE
                 mov     word ptr cs:LPBOOTAPP+2, cs
                 mov     word ptr cs:BOOTEXECBLOCK+2, 80h
                 mov     word ptr cs:BOOTEXECBLOCK+4, es                 ; just use the default (not sure what the significance of this is, DEBUG!)
@@ -598,7 +649,7 @@ load_file_loop:                               ; CODE XREF: SLOWBOOT+62↓j
                 call    load_boot_file        ; load the next file
                 push    cs
                 pop     es                      ; set es=cs, as 8086 string instructions copy from ES:SI to DS:DI and we want to copy from the kernel 
-                assume es:cseg01
+                assume es:_TEXT
                 mov     cx, 0FFFFh
                 xor     ax, ax                  ; set terminator byte (buffer overflow - will copy up to 64kb)
                 cld                             ; load in the right direction!
@@ -658,7 +709,7 @@ boot_failure_user_specified:                               ; CODE XREF: SLOWBOOT
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOADFILE db 'BOOT: unable to load - ',0,'$'
                                         ; DATA XREF: SLOWBOOT+AB↑o
-LPRETURNONSLOWBOOTERROR    ; CODE XREF: SLOWBOOT+BD↑j
+LPRETURNONSLOWBOOTERROR:    ; CODE XREF: SLOWBOOT+BD↑j
                 jmp     boot_failure_01
 SLOWBOOT        endp ; sp-analysis failed
 
@@ -666,4 +717,6 @@ word_84B8       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)
 
-          
+sEnd CODE
+
+END BOOTSTRAP

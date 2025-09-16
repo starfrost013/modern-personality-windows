@@ -2,6 +2,10 @@
 ; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; kernel.inc - core includes
 
+; Only use 8086/8087 instructions
+.8086
+.8087
+
 ; Prevent implicit creation of segments
 ?NODATA = 1
 ?DF = 1
@@ -13,7 +17,8 @@ include CMACROS.inc
 KDEBUG=1
 
 ; Windows 1.0 Kernel is a tiny application 
-createSeg _TEXT,CODE,WORD,TEXT,PUBLIC,IGROUP
+createSeg   _TEXT,CODE,PARA,PUBLIC,CODE ; TODO: get IGROUP to work
+createSeg   STACK,STACK,WORD,PUBLIC,DATA ; But there still needs to be a stack.
 
 ;
 ; DEFINE
