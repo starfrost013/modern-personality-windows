@@ -18,6 +18,7 @@ INCLUDE KDATA.inc
 ; Init stuff. Technically, this could be a globalB/globalW/globalD but it is only used here and LDBOOT
 externD LPBOOTAPP
 externB BOOTEXECBLOCK
+externB UNKNOWNFASTBOOTARRAY
 externW SEGINITMEM
 externW HINITMEM
 externW WIN_SHOW
@@ -54,7 +55,7 @@ sBegin CODE
 
 assumeS CS,CODE
 assumeS DS,CODE
-                db 6 dup(0)
+byte_873D         db 6 dup(0)
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -93,7 +94,7 @@ var_2           = word ptr -2
                 call    SHRINK
                 pop     ax
                 sub     cs:CPSHRUNK, ax
-                mov     di, 873Dh
+                mov     di, offset byte_873D
                 mov     cx, 2
                 cmp     word ptr cs:LPBOOTAPP+2, 0
                 jz      short loc_878B
@@ -252,7 +253,7 @@ loc_88AE:                               ; CODE XREF: FASTBOOT+F2↑j
 
 loc_88DF:                               ; CODE XREF: FASTBOOT+18E↑j
                 xor     ax, ax
-                mov     bx, 873Dh
+                mov     bx, offset byte_873D
                 mov     cx, 3
 
 loc_88E7:                               ; CODE XREF: FASTBOOT+1AB↓j
@@ -525,7 +526,7 @@ loc_8AFC:                               ; CODE XREF: FASTBOOT+3B4↑j
                 pop     es
                 assume es:_TEXT
                 mov     si, 2
-                mov     di, 84BAh
+                mov     di, offset UNKNOWNFASTBOOTARRAY
                 cld
                 mov     word ptr cs:LPBOOTAPP, di
                 mov     word ptr cs:LPBOOTAPP+2, es
@@ -543,7 +544,7 @@ FB6:                                    ; CODE XREF: FASTBOOT+38C↑j
                 mov     cs:HINITMEM, ax
                 call    near ptr INITFWDREF
                 call    ENABLEINT21
-                mov     bx, 7F3Bh
+                mov     bx, offset BOOTEXECBLOCK
                 mov     es, cs:TOPPDB
                 assume es:nothing
                 mov     word ptr cs:[bx+2], 80h

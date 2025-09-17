@@ -27,7 +27,8 @@ assumeS DS,CODE
 
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r
-                                        ; DEBUGDEFINESEGMENT+27↓r ...
+
+                PUBLIC SZSEGDEBUG
 SZSEGDEBUG      db 'SEGDEBUG',0
 
 ; =============== S U B R O U T I N E =======================================
@@ -45,7 +46,7 @@ if KDEBUG
                     mov     es, bx
                     assume es:nothing
                     mov     di, 100h
-                    mov     si, 6FC3h
+                    mov     si, offset SZSEGDEBUG
                     mov     cx, 9
                     cld
                     repe cmps byte ptr cs:[si], byte ptr es:[di]

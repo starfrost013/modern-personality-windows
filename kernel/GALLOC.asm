@@ -986,6 +986,7 @@ GCHECKFREE      endp
 
 ; ---------------------------------------------------------------------------
                 db 80h dup(0)
+public word_65B0
 word_65B0       dw 0                    ; DATA XREF: GMOVE:loc_6606↓w
                                         ; GMOVE:loc_6655↓r ...
 word_65B2       dw 0                    ; DATA XREF: GMOVE+46↓w
@@ -1040,7 +1041,7 @@ loc_65E3:                               ; CODE XREF: GMOVE+2A↑j
                 push    cs
                 pop     ss
                 assume ss:STACK
-                mov     sp, 65B0h
+                mov     sp, word ptr word_65B0
                 sti
 
 loc_6606:                               ; CODE XREF: GMOVE+3F↑j

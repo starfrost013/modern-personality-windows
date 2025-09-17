@@ -708,8 +708,9 @@ LPRETURNONSLOWBOOTERROR:    ; CODE XREF: SLOWBOOT+BD↑j
 SLOWBOOT        endp ; sp-analysis failed
 
 globalW UNKNOWNFASTBOOTVAR,0
-                                        ; FINDFREESEG+8C↓w ...
-                db 0Eh dup(0)
+                    
+PUBLIC UNKNOWNFASTBOOTARRAY                    
+UNKNOWNFASTBOOTARRAY    db 0Eh dup(0)
 ; ---------------------------------------------------------------------------
                 ;align 8
 INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)

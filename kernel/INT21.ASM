@@ -211,7 +211,7 @@ INT21_HOOK_TABLE db 0                   ; DATA XREF: INT21HANDLER+A4↓w
 ; Has no other purpose.
 LAST_INT21_FUNCTION_NUMBER       db 0                    ; DATA XREF: INT21HANDLER+3↓w
                 dw offset loc_4296
-                db 0
+INT21_TABLE     db 0
                 db 0
                 db 0
                 db 0
@@ -330,7 +330,7 @@ loc_3E96:                               ; CODE XREF: ENABLEDOS+47↑j
                 call    cs:PSYSPROC
                 push    cs
                 pop     ds
-                mov     bx, 3E12h
+                mov     bx, word ptr INT21_TABLE
                 xor     cx, cx
 
 loc_3EC3:                               ; CODE XREF: ENABLEDOS+B0↓j
@@ -1003,7 +1003,7 @@ sub_425B        proc near               ; CODE XREF: INT21HANDLER:DOSDiskHook↑
                                         ; INT21HANDLER:DOSCwdHook↑p ...
                 push    bx
                 push    dx
-                mov     bx, 3E12h
+                mov     bx, word ptr INT21_TABLE
                 cmp     dl, 1Ah
                 ja      short loc_4276
                 or      dl, dl
@@ -1095,7 +1095,7 @@ loc_42AA:                               ; CODE XREF: SftThing+11↑j
                 mov     es, ax
                 assume es:_TEXT
                 mov     bx, 90h
-                mov     ax, 48E2h
+                mov     ax, offset INT24HANDLER
                 xchg    ax, es:[bx]
                 push    ax
                 mov     ax, cs
@@ -1108,7 +1108,7 @@ loc_42AA:                               ; CODE XREF: SftThing+11↑j
                 cmp     cs:word_3D72, 3D7Ch
                 jnz     short loc_4301
                 push    bx
-                mov     bx, 3E12h
+                mov     bx, word ptr INT21_TABLE
                 add     bx, dx
                 cmp     byte ptr cs:[bx], 0
                 pop     bx

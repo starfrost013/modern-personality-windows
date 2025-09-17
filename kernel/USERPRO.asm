@@ -891,10 +891,10 @@ loc_50E0:                               ; CODE XREF: WRITEPROFILESTRING+A3↑j
                 jnz     short loc_5125
                 pop     ds
                 push    ds
-                mov     dx, 4CB9h
+                mov     dx, word ptr SZINISECTION+2
                 mov     cx, 2
                 call    near ptr BUFFERWRITE
-                mov     dx, 4CB7h
+                mov     dx, word ptr SZINISECTION
                 mov     cx, 1
                 call    near ptr BUFFERWRITE
                 les     di, [bp+arg_8]
@@ -903,7 +903,7 @@ loc_50E0:                               ; CODE XREF: WRITEPROFILESTRING+A3↑j
                 call    near ptr BUFFERWRITE
                 pop     ds
                 push    ds
-                mov     dx, 4CB8h
+                mov     dx, word ptr SZINISECTION+1
                 mov     cx, 3
                 call    near ptr BUFFERWRITE
 
@@ -916,7 +916,7 @@ loc_5125:                               ; CODE XREF: WRITEPROFILESTRING+DE↑j
                 call    near ptr BUFFERWRITE
                 pop     ds
                 push    ds
-                mov     dx, 4CBBh
+                mov     dx, word ptr SZINISECTION+4
                 mov     cx, 1
                 call    near ptr BUFFERWRITE
 
@@ -927,7 +927,7 @@ loc_5142:                               ; CODE XREF: WRITEPROFILESTRING+10F↑j
                 call    near ptr BUFFERWRITE
                 pop     ds
                 push    ds
-                mov     dx, 4CB9h
+                mov     dx, word ptr SZINISECTION+2
                 mov     cx, 2
                 call    near ptr BUFFERWRITE
                 les     di, [bp+var_6]

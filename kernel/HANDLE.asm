@@ -11,6 +11,7 @@ externNP COPYNAME
 externNP FINDEXEINFO
 externNP GETEXEPTR
 externNP MYLOCK
+externNP MYUPPER
 
 sBegin CODE
 
@@ -234,7 +235,7 @@ arg_2           = word ptr  8           ; hModule
                 cmp     [bp+arg_2], 0
                 jz      short loc_1E35
                 lea     bx, [bp+var_42]
-                mov     dx, 53A6h
+                mov     dx, offset MYUPPER
                 push    [bp+arg_2]
                 push    [bp+arg_0]
                 push    bx
