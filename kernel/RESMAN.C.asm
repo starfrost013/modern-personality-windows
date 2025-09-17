@@ -757,6 +757,7 @@ SIZEOFRESOURCE  endp
 
 ; Attributes: bp-based frame
 
+                    public DEFAULTRESOURCEHANDLER
 DEFAULTRESOURCEHANDLER proc far         ; DATA XREF: PRELOADRESOURCES+24↓o
 
 arg_0           = word ptr  6

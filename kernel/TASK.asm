@@ -15,6 +15,7 @@ externNP UNLOCKSEGMENT
 externNP MYLOCK
 externNP SAVESTATE
 externNP CALCMAXNRSEG
+externNP PDB_CALL_SYSTEM_ENTRY
 
 assumeS CS,CODE
 assumeS DS,CODE
@@ -487,7 +488,7 @@ loc_480E:                               ; CODE XREF: BUILDPDB+5A↑j
                 sub     ax, 10h
                 mov     bx, cs
                 mov     cl, 4
-                mov     dx, 4046h
+                mov     dx, offset PDB_CALL_SYSTEM_ENTRY
                 mov     si, dx
                 shr     si, cl
                 add     bx, si

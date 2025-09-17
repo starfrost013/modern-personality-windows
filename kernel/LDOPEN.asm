@@ -112,7 +112,7 @@ OPENFILE        proc far                ; CODE XREF: LOADMODULE+92↑p
 var_56          = byte ptr -56h
 var_6           = word ptr -6
 var_4           = word ptr -4
-arg_0           = word ptr  6
+flags           = word ptr  6
 arg_2           = dword ptr  8
 arg_6           = dword ptr  0Ch
 
@@ -123,7 +123,7 @@ arg_6           = dword ptr  0Ch
                 sub     sp, 54h
                 push    si
                 push    di
-                mov     ax, [bp+arg_0]
+                mov     ax, [bp+flags]
                 test    ah, 10h
                 mov     ah, 3Dh ; '='
                 jz      short loc_1F09
@@ -131,7 +131,7 @@ arg_6           = dword ptr  0Ch
 
 loc_1F09:                               ; CODE XREF: OPENFILE+12↑j
                 mov     [bp+var_4], ax
-                test    byte ptr [bp+arg_0+1], 80h
+                test    byte ptr [bp+flags+1], 80h
                 jz      short loc_1F80
                 mov     byte ptr [bp+var_6], 1
                 lds     si, [bp+arg_2]
@@ -176,7 +176,7 @@ loc_1F5B:                               ; CODE XREF: OPENFILE+5E↑j
                 mov     ax, bx
                 push    ds
                 pop     es
-                test    byte ptr [bp+arg_0+1], 4
+                test    byte ptr [bp+flags+1], 4
                 jz      short loc_1F76
                 cmp     [si+4], dx
                 jnz     short loc_1F79
@@ -203,7 +203,7 @@ loc_1F80:                               ; CODE XREF: OPENFILE+1D↑j
                 call    PARSEFILE
                 mov     di, bp
                 pop     bp
-                test    byte ptr [bp+arg_0+1], 4
+                test    byte ptr [bp+flags+1], 4
                 jz      short loc_1F98
                 xor     di, di
 
@@ -222,7 +222,7 @@ loc_1F98:                               ; CODE XREF: OPENFILE+A1↑j
                 call    cs:PKEYPROC
 
 loc_1FB6:                               ; CODE XREF: OPENFILE+B8↑j
-                test    byte ptr [bp+arg_0+1], 1
+                test    byte ptr [bp+flags+1], 1
                 jz      short loc_1FC1
                 xor     bx, bx
                 jmp     loc_2118
@@ -230,7 +230,7 @@ loc_1FB6:                               ; CODE XREF: OPENFILE+B8↑j
 
 loc_1FC1:                               ; CODE XREF: OPENFILE+C7↑j
                 mov     dx, si
-                test    byte ptr [bp+arg_0+1], 10h
+                test    byte ptr [bp+flags+1], 10h
                 jnz     short loc_1FD0
                 mov     ax, 4300h
                 int     21h             ; DOS - 2+ - GET FILE ATTRIBUTES
@@ -309,7 +309,7 @@ loc_2037:                               ; CODE XREF: OPENFILE+8A↑j
                                         ; OPENFILE+F4↑j ...
                 lds     si, [bp+arg_2]
                 lea     si, [si+8]
-                test    byte ptr [bp+arg_0+1], 20h
+                test    byte ptr [bp+flags+1], 20h
                 jz      short loc_20AC
                 cmp     cs:FINT21, 0
                 jz      short loc_20AC
@@ -326,7 +326,7 @@ loc_2037:                               ; CODE XREF: OPENFILE+8A↑j
 ; ---------------------------------------------------------------------------
 
 loc_2063:                               ; CODE XREF: OPENFILE+166↑j
-                test    byte ptr [bp+arg_0+1], 80h
+                test    byte ptr [bp+flags+1], 80h
                 jnz     short loc_2074
                 cmp     byte ptr [bp+var_6], 0
                 jz      short loc_2074
@@ -426,14 +426,14 @@ loc_20FC:                               ; CODE XREF: OPENFILE+1F3↑j
 loc_2106:                               ; CODE XREF: OPENFILE:loc_1F76↑j
                 mov     es:[si+6], cx
                 mov     es:[si+4], dx
-                test    byte ptr [bp+arg_0+1], 42h
+                test    byte ptr [bp+flags+1], 42h
                 jz      short loc_2128
                 mov     ah, 3Eh ; '>'
                 int     21h             ; DOS - 2+ - CLOSE A FILE WITH HANDLE
                                         ; BX = file handle
 
 loc_2118:                               ; CODE XREF: OPENFILE+CB↑j
-                test    byte ptr [bp+arg_0+1], 2
+                test    byte ptr [bp+flags+1], 2
                 jz      short loc_2128
                 lds     si, [bp+arg_2]
                 lea     dx, [si+8]
@@ -581,7 +581,7 @@ PARSEFILE       proc near               ; CODE XREF: OPENFILE+97↑p
                 cld
                 xor     bp, bp
                 cmp     byte ptr [si+1], 3Ah ; ':'
-                jnz     short loc_21F2
+                jnz     short get_default_disknum
                 lodsb
                 inc     si
                 or      al, 20h
@@ -594,7 +594,7 @@ loc_21EF:                               ; CODE XREF: PARSEFILE+F↑j
                 jmp     loc_2276
 ; ---------------------------------------------------------------------------
 
-loc_21F2:                               ; CODE XREF: PARSEFILE+7↑j
+get_default_disknum:                               ; CODE XREF: PARSEFILE+7↑j
                 mov     ah, 19h
                 int     21h             ; DOS - GET DEFAULT DISK NUMBER
 
@@ -641,7 +641,7 @@ loc_2239:                               ; CODE XREF: PARSEFILE+2D↑j
                 xor     cx, cx
                 mov     dx, di
 
-loc_223D:                               ; CODE XREF: PARSEFILE+115↓j
+fileparse_start:                               ; CODE XREF: PARSEFILE+115↓j
                                         ; PARSEFILE+11D↓j
                 lodsb
                 cmp     al, bl
@@ -753,27 +753,28 @@ loc_22D2:                               ; CODE XREF: PARSEFILE+80↑j
 
 loc_22DD:                               ; CODE XREF: PARSEFILE+FB↑j
                 cmp     ch, 0
-                jz      short loc_22F2
+                jz      short fileparse_filename_done
                 cmp     cl, 0Ch
-                ja      short loc_230C
+                ja      short fileparse_start_extension
                 mov     al, cl
                 sub     al, ah
                 cmp     al, 4
-                ja      short loc_230C
-                jmp     loc_223D
+                ja      short fileparse_start_extension
+                jmp     fileparse_start
 ; ---------------------------------------------------------------------------
 
-loc_22F2:                               ; CODE XREF: PARSEFILE+106↑j
+; check if we have reached 8 characters. if we have, go to parse the extn
+fileparse_filename_done:                               ; CODE XREF: PARSEFILE+106↑j
                 cmp     cl, 8
-                ja      short loc_230C
-                jmp     loc_223D
+                ja      short fileparse_start_extension
+                jmp     fileparse_start
 ; ---------------------------------------------------------------------------
 
 loc_22FA:                               ; CODE XREF: PARSEFILE+A8↑j
                                         ; PARSEFILE+B3↑j
                 cmp     ch, 1
                 jz      short loc_2303
-                ja      short loc_230C
+                ja      short fileparse_start_extension
                 mov     ah, cl
 
 loc_2303:                               ; CODE XREF: PARSEFILE+123↑j
@@ -782,14 +783,15 @@ loc_2303:                               ; CODE XREF: PARSEFILE+123↑j
                 or      ax, ax
                 jnz     short loc_230F
 
-loc_230C:                               ; CODE XREF: PARSEFILE+10B↑j
+fileparse_start_extension:                               ; CODE XREF: PARSEFILE+10B↑j
                                         ; PARSEFILE+113↑j ...
                 jmp     loc_2275
 ; ---------------------------------------------------------------------------
 
 loc_230F:                               ; CODE XREF: PARSEFILE+130↑j
                 cmp     ax, 8
-                ja      short loc_230C
+                ja      short fileparse_start_extension
+fileparse_done:
                 pop     ax
                 sub     dx, ax
                 lea     ax, [bx+3]

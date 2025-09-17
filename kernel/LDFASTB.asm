@@ -48,6 +48,7 @@ externNP INITFWDREF
 externNP INITPROFILE
 externNP ENABLEINT21
 externNP GETSTRINGPTR
+externNP DEFAULTRESOURCEHANDLER
 
 sBegin CODE
 
@@ -114,7 +115,7 @@ loc_878B:                               ; CODE XREF: FASTBOOT+45↑j
                 pop     es
                 assume es:_TEXT
                 stosw
-                cmp     di, 8743h
+                cmp     di, offset FASTBOOT ; 8743
                 jb      short loc_878B
                 call    INITPROFILE
 
@@ -421,7 +422,7 @@ loc_8A30:                               ; CODE XREF: FASTBOOT+2E8↑j
 loc_8A38:                               ; CODE XREF: FASTBOOT+37E↓j
                 lods    word ptr es:[si]
                 mov     [bp+var_8], ax
-                mov     word ptr es:[si], 3173h
+                mov     word ptr es:[si], offset DEFAULTRESOURCEHANDLER
                 mov     word ptr es:[si+2], cs
                 add     si, 4
 

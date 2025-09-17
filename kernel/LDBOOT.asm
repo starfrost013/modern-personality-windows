@@ -16,6 +16,7 @@ externNP DELETETASK
 externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
 externNP VALIDATECODESEGMENTS
+externNP INT3FHANDLER
 externW TOPPDB
 externW HEADPDB
 externW HEADTDB ; Windows tdb
@@ -425,7 +426,7 @@ check_boot_type:
                 mov     es, ax
                 assume  es:_TEXT
                 mov     bx, 0FCh
-                mov     ax, 180Ah
+                mov     ax, offset INT3FHANDLER
                 xchg    ax, es:[bx]
                 mov     word ptr cs:PREVINT3FPROC, ax
                 mov     ax, cs

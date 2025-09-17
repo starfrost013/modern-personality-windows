@@ -228,6 +228,7 @@ loc_2F33:                               ; CODE XREF: RESALLOC+30↑j
 loc_2F57:                               ; CODE XREF: RESALLOC+44↑j
                 xor     dx, dx
                 mov     ds, ax
+RESOURCE_READFILE:
                 mov     ah, 3Fh ; '?'
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read

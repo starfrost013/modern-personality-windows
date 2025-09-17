@@ -80,7 +80,7 @@ INT3FFAIL       endp                    ; AL = exit code
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC INT3FHANDLER
 INT3FHANDLER    proc far
                 pop     cs:INT3FCURRENTCS
                 pop     cs:INT3FCURRENTDS

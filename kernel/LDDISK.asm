@@ -148,7 +148,7 @@ PARSEFILE       proc near               ; CODE XREF: OPENFILE+97↑p
                 cld
                 xor     bp, bp
                 cmp     byte ptr [si+1], 3Ah ; ':'
-                jnz     short loc_21F2
+                jnz     short get_default_disknum
                 lodsb
                 inc     si
                 or      al, 20h
@@ -161,7 +161,7 @@ loc_21EF:                               ; CODE XREF: PARSEFILE+F↑j
                 jmp     loc_2276
 ; ---------------------------------------------------------------------------
 
-loc_21F2:                               ; CODE XREF: PARSEFILE+7↑j
+get_default_disknum:                               ; CODE XREF: PARSEFILE+7↑j
                 mov     ah, 19h
                 int     21h             ; DOS - GET DEFAULT DISK NUMBER
 
@@ -172,7 +172,7 @@ loc_21F6:                               ; CODE XREF: PARSEFILE+13↑j
                 mov     ah, 3Ah ; ':'
                 stosw
                 push    di
-                mov     bx, 2F5Ch
+                mov     bx, 2F5Ch       ; '/\'
                 mov     al, [si]
                 cmp     al, bh
                 jz      short loc_2239
@@ -208,7 +208,7 @@ loc_2239:                               ; CODE XREF: PARSEFILE+2D↑j
                 xor     cx, cx
                 mov     dx, di
 
-loc_223D:                               ; CODE XREF: PARSEFILE+115↓j
+fileparse_start:                               ; CODE XREF: PARSEFILE+115↓j
                                         ; PARSEFILE+11D↓j
                 lodsb
                 cmp     al, bl
@@ -320,27 +320,27 @@ loc_22D2:                               ; CODE XREF: PARSEFILE+80↑j
 
 loc_22DD:                               ; CODE XREF: PARSEFILE+FB↑j
                 cmp     ch, 0
-                jz      short loc_22F2
+                jz      short fileparse_filename_done
                 cmp     cl, 0Ch
-                ja      short loc_230C
+                ja      short fileparse_start_extension
                 mov     al, cl
                 sub     al, ah
                 cmp     al, 4
-                ja      short loc_230C
-                jmp     loc_223D
+                ja      short fileparse_start_extension
+                jmp     fileparse_start
 ; ---------------------------------------------------------------------------
 
-loc_22F2:                               ; CODE XREF: PARSEFILE+106↑j
+fileparse_filename_done:                               ; CODE XREF: PARSEFILE+106↑j
                 cmp     cl, 8
-                ja      short loc_230C
-                jmp     loc_223D
+                ja      short fileparse_start_extension
+                jmp     fileparse_start
 ; ---------------------------------------------------------------------------
 
 loc_22FA:                               ; CODE XREF: PARSEFILE+A8↑j
                                         ; PARSEFILE+B3↑j
                 cmp     ch, 1
                 jz      short loc_2303
-                ja      short loc_230C
+                ja      short fileparse_start_extension
                 mov     ah, cl
 
 loc_2303:                               ; CODE XREF: PARSEFILE+123↑j
@@ -349,14 +349,14 @@ loc_2303:                               ; CODE XREF: PARSEFILE+123↑j
                 or      ax, ax
                 jnz     short loc_230F
 
-loc_230C:                               ; CODE XREF: PARSEFILE+10B↑j
+fileparse_start_extension:                               ; CODE XREF: PARSEFILE+10B↑j
                                         ; PARSEFILE+113↑j ...
                 jmp     loc_2275
 ; ---------------------------------------------------------------------------
 
 loc_230F:                               ; CODE XREF: PARSEFILE+130↑j
                 cmp     ax, 8
-                ja      short loc_230C
+                ja      short fileparse_start_extension
                 pop     ax
                 sub     dx, ax
                 lea     ax, [bx+3]

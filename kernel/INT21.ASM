@@ -300,7 +300,7 @@ loc_3E65:                               ; CODE XREF: ENABLEDOS+3C↓j
                 mov     ah, 52h ; 'R'
                 int     21h             ; DOS - 2+ internal - GET LIST OF LISTS
                                         ; Return: ES:BX -> DOS list of lists
-                mov     ax, 48BEh
+                mov     ax, word ptr SYSVARS_OFF
                 xchg    ax, es:[bx+0Ch]
                 mov     word ptr cs:PREVBCON, ax
                 mov     ax, cs
@@ -587,6 +587,7 @@ GETLPERRMODE    endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC PDB_CALL_SYSTEM_ENTRY
 PDB_CALL_SYSTEM_ENTRY proc far
 
 var_s4          = word ptr  4
@@ -1885,6 +1886,36 @@ loc_47A8:                               ; CODE XREF: DOSTerminateHook+69↑j
                 call    cs:PEXITPROC ; exit windows????
 DOSTerminateHook endp ; sp-analysis failed
 
+; Used to hold the BCON and possibly some other files
+SYSVARS_OFF    dw    0                 ; DATA XREF: sub_48D3+2↓r
+
+SYSVARS_SEG    db    0                 ; DATA XREF: LOAD_SYSVARS+C↓w
+
+; =============== S U B R O U T I N E =======================================
+
+
+LOAD_SYSVARS        proc far
+                add     [bp+di], al     ; these are all also different interrupt handlers.
+                or      al, 48h
+                ror     word ptr [bx+si+2Eh], cl
+                mov     word ptr SYSVARS_OFF, bx
+                mov     word ptr cs:SYSVARS_SEG, es
+                ret
+LOAD_SYSVARS        endp
+
+
+; =============== S U B R O U T I N E =======================================
+
+
+sub_48D3        proc far
+                push    ds
+                push    bx
+                lds     bx, dword ptr cs:SYSVARS_OFF
+                mov     word ptr [bx+3], 300h
+                pop     bx
+                pop     ds
+                ret
+sub_48D3        endp
 sEnd CODE
 
 end
