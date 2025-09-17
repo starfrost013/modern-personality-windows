@@ -3,6 +3,9 @@
 *.BAK
 *.obj
 *.OBJ
+*.CRF
+*.LST
+*.MAP
 KERNSTUB.exe
 KERNEL.exe
 KDATA.exe
