@@ -450,7 +450,7 @@ no_fastboot:                               ; CODE XREF: BOOTSTRAP+25E↑j
                 call    near ptr GLOBALFREE
                 mov     cs:HINITMEM, ax
                 push    cs:TOPPDB
-                mov     ax, 83DDh
+                mov     ax, offset SLOWBOOT ; setup our slowboot pointer
                 push    ax
                 jmp     INITLOADER
 
