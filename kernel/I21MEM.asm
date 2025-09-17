@@ -24,6 +24,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC INT21ALLOC
 INT21ALLOC      proc near               ; CODE XREF: DOSAllocMemoryHook+3↑p
                 call    GENTERCURRENTPDB
                 call    GALLOC
@@ -36,7 +37,7 @@ INT21ALLOC      endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC INT21REALLOC
 INT21REALLOC    proc near               ; CODE XREF: DOSResizeMemoryHook+35↑p
                 call    GENTERCURRENTPDB
                 call    GREALLOC
@@ -49,7 +50,7 @@ INT21REALLOC    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC INT21ENTERCURRENTPDB
 INT21ENTERCURRENTPDB proc near            ; CODE XREF: DOSFreeMemoryHook+5↑p
                 call    GENTERCURRENTPDB
 INT21ENTERCURRENTPDB endp

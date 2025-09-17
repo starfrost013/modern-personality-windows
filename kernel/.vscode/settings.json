@@ -2,6 +2,7 @@
     "files.associations": {
         "RESMAN.C": "cpp",
         "LACHECK.C": "cpp",
-        "RIP.C": "cpp"
+        "RIP.C": "cpp",
+        "RIP copy.C": "cpp"
     }
 }

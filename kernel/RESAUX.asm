@@ -20,6 +20,7 @@ externNP GLOBALREALLOC
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC MYRESALLOC
 MYRESALLOC      proc near               ; CODE XREF: LOADRESOURCE+11A↑p
 
 arg_0           = word ptr  4
@@ -168,6 +169,7 @@ ALLOCRESOURCE   endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC RESALLOC
 RESALLOC        proc near               ; CODE XREF: DEFAULTRESOURCEHANDLER+30↓p
                                         ; PRELOADRESOURCES+55↓p ...
 

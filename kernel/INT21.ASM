@@ -428,6 +428,7 @@ DISABLEDOS      endp
 ; Returns: Nothing, but the INT 20, 21 and 27h handling is set to Windows' own handling (which is sometimes sent out to DOS) instead of MS-DOS.
 ;
 ; Notes: Internal only function. Not for user apps. 
+                PUBLIC ENABLEINT21
 ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                                         ; FASTBOOT+3E8↓p
                 mov     al, 1
@@ -928,7 +929,7 @@ INT21HANDLER    endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC PATHDRVDSDX
 PATHDRVDSDX     proc far                ; CODE XREF: OPENFILE+52↑p
                                         ; INT21HANDLER+E3↑p ...
                 push    si

@@ -225,12 +225,14 @@ globalB CDEVAT,0
 globalB OLDERRNO,0
 ; Kernel CS:0092
 ; Another buffer? (maybe BUFFER is some sort of mmaster buffer object)
+public OUTBUF
 OUTBUF          db 32h dup(0)
 ; Kernel CS:00C4
 ; The current position within outbuf? or userprobuf? DEBUG!
 globalW BUFPOS,0
 ; Kernel CS:00C6
 ; Buffer for reading from the user profile (WIN.INI file)
+public USERPROBUF
 USERPROBUF      db 50h dup(0)
 
 public SZUSERPRO
@@ -311,7 +313,7 @@ SZERRCANNOTREAD db 'Cannot read from device ',0
 
 ; Kernel CS:01E3
 ; A string displayed when DOS FAT12 driver is telling the kernel it can't write to a device.
-public SZERRCANNOTREAD
+public SZERRCANNOTWRITE
 SZERRCANNOTWRITE db 'Cannot write to device ',0
                 db 8 dup(0) ; placeholder for up to 8 character dos device name
 ; Kernel CS:0203

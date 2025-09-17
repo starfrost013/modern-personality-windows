@@ -30,7 +30,7 @@ externB INSCHEDULER
 externB FEMM
 externW BUFFER
 externW BUFADDR
-externW HFILEext
+externW HFILE
 externW INT22BASE
 externD PDMAADD
 externD PINDOS
@@ -103,3 +103,4 @@ if KDEBUG
     externB SZERRABORT
     externB SZERRINVALIDBPCHAIN
 endif
+externNP KERNELERROR                        ; Let's give up    

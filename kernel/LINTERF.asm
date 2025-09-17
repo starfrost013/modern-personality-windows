@@ -30,7 +30,7 @@ externNP LZERO
 
 
 if KDEBUG
-    externNP CHECKLOCALHEAP
+    ;externNP CHECKLOCALHEAP
 endif
 
 sBegin CODE
@@ -60,9 +60,12 @@ arg_2           = word ptr  8
                 push    ds
                 push    si
                 push    di
-                call    CHECKLOCALHEAP
-                or      ax, ax
-                jz      short loc_5849
+                ; TEMP
+                jmp loc_5849
+
+                ;call    CHECKLOCALHEAP
+                ;or      ax, ax
+                ;jz      short loc_5849
                 or      ax, 100h
                 push    ax
                 mov     ax, offset SZERRLOCALALLOC ; "LocalAlloc: Invalid local heap"
@@ -153,9 +156,10 @@ arg_4           = word ptr  0Ah
                 push    ds
                 push    si
                 push    di
-                call    CHECKLOCALHEAP
-                or      ax, ax
-                jz      short loc_58EA
+                jmp loc_58EA
+                ;call    CHECKLOCALHEAP
+                ;or      ax, ax
+                ;jz      short loc_58EA
                 or      ax, 100h
                 push    ax
                 mov     ax, offset SZERRLOCALREALLOC ; "LocalReAlloc: Invalid local heap"
@@ -385,9 +389,11 @@ arg_0           = word ptr  6
                 push    ds
                 push    si
                 push    di
-                call    CHECKLOCALHEAP
-                or      ax, ax
-                jz      short loc_5A79
+                jmp loc_5A79
+                ;TEMP
+                ;call    CHECKLOCALHEAP
+                ;or      ax, ax
+                ;jz      short loc_5A79
                 or      ax, 100h
                 push    ax
                 mov     ax, offset SZERRLOCALFREE ; "LocalFree: Invalid local heap"
@@ -667,9 +673,10 @@ arg_0           = word ptr  6
                 push    ds
                 push    si
                 push    di
-                call    CHECKLOCALHEAP
-                or      ax, ax
-                jz      short loc_5C40
+                jmp     loc_5C40
+                ;call    CHECKLOCALHEAP
+                ;or      ax, ax
+                ;jz      short loc_5C40
                 or      ax, 100h
                 push    ax
                 mov     ax, offset SZERRLOCALCOMPACT ; "LocalCompact: Invalid local heap"

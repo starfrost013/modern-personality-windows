@@ -47,7 +47,7 @@ start PROC FAR
 	push    cs
 	pop     ds
 	mov     si, 130h
-	add     si, 1FFh
+	add     si, 3FFh ; was 1FFh
 	and     si, 0FE00h ; 0x200 - location of NE header in binary
 	cmp     word ptr [si], 454Eh ; check for NE header magic
 	jnz     short call_boot_failure ; jump to fail code if it is not 0x4E45 ("NE")

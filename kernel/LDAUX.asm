@@ -34,6 +34,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC FINDORDINAL
 FINDORDINAL     proc near               ; CODE XREF: SEGRELOC+AF↓p
                                         ; GETPROCADDRESS+3A↓p
 
@@ -176,6 +177,7 @@ FINDORDINAL     endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC FINDEXEINFO
 FINDEXEINFO     proc near               ; CODE XREF: LOADMODULE+76↑p
                                         ; LOADMODULE+1CF↑p ...
 
@@ -327,6 +329,7 @@ GETCODEHANDLE   endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC COPYNAME
 COPYNAME        proc near               ; CODE XREF: GETPROCADDRESS+31↓p
                                         ; GETMODULEHANDLE+1C↓p
 
@@ -701,7 +704,7 @@ MAKEPROCINSTANCE endp
 
 ; Attributes: bp-based frame
 
-                public FREEPROCINSTANCE
+                 public FREEPROCINSTANCE
 FREEPROCINSTANCE proc far
 
 arg_0           = word ptr  6
@@ -802,6 +805,7 @@ PATCHPROLOG     endp
 
 ; Attributes: bp-based frame
 
+                public PATCHTHUNKS
 PATCHTHUNKS     proc near               ; CODE XREF: MYFREE+22↑p
                                         ; GNOTIFY+1F↓p ...
 
@@ -1156,11 +1160,12 @@ loc_2A96:                               ; CODE XREF: VALIDATECODESEGMENTS+12↑j
 VALIDATECODESEGMENTS endp
 
 ; ---------------------------------------------------------------------------
+PUBLIC FUSEDBP ; why2
 FUSEDBP         dw 0                    ; DATA XREF: PATCHSTACK+12↓w
                                         ; PATCHSTACK+3E↓w ...
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR PATCHSTACK
-
+PUBLIC JMP_TO_FUSEDBP_CHECK ; why
 JMP_TO_FUSEDBP_CHECK:                               ; CODE XREF: PATCHSTACK+18↓j
                 jmp     FUSEDBP_CHECK
 ; END OF FUNCTION CHUNK FOR PATCHSTACK

@@ -38,6 +38,7 @@ assumeS DS,CODE
 
 ; Attributes: bp-based frame
 
+                PUBLIC LOADNRTABLE
 LOADNRTABLE     proc near               ; CODE XREF: FINDORDINAL+80↑p
 
 var_2           = word ptr -2
@@ -184,6 +185,7 @@ LOADNRTABLE     endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC FREENRTABLE
 FREENRTABLE     proc near               ; CODE XREF: FINDORDINAL+95↑p
                                         ; TRIMEXEHEADER+18↓p
 
@@ -230,7 +232,7 @@ FREENRTABLE     endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC GETSTRINGPTR
 GETSTRINGPTR    proc near               ; CODE XREF: LOADMODULE+1B4↑p
                                         ; SEGRELOC+A7↓p ...
 
@@ -255,7 +257,7 @@ GETSTRINGPTR    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC CALCMAXNRSEG
 CALCMAXNRSEG    proc near               ; CODE XREF: ADDMODULE+43↑p
                                         ; DELMODULE+3F↑p ...
                 xor     ax, ax
@@ -312,9 +314,7 @@ CALCMAXNRSEG    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-; =============== S U B R O U T I N E =======================================
-
-
+                PUBLIC GROWSFT
 GROWSFT         proc near               ; CODE XREF: OPENFILE:loc_1F3A↑p
                                         ; SftThing+A2↓p
                 push    ax
@@ -421,7 +421,7 @@ GROWSFT         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC CLOSEOPENFILES    
 CLOSEOPENFILES  proc near               ; CODE XREF: PROMPT+11↑p
                 push    ax
                 mov     ah, 0Dh

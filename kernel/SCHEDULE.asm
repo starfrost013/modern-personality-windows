@@ -15,6 +15,7 @@ assumeS DS,CODE
 
 ; Attributes: bp-based frame
 
+PUBLIC SAVESTATE
 SAVESTATE       proc near               ; CODE XREF: CREATETASK+EF↑p
                                         ; BOOTSCHEDULE+84↓p ...
 
@@ -109,6 +110,7 @@ SAVESTATE       endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC RESTORESTATE
 RESTORESTATE    proc near               ; CODE XREF: BOOTSCHEDULE+89↓p
 
 arg_0           = word ptr  4
@@ -206,7 +208,6 @@ RESTORESTATE    endp
 
 
 ; =============== S U B R O U T I N E =======================================
-
 
 STATEXJUMP      proc near               ; CODE XREF: SAVESTATE+2D↑p
                                         ; RESTORESTATE+8A↑p

@@ -13,8 +13,6 @@ INCLUDE KERNEL.inc
 INCLUDE KDATA.inc
 sBegin CODE
 
-externW HFILE
-
 externNP GLOBALALLOC
 externNP GLOBALREALLOC
 externNP GLOBALFREE
@@ -27,6 +25,7 @@ externNP OPENFILE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC INITPROFILE
 INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p
                 push    ds
                 push    si

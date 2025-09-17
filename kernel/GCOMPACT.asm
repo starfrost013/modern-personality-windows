@@ -19,6 +19,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC GCOMPACT
 GCOMPACT        proc near               ; CODE XREF: GREALLOC+17A↑p
                                         ; GREALLOC+1F3↑p ...
                 push    si

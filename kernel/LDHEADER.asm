@@ -367,6 +367,8 @@ loc_27E7:                               ; CODE XREF: LOADEXEHEADER+271↑j
 loc_27FE:                               ; CODE XREF: LOADEXEHEADER+2B1↓j
                                         ; LOADEXEHEADER+2C1↓j ...
                 lods    byte ptr es:[si]
+; yup
+PUBLIC LOADMODULE_LOADEXEHEADER
 LOADMODULE_LOADEXEHEADER:
                 or      ax, ax
                 jz      short loc_285B
@@ -474,7 +476,7 @@ LOADEXEHEADER   endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC TRIMEXEHEADER
 TRIMEXEHEADER   proc near               ; CODE XREF: LOADMODULE+348↑p
                                         ; STARTTASK+64↓p ...
 

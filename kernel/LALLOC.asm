@@ -16,6 +16,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC LJOIN
 LJOIN           proc near               ; CODE XREF: LFREE+22↓p
                                         ; LFREE+2E↓p ...
                 dec     word ptr [di+4]
@@ -29,7 +30,7 @@ LJOIN           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LREPSETUP
 LREPSETUP       proc near               ; CODE XREF: LZERO+C↓p
                                         ; LOCALREALLOC+15E↓p ...
                 shr     cx, 1
@@ -42,7 +43,7 @@ LREPSETUP       endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LZERO
 LZERO           proc near               ; CODE XREF: LALLOC+B2↓p
                                         ; LOCALREALLOC+119↓p
                 push    di
@@ -64,7 +65,7 @@ LZERO           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LALLOC
 LALLOC          proc near               ; CODE XREF: LALLOC+3D↓j
                                         ; LCOMPACT+15F↓p ...
                 push    si
@@ -186,7 +187,7 @@ LALLOC          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LFREE
 LFREE           proc near               ; CODE XREF: LCOMPACT+61↓p
                                         ; LCOMPACT+149↓p ...
                 mov     si, bx
@@ -227,7 +228,7 @@ LFREE           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LMOVE
 LMOVE           proc near               ; CODE XREF: LCOMPACT+9A↓p
                                         ; LCOMPACT+105↓p
                 mov     cx, [si+2]
@@ -272,8 +273,8 @@ LMOVE           endp
 
 
 ; =============== S U B R O U T I N E =======================================
-
-
+    
+                PUBLIC LENTER
 LENTER          proc near               ; CODE XREF: LOCALALLOC:loc_5849↓p
                                         ; LOCALREALLOC:loc_58EA↓p ...
                 mov     di, ds:6
@@ -304,7 +305,7 @@ LENTER          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LLEAVE
 LLEAVE          proc near               ; CODE XREF: LOCALALLOC:loc_5896↓p
                                         ; LOCALREALLOC:loc_5A28↓p ...
                 mov     di, ds:6
@@ -334,7 +335,7 @@ SZLEAVECRITNOTBUSYHEAP db 'LeaveCrit: local heap is NOT busy',0
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LALIGN
 LALIGN          proc near               ; CODE XREF: LALLOC+D↑p
                                         ; LALLOC+58↑p ...
                 jnb     short loc_5789
@@ -354,7 +355,7 @@ LALIGN          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LDREF
 LDREF           proc near               ; CODE XREF: LOCALREALLOC+52↓p
                                         ; LOCALREALLOC+153↓p ...
                 xor     cx, cx
@@ -412,7 +413,7 @@ LDREF           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LNOTIFY
 LNOTIFY         proc near               ; CODE XREF: LALLOC+36↑p
                                         ; LCOMPACT+54↑p ...
                 cmp     word ptr [di+18h], 0

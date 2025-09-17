@@ -144,7 +144,7 @@ GETCURRENTTASK  endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC CREATETASK
 CREATETASK      proc far                ; CODE XREF: STARTMODULE+9D↑p
 
 arg_2           = word ptr  8
@@ -308,6 +308,7 @@ CREATETASK      endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC INSERTTASK
 INSERTTASK      proc near               ; CODE XREF: CREATETASK+F3↑p
                                         ; BOOTSCHEDULE+62↓p ...
 
@@ -363,6 +364,7 @@ INSERTTASK      endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC DELETETASK
 DELETETASK      proc near               ; CODE XREF: STARTTASK+79↑p
                                         ; BOOTSCHEDULE+5E↓p ...
 

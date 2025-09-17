@@ -73,7 +73,7 @@ LBESTFIT        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LCOMPACT
 LCOMPACT        proc near               ; CODE XREF: LALLOC+29↑p
                                         ; LALLOC+73↑p ...
                 push    si
@@ -278,6 +278,7 @@ loc_56C1:                               ; CODE XREF: LCOMPACT+130↑j
                 sub     cx, si
                 pop     bx
                 jmp     short loc_567E
+PUBLIC LOCALINIT_LCOMPACT
 LOCALINIT_LCOMPACT:
 ; ---------------------------------------------------------------------------
                 xor     ax, ax
@@ -308,4 +309,3 @@ LCOMPACT        endp
 sEnd CODE
 
 end
-

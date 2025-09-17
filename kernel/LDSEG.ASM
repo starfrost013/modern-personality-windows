@@ -40,6 +40,8 @@ endif
 
 assumeS CS,CODE
 assumeS DS,CODE
+
+                PUBLIC FINDFREESEG
 FINDFREESEG     proc near               ; CODE XREF: FASTBOOT+AA↓p
                                         ; FASTBOOT+192↓p ...
 
@@ -174,7 +176,7 @@ FINDFREESEG     endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC LOADFIXEDSEG    
 LOADFIXEDSEG    proc near               ; CODE XREF: FASTBOOT+271↓p
 
 arg_0           = word ptr  4
@@ -297,7 +299,7 @@ LOADFIXEDSEG    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GETCHKSUMADDR
 GETCHKSUMADDR   proc near               ; CODE XREF: CHECKSEGCHKSUM+1↓p
                                         ; PATCHPROLOG+2C↓p
                 push    dx
@@ -345,7 +347,7 @@ GETCHKSUMADDR   endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public CHECKSEGCHKSUM
 CHECKSEGCHKSUM  proc near               ; CODE XREF: LOADSEGMENT+155↓p
                                         ; PATCHTHUNKS+8↓p ...
                 push    ax
@@ -402,6 +404,7 @@ CHECKSEGCHKSUM  endp
 
 ; Attributes: bp-based frame
 
+                public ALLOCSEG
 ALLOCSEG        proc near               ; CODE XREF: ALLOCALLSEGS+2A↓p
                                         ; ALLOCALLSEGS+7E↓p ...
 
@@ -484,6 +487,7 @@ ALLOCSEG        endp
 
 ; Attributes: bp-based frame
 
+                public ALLOCALLSEGS
 ALLOCALLSEGS    proc near               ; CODE XREF: LOADMODULE+294↑p
                                         ; LOADMODULE+3B3↑p ...
 
@@ -599,6 +603,7 @@ ALLOCALLSEGS    endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC SEGLOAD
 SEGLOAD         proc near               ; CODE XREF: LOADSEGMENT+B6↓p
                                         ; LOADFIXEDSEG+8F↓p
 
@@ -977,6 +982,7 @@ SEGLOAD         endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC LOADSEGMENT
 LOADSEGMENT     proc near               ; CODE XREF: STARTMODULE+30↑p
                                         ; LOADMODULE+2D9↑p ...
 

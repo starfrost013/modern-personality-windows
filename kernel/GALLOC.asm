@@ -11,6 +11,10 @@ externNP HALLOC
 externNP HEND
 externNP HENUM
 externNP HFREE
+externNP GLRUADD
+externNP GLRUDEL
+externNP GLRUPREV
+externNP GLRUTOP
 externNP GCOMPACT
 externNP GNOTIFY
 
@@ -19,7 +23,8 @@ sBegin CODE
 
 assumeS CS,CODE
 assumeS DS,CODE
-
+            
+                PUBLIC GALIGN
 GALIGN          proc near               ; CODE XREF: GREALLOC+7↓p
                                         ; GFREE+1↓p ...
                 xor     cx, cx
@@ -59,8 +64,8 @@ GALIGN          endp
 
 
 ; =============== S U B R O U T I N E =======================================
-
-
+            
+                PUBLIC GHANDLE
 GHANDLE         proc near               ; CODE XREF: GHANDLE+88↓j
                                         ; GHEXPAND+3↓p ...
                 mov     bx, ax
@@ -145,7 +150,7 @@ GHANDLE         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GALLOC
 GALLOC          proc near               ; CODE XREF: INT21ALLOC+3↓p
                                         ; GLOBALALLOC+50↓p
                 or      bx, bx
@@ -198,7 +203,7 @@ GALLOC          endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC GREALLOC
 GREALLOC        proc near               ; CODE XREF: INT21REALLOC+3↓p
                                         ; GHEXPAND+2B↓p ...
 
@@ -515,7 +520,7 @@ GREALLOC        endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GFREE
 GFREE           proc near               ; CODE XREF: INT21FREE+2↓p
                                         ; GLOBALFREE+8F↓p
                 push    cx
@@ -547,7 +552,7 @@ GFREE           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GFREEALL
 GFREEALL        proc near               ; CODE XREF: GLOBALFREEALL+73↓p
                 mov     es, word ptr [di+6]
                 mov     cx, [di+4]
@@ -584,7 +589,7 @@ GFREEALL        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GLOCK
 GLOCK           proc near               ; CODE XREF: LOCKSEGMENT+5↓p
                                         ; GLOBALLOCK:loc_6EDC↓p
                 inc     ch
@@ -598,7 +603,7 @@ GLOCK           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GUNLOCK
 GUNLOCK         proc near               ; CODE XREF: UNLOCKSEGMENT+5↓p
                                         ; GLOBALUNLOCK:loc_6F33↓p
                 dec     ch
@@ -904,7 +909,7 @@ GMARKFREE       endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GFINDFREE
 GFINDFREE       proc near               ; CODE XREF: GSEARCH+47↑p
                                         ; GRTEST+B↓p
                 push    es
@@ -935,7 +940,7 @@ GFINDFREE       endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GCHECKFREE
 GCHECKFREE      proc near               ; CODE XREF: GREALLOC+106↑p
                                         ; GREALLOC+1CF↑p ...
                 mov     ax, es:[di+3]
@@ -1114,7 +1119,7 @@ GMOVE           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GMOVEABLE
 GMOVEABLE       proc near               ; CODE XREF: GSLIDE+A↓p
                                         ; GBESTFIT+F↓p
                 mov     si, es:[di+0Ah]
@@ -1146,8 +1151,7 @@ GMOVEABLE       endp
 
 
 ; =============== S U B R O U T I N E =======================================
-
-
+                PUBLIC GSLIDE
 GSLIDE          proc near               ; CODE XREF: GCMPHEAP+1E↑p
                 push    es
                 mov     es, word ptr es:[bx]
@@ -1162,7 +1166,7 @@ GSLIDE          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GSLIDECOMMON
 GSLIDECOMMON    proc near               ; CODE XREF: GSLIDE+E↑j
                                         ; GMOVEBUSY+1D↓p
                 mov     si, ax
@@ -1253,7 +1257,7 @@ GSLIDECOMMON    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GMOVEBUSY
 GMOVEBUSY       proc near               ; CODE XREF: GREALLOC+19F↑p
                                         ; GSEARCH+57↑p ...
                 push    cx
@@ -1318,7 +1322,7 @@ GMOVEBUSY       endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GDISCARD
 GDISCARD        proc near               ; CODE XREF: GCOMPACT+30↑p
                 push    es
                 push    ax

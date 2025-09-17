@@ -23,7 +23,7 @@ LRUSWEEP_MODE1  endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC LRUSWEEP
 LRUSWEEP        proc far
                 xor     cx, cx
 
@@ -90,7 +90,7 @@ LRUSWEEP        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GLRUTOP
 GLRUTOP         proc near               ; CODE XREF: GETCODEHANDLE+53↑p
                                         ; GUNLOCK+11↑p ...
                 push    es
@@ -146,7 +146,7 @@ GLRUTOP         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GLRUADD
 GLRUADD         proc near               ; CODE XREF: GALLOC+40↑p
                                         ; GREALLOC:loc_6004↑p ...
                 mov     bx, es:[di+0Ah]
@@ -184,7 +184,7 @@ GLRUADD         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GLRUDEL
 GLRUDEL         proc near               ; CODE XREF: GREALLOC+38↑p
                                         ; GREALLOC+5E↑p ...
                 push    si
@@ -227,7 +227,7 @@ GLRUDEL         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GLRUPREV
 GLRUPREV        proc near               ; CODE XREF: GDISCARD+40↓p
                 or      si, si
                 jnz     short loc_62EF

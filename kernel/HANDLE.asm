@@ -19,7 +19,7 @@ assumeS DS,CODE
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HALLOC
 HALLOC          proc near               ; CODE XREF: LOCALALLOC+59↑p
                                         ; LOCALALLOC+6F↑p ...
                 mov     bx, [di+10h]
@@ -60,7 +60,7 @@ HALLOC          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HTHREAD
 HTHREAD         proc near               ; CODE XREF: LCOMPACT+171↑p
                                         ; GHEXPAND+61↓p ...
                 push    di
@@ -83,7 +83,7 @@ HTHREAD         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HFREE
 HFREE           proc near               ; CODE XREF: LOCALFREE:loc_5AC7↑p
                                         ; GFREE:loc_6197↓p ...
                 or      si, si
@@ -109,7 +109,7 @@ HFREE           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HDREF
 HDREF           proc near               ; CODE XREF: LDREF:loc_57AE↑p
                                         ; GALIGN+28↓p
                 xor     ax, ax
@@ -130,7 +130,7 @@ HDREF           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HENUM
 HENUM           proc near               ; CODE XREF: LCOMPACT:loc_55D4↑p
                                         ; GFREEALL:loc_61C8↓p
                 or      si, si
@@ -176,7 +176,7 @@ HENUM           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC HEND
 HEND            proc near               ; CODE XREF: GREALLOC+D9↓p
                                         ; GREALLOC+1BE↓p ...
                 jb      short loc_5E84

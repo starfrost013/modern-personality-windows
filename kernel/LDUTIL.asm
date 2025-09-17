@@ -29,6 +29,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC INCEXEUSAGE
 INCEXEUSAGE     proc near               ; CODE XREF: LOADMODULE+249↑p
                                         ; LOADMODULE+3AC↑p ...
 
@@ -72,7 +73,7 @@ INCEXEUSAGE     endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC DECEXEUSAGE
 DECEXEUSAGE     proc near               ; CODE XREF: LOADMODULE+3E8↑p
                                         ; DECEXEUSAGE+3C↓p ...
 
@@ -139,6 +140,7 @@ DECEXEUSAGE     endp
 ; Returns: 
 ;     A segment:offset pointer to the function requested if successful, in the ax:dx register pair.
 ;     If, at this point, an invalid ordinal was provided to the function, a fatalexit code 403 - "Invalid ordinal reference to <module name>" - is triggered and Windows quits.
+                PUBLIC ENTPROCADDRESS
 ENTPROCADDRESS  proc near               ; CODE XREF: SEGRELOC+BB↓p
                                         ; GETPROCADDRESS+3F↓p
 
@@ -257,6 +259,7 @@ ENTPROCADDRESS  endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC STARTPROCADDRESS
 STARTPROCADDRESS proc near              ; CODE XREF: STARTMODULE+4F↑p
 
 arg_0           = word ptr  4
@@ -293,6 +296,7 @@ STARTPROCADDRESS endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC GETINSTANCE
 GETINSTANCE     proc near               ; CODE XREF: LOADMODULE+3A2↑p
                                         ; LOADMODULE+419↑p ...
 
@@ -323,6 +327,7 @@ GETINSTANCE     endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC GETEXEPTR
 GETEXEPTR       proc near               ; CODE XREF: LOADMODULE+D7↑p
                                         ; LOADMODULE+255↑p ...
 
@@ -387,7 +392,7 @@ GETEXEPTR       endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC MYALLOC
 MYALLOC         proc near               ; CODE XREF: LOADNRTABLE+62↓p
                                         ; ALLOCSEG+48↓p ...
 
@@ -457,7 +462,7 @@ MYALLOC         endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC MYLOCK
 MYLOCK          proc near               ; CODE XREF: GETEXEPTR+6↑p
                                         ; MYALLOC+4D↑p ...
 
@@ -480,6 +485,7 @@ MYLOCK          endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC MYFREE
 MYFREE          proc near               ; CODE XREF: LOADMODULE:loc_500↑p
                                         ; ALLOCALLSEGS+A6↓p ...
 

@@ -26,9 +26,9 @@ externNP DECEXEUSAGE
 externNP CALCMAXNRSEG
 externNP ENTPROCADDRESS
 externNP FINDORDINAL
+externNP CHECKSEGCHKSUM
 externNP OPENFILE
 
-PUBLIC CHECKSEGCHKSUM
 
 if KDEBUG
     externNP DEBUGDEFINESEGMENT
@@ -82,61 +82,6 @@ loc_DC6:                                ; CODE XREF: GETCHKSUMADDR+E↑j
                 pop     dx
                 ret
 GETCHKSUMADDR   endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-CHECKSEGCHKSUM  proc near               ; CODE XREF: LOADSEGMENT+155↓p
-                                        ; PATCHTHUNKS+8↓p ...
-                push    ax
-                call    GETCHKSUMADDR
-                pop     ax
-                jcxz    short check_seg_done
-                shl     cx, 1
-                shl     cx, 1
-                shl     cx, 1
-                push    ds
-                push    si
-                mov     ds, ax
-                xor     si, si
-                xor     dx, dx
-                cld
-
-loc_DDE:                                ; CODE XREF: CHECKSEGCHKSUM+19↓j
-                lodsw
-                xor     dx, ax          ; check 1 word of the segment until we are done
-                loop    loc_DDE
-                mov     ax, ds
-                pop     si
-                pop     ds
-                mov     cx, dx
-                xchg    cx, es:[bx] ; segaddr pointer to segment (probably)
-                jcxz    short check_seg_done
-                cmp     cx, dx              
-                jz      short check_seg_done
-
-BADSEGCONT:
-                mov     bx, ax
-                mov     ax, 409h
-                push    ax
-                mov     ax, offset SZSEGMENTCONTENTSTRASHED ; "Segment contents trashed "
-                push    cs
-                push    ax
-                push    es
-                push    bx
-                call    KERNELERROR
-                jmp     short check_seg_done
-; ---------------------------------------------------------------------------
-SZSEGMENTCONTENTSTRASHED db 'Segment contents trashed ',0
-                                        ; DATA XREF: CHECKSEGCHKSUM+30↑o
-                db 24h
-; ---------------------------------------------------------------------------
-
-check_seg_done:                             ; CODE XREF: CHECKSEGCHKSUM+5↑j
-                                        ; CHECKSEGCHKSUM+24↑j ...
-                ret
-CHECKSEGCHKSUM  endp
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -995,65 +940,11 @@ loc_13D2:                               ; CODE XREF: LOADSEGMENT+1A7↑j
                 ret     8
 LOADSEGMENT     endp
 
-
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
 
-ADDMODULE       proc near               ; CODE XREF: LOADMODULE+165↑p
-                                        ; FASTBOOT+E0↓p
-
-arg_0           = word ptr  4
-
-                push    bp
-                mov     bp, sp
-                mov     es, cs:HEXEHEAD
-
-loc_13E4:                               ; CODE XREF: ADDMODULE+11↓j
-                mov     cx, es:6
-                jcxz    short loc_13EF
-                mov     es, cx
-                jmp     short loc_13E4
-; ---------------------------------------------------------------------------
-
-loc_13EF:                               ; CODE XREF: ADDMODULE+D↑j
-                mov     ax, [bp+arg_0]
-                mov     es:6, ax
-                mov     es, ax
-                cmp     cs:HEXESWEEP, 0
-                jnz     short loc_140C
-                cmp     word ptr es:30h, 0
-                jz      short loc_140C
-                mov     cs:HEXESWEEP, ax
-
-loc_140C:                               ; CODE XREF: ADDMODULE+22↑j
-                                        ; ADDMODULE+2A↑j
-                mov     ax, [bp+arg_0]
-                xor     bx, bx
-                cmp     cs:FBOOTING, bl
-                jnz     short loc_1429
-                push    bx
-                push    bx
-                nop
-                push    cs
-                call    near ptr GLOBALCOMPACT
-                call    CALCMAXNRSEG
-                or      ax, ax
-                jz      short loc_1429
-                mov     ax, [bp+arg_0]
-
-loc_1429:                               ; CODE XREF: ADDMODULE+3A↑j
-                                        ; ADDMODULE+48↑j
-                mov     sp, bp
-                pop     bp
-                ret     2
-ADDMODULE       endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-; Attributes: bp-based frame
-
+                PUBLIC DELMODULE
 DELMODULE       proc near               ; CODE XREF: LOADMODULE+358↑p
                                         ; DECEXEUSAGE+46↑p ...
 
@@ -1093,128 +984,11 @@ loc_145E:                               ; CODE XREF: DELMODULE+19↑j
                 pop     bp
                 ret     2
 DELMODULE       endp
-
-;
-; External Entry #46 into the Module
-; Attributes (0001): Fixed Exported
-;
-;
-; External Entry #96 into the Module
-; Attributes (0001): Fixed Exported
-;
-
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
 
-                public FREEMODULE
-FREEMODULE      proc far                ; CODE XREF: LOADMODULE+3DF↑p
-                                        ; DOSTerminateHook+C0↓p
-
-var_4           = word ptr -4
-arg_0           = word ptr  6
-
-                inc     bp              ; KERNEL_46
-                                        ; KERNEL_96
-                                        ; FREELIBRARY
-                push    bp
-                mov     bp, sp
-                push    ds
-                sub     sp, 2
-                push    si
-                push    di
-                push    [bp+arg_0]
-                call    GETEXEPTR
-                or      ax, ax
-                jz      short loc_14AF
-                mov     [bp+var_4], ax
-                push    [bp+var_4]
-                call    DECEXEUSAGE
-                jnz     short loc_14B4
-                mov     es, [bp+var_4]
-                mov     bx, es:8
-                or      bx, bx
-                jz      short loc_14A9
-                push    word ptr es:[bx+8]
-                call    MYFREE
-
-loc_14A9:                               ; CODE XREF: FREEMODULE+29↑j
-                push    [bp+var_4]
-                call    DELMODULE
-
-loc_14AF:                               ; CODE XREF: FREEMODULE+12↑j
-                                        ; FREEMODULE+46↓j
-                xor     ax, ax
-                jmp     short loc_1519
-; ---------------------------------------------------------------------------
-                ;align 2
-
-loc_14B4:                               ; CODE XREF: FREEMODULE+1D↑j
-                mov     es, [bp+var_4]
-                test    byte ptr es:0Ch, 2
-                jz      short loc_14AF
-                mov     es, [bp+var_4]
-                mov     bx, es:8
-                push    word ptr es:[bx+8]
-                push    [bp+arg_0]
-                call    MYFREE
-                pop     dx
-                cmp     [bp+arg_0], dx
-                jnz     short loc_1519
-                mov     es, cs:PGLOBALHEAP
-                mov     cx, es:4
-                mov     es, word ptr es:6
-                xor     bx, bx
-                mov     dx, [bp+var_4]
-
-loc_14EB:                               ; CODE XREF: FREEMODULE+92↓j
-                cmp     es:[bx+1], dx
-                jnz     short loc_1505
-                test    byte ptr es:[bx+5], 4
-                jz      short loc_1505
-                mov     ax, es:[bx+0Ah]
-                or      ax, ax
-                jnz     short loc_150D
-                mov     ax, es
-                inc     ax
-                jmp     short loc_150D
-; ---------------------------------------------------------------------------
-
-loc_1505:                               ; CODE XREF: FREEMODULE+78↑j
-                                        ; FREEMODULE+7F↑j
-                mov     es, word ptr es:[bx+8]
-                loop    loc_14EB
-                xor     ax, ax
-
-loc_150D:                               ; CODE XREF: FREEMODULE+87↑j
-                                        ; FREEMODULE+8C↑j
-                mov     es, [bp+var_4]
-                mov     bx, es:8
-                mov     es:[bx+8], ax
-
-loc_1519:                               ; CODE XREF: FREEMODULE+3A↑j
-                                        ; FREEMODULE+5E↑j
-                xor     ax, ax
-                push    ax
-                push    ax
-                nop
-                push    cs
-                call    near ptr GLOBALCOMPACT
-                pop     di
-                pop     si
-                sub     bp, 2
-                mov     sp, bp
-                pop     ds
-                pop     bp
-                dec     bp
-                ret     2
-FREEMODULE      endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-; Attributes: bp-based frame
-
+                PUBLIC SEGRELOC
 SEGRELOC        proc near               ; CODE XREF: LOADSEGMENT+13B↑p
                                         ; LOADFIXEDSEG+B7↓p
 

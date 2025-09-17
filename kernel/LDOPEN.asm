@@ -1198,7 +1198,7 @@ GETTEMPFILENAME endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC APPENDFIRST
 APPENDFIRST     proc near               ; CODE XREF: PROMPT+2D↑p
                 mov     cs:BUFPOS, 92h
 APPENDFIRST     endp
@@ -1206,7 +1206,7 @@ APPENDFIRST     endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC APPEND
 APPEND          proc near               ; CODE XREF: ISFLOPPY+18↑p
                                         ; PROMPT+B↑p ...
                 push    si

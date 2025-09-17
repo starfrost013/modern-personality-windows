@@ -32,43 +32,45 @@ SZSEGDEBUG      db 'SEGDEBUG',0
 
 ; =============== S U B R O U T I N E =======================================
 
+if KDEBUG
+    PUBLIC DEBUGINIT
+    DEBUGINIT       proc near               ; CODE XREF: BOOTSTRAP+D0↓p
+                    push    si
+                    push    di
+                    push    es
+                    xor     ax, ax
+                    mov     es, ax
+                    assume es:_TEXT
+                    mov     bx, es:HHANDLE
+                    mov     es, bx
+                    assume es:nothing
+                    mov     di, 100h
+                    mov     si, 6FC3h
+                    mov     cx, 9
+                    cld
+                    repe cmps byte ptr cs:[si], byte ptr es:[di]
+                    jnz     short loc_6FFF
+                    mov     word ptr cs:dword_6FBF+2, bx
+                    mov     ax, cs:PGLOBALHEAP
+                    push    ax
+                    mov     ax, 3
+                    push    ax
+                    call    cs:dword_6FBF
+                    add     sp, 4
 
-DEBUGINIT       proc near               ; CODE XREF: BOOTSTRAP+D0↓p
-                push    si
-                push    di
-                push    es
-                xor     ax, ax
-                mov     es, ax
-                assume es:_TEXT
-                mov     bx, es:HHANDLE
-                mov     es, bx
-                assume es:nothing
-                mov     di, 100h
-                mov     si, 6FC3h
-                mov     cx, 9
-                cld
-                repe cmps byte ptr cs:[si], byte ptr es:[di]
-                jnz     short loc_6FFF
-                mov     word ptr cs:dword_6FBF+2, bx
-                mov     ax, cs:PGLOBALHEAP
-                push    ax
-                mov     ax, 3
-                push    ax
-                call    cs:dword_6FBF
-                add     sp, 4
-
-loc_6FFF:                               ; CODE XREF: DEBUGINIT+1B↑j
-                pop     es
-                pop     di
-                pop     si
-                ret
-DEBUGINIT       endp
-
+    loc_6FFF:                               ; CODE XREF: DEBUGINIT+1B↑j
+                    pop     es
+                    pop     di
+                    pop     si
+                    ret
+    DEBUGINIT       endp
+endif
 
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
 
+                PUBLIC DEBUGDEFINESEGMENT
 DEBUGDEFINESEGMENT proc near            ; CODE XREF: SEGLOAD+293↑p
 
 arg_0           = word ptr  4
@@ -108,7 +110,7 @@ DEBUGDEFINESEGMENT endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC DEBUGMOVEDSEGMENT
 DEBUGMOVEDSEGMENT proc near             ; CODE XREF: GNOTIFY+15↑p
                                         ; GNOTIFY+68↑p
 
@@ -137,6 +139,7 @@ DEBUGMOVEDSEGMENT endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC DEBUGFREESEGMENT
 DEBUGFREESEGMENT proc near              ; CODE XREF: MYFREE:loc_C0C↑p
                                         ; GLOBALFREEALL+68↑p
 
@@ -820,7 +823,7 @@ NEXTFRAME       endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC STACKWALK
 STACKWALK       proc near               ; CODE XREF: FATALEXIT+A1↓p
 
 var_AA          = word ptr -0AAh

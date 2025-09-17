@@ -28,7 +28,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
-
+                PUBLIC GENTERCURRENTPDB
 GENTERCURRENTPDB proc near              ; CODE XREF: INT21ALLOC↓p
                                         ; INT21REALLOC↓p ...
                 lds     di, cs:PCURRENTPDB
@@ -48,7 +48,7 @@ GENTERCURRENTPDB endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GENTER
 GENTER          proc near               ; CODE XREF: GETCODEHANDLE+50↑p
                                         ; INT24HANDLER+8E↑p ...
                 mov     ds, cs:PGLOBALHEAP
@@ -60,7 +60,7 @@ GENTER          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GLEAVE
 GLEAVE          proc near               ; CODE XREF: GETCODEHANDLE+56↑p
                                         ; INT24HANDLER+94↑p ...
                 dec     word ptr [di+18h] ; decrement memory block reference count
@@ -70,7 +70,7 @@ GLEAVE          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GBTOP
 GBTOP           proc near               ; CODE XREF: GLOBALALLOC+4D↓p
                                         ; GLOBALREALLOC+50↓p ...
                 push    dx
@@ -147,7 +147,7 @@ GBTOP           endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GRESERVE
 GRESERVE        proc near               ; CODE XREF: CALCMAXNRSEG:loc_2555↑p
                 push    ds
                 push    di
@@ -189,7 +189,7 @@ GRESERVE        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GRTEST
 GRTEST          proc near               ; CODE XREF: GRESERVE+20↑p
                                         ; GRESERVE+2B↑p
                 mov     bx, 6
@@ -204,7 +204,7 @@ GRTEST          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public GAVAIL
 GAVAIL          proc near               ; CODE XREF: GLOBALCOMPACT+54↓p
                 mov     byte ptr [di+0Bh], 0
                 call    GCOMPACT
@@ -307,7 +307,7 @@ GAVAIL          endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GNOTIFY
 GNOTIFY         proc near               ; CODE XREF: GREALLOC+32↑p
                                         ; GMOVE+30↑p ...
                 xor     ah, ah
@@ -389,8 +389,8 @@ GNOTIFY         endp
 
 
 ; =============== S U B R O U T I N E =======================================
-
-
+        
+                PUBLIC GHEXPAND
 GHEXPAND        proc near
                 mov     ax, ds
                 push    cx
@@ -452,7 +452,7 @@ GHEXPAND        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GMEMCHECK
 GMEMCHECK       proc near               ; CODE XREF: GLOBALALLOC+56↓p
                                         ; GLOBALREALLOC+59↓p
                 or      ax, ax
@@ -463,7 +463,7 @@ GMEMCHECK       endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GMEMFAIL
 GMEMFAIL        proc near               ; CODE XREF: GMEMCHECK+2↑j
                 ret
 GMEMFAIL        endp
@@ -476,7 +476,7 @@ GMEMFAIL        endp
 ; =============== S U B R O U T I N E =======================================
 
 
-                public SETSWAPHOOK
+                PUBLIC SETSWAPHOOK
 SETSWAPHOOK     proc far
                 mov     bx, sp          ; KERNEL_27
                 mov     ax, ss:[bx+4]
@@ -489,7 +489,7 @@ SETSWAPHOOK     endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GINIT
 GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 lea     si, [bx+1]
                 and     si, 0FFFEh

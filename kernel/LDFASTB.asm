@@ -23,7 +23,6 @@ externW HINITMEM
 externW WIN_SHOW
 externW CPSHRUNK
 externW UNKNOWNFASTBOOTVAR ; something to do with the offset in fastboot or a pointer to the win100.bin/ovl
-externNP INITMODULE
 externNP MYLOCK
 externNP INCEXEUSAGE
 externNP LOADEXEHEADER 
@@ -68,7 +67,7 @@ assumeS DS,CODE
 ; Returns: KERNELERROR called and system exits if boot fails. Calls the function pointer (relative to current code segment) in AX if boot succeeds.
 ;
 ; Notes: Internal only function. Not for user apps. Possibly needs debugging
-
+                PUBLIC FASTBOOT
 FASTBOOT        proc near               ; CODE XREF: BOOTSTRAP+264↑j
 
 var_9           = byte ptr -9
@@ -605,7 +604,7 @@ FASTBOOT        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC SHRINK
 SHRINK          proc near               ; CODE XREF: FINDFREESEG:loc_8596↑p
                                         ; FASTBOOT+30↓p
                 push    es

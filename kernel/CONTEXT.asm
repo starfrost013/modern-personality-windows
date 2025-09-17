@@ -142,7 +142,7 @@ YIELD           endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GETTASKHANDLE_VARIANT_UNDOC
 GETTASKHANDLE_VARIANT_UNDOC proc near ; CODE XREF: SETTASKQUEUE↓p
                                         ; SETPRIORITY↓p
                 mov     bx, sp
@@ -154,7 +154,7 @@ GETTASKHANDLE_VARIANT_UNDOC endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC GETTASKHANDLE_VARIANT_UNDOC_2
 GETTASKHANDLE_VARIANT_UNDOC_2 proc near ; CODE XREF: POSTEVENT↓p
                                         ; GETTASKQUEUE↓p
                 mov     bx, sp
@@ -176,7 +176,7 @@ GETTASKHANDLE_VARIANT_UNDOC_2 endp
 ;
 ; Notes: Internal only function. Not for user apps. Possibly needs debugging
 
-
+                PUBLIC GETTASKHANDLE
 GETTASKHANDLE   proc near               ; CODE XREF: WAITEVENT+8↑p
                                         ; GETTASKHANDLE_VARIANT_UNDOC+A↑j ...
                 or      ax, ax                          ; did the user provide a hTask pointer?
@@ -355,6 +355,7 @@ SETPRIORITY     endp
 
 ; This is the main loop and handles scheduling all tasks.
 ; When no task is running, this functions runs.
+                PUBLIC RESCHEDULE
 RESCHEDULE      proc far                ; CODE XREF: WAITEVENT+29↓j
                                         ; YIELD+24↓j
                 inc     bp
@@ -369,6 +370,7 @@ RESCHEDULE      proc far                ; CODE XREF: WAITEVENT+29↓j
 ; =============== S U B R O U T I N E =======================================
 
 ; is actually the second half of RESCHEDULE, this is called during boot
+public BOOTSCHEDULE
 BOOTSCHEDULE:                           ; CODE XREF: BOOTSCHEDULE+A↓j
                                         ; BOOTSCHEDULE+E3↓j ...
                 mov     ax, cs:HEADTDB  ; get currently running process

@@ -53,6 +53,7 @@ assumeS DS,CODE
 
 ; Attributes: bp-based frame
 
+                PUBLIC ADDMODULE
 ADDMODULE       proc near               ; CODE XREF: LOADMODULE+165↑p
                                         ; FASTBOOT+E0↓p
 
@@ -269,6 +270,7 @@ FREEMODULE      endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC STARTMODULE
 STARTMODULE     proc near               ; CODE XREF: LOADMODULE+333↓p
                                         ; LOADMODULE+3CF↓p ...
 

@@ -20,25 +20,18 @@ assumeS CS,CODE
 assumeS DS,CODE
 
 ; ---------------------------------------------------------------------------
-INT3FBP         dw 0                    ; DATA XREF: INT3FHANDLER+3B↓w
-                                        ; SEARCHSTACK+BF↓r ...
-INT3FSAVEDBP    dw 0                    ; DATA XREF: SEARCHSTACK+110↓r
-                                        ; SEARCHSTACK+139↓w
-INT3FSAVEDSS    dw 0                    ; DATA XREF: INT3FTHUNK+20↓w
-                                        ; SEARCHSTACK+103↓r ...
-INT3FSAVEDDS    dw 0                    ; DATA XREF: INT3FTHUNK+1A↓r
-                                        ; SEARCHSTACK+125↓r ...
-INT3FSAVEDFRAME dw 0
-INT3FSAVEDIP    dw 0                    ; DATA XREF: INT3FTHUNK+6↓r
-                                        ; SEARCHSTACK+11D↓r ...
-INT3FSAVEDCS    dw 0                    ; DATA XREF: INT3FTHUNK+10↓r
-                                        ; SEARCHSTACK+115↓r ...
-INT3FCURRENTCS  dw 0                    ; DATA XREF: INT3FTHUNK+B↓w
-                                        ; INT3FHANDLER↓w ...
-INT3FCURRENTDS  dw 0                    ; DATA XREF: INT3FTHUNK+15↓w
-                                        ; INT3FFAIL+B↓r ...
-INT3FCURRENTIP  dw 0                    ; DATA XREF: INT3FTHUNK+1↓w
-                                        ; INT3FHANDLER+A↓w ...
+
+globalW INT3FBP,0
+globalW INT3FSAVEDBP,0
+globalW INT3FSAVEDSS,0
+globalW INT3FSAVEDDS,0
+globalW INT3FSAVEDFRAME,0
+globalW INT3FSAVEDIP,0
+globalW INT3FSAVEDCS,0
+globalW INT3FCURRENTCS,0
+globalW INT3FCURRENTDS,0
+globalW INT3FCURRENTIP,0
+
 
 ; =============== S U B R O U T I N E =======================================
 

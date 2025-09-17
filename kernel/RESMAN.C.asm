@@ -815,6 +815,7 @@ DEFAULTRESOURCEHANDLER endp
 
 ; Attributes: bp-based frame
 
+PUBLIC PRELOADRESOURCES
 PRELOADRESOURCES proc near              ; CODE XREF: LOADMODULE+305↑p
 
 arg_0           = word ptr  4

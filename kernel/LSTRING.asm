@@ -316,7 +316,7 @@ ANSINEXT        endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC MYANSIUPPER
 MYANSIUPPER     proc near               ; CODE XREF: ANSIUPPER+11↑p
                 cld
                 mov     si, di
@@ -344,6 +344,7 @@ MYANSIUPPER     endp
 ; =============== S U B R O U T I N E =======================================
 
 
+                PUBLIC MYANSILOWER
 MYANSILOWER     proc near               ; CODE XREF: ANSILOWER+11↑p
                 cld
                 mov     si, di
@@ -370,7 +371,7 @@ MYANSILOWER     endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC MYUPPER
 MYUPPER         proc near               ; CODE XREF: LOADEXEHEADER+142↑p
                                         ; CMPRESSTR+1C↑p ...
                 cmp     al, 61h ; 'a'
@@ -393,7 +394,7 @@ MYUPPER         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC MYLOWER
 MYLOWER         proc near               ; CODE XREF: PROFILESTRINGTOLOWER:loc_4EC0↑p
                                         ; PROFILESTRINGTOLOWER+14↑p ...
                 cmp     al, 41h ; 'A'
@@ -416,7 +417,7 @@ MYLOWER         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public ISKANJI
 ISKANJI         proc near               ; CODE XREF: LSTRCMP+F↑p
                                         ; LSTRCMP+24↑p ...
                 cmp     cs:FFAREAST, 1

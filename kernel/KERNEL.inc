@@ -60,5 +60,4 @@ ERR_RESOURCE_INVALID=504h                   ; Invalid resource
 ERR_RESOURCE_LOAD_FAIL=505h                 ; Could not load resource
 
 ; Some functions that we need everywhere
-externNP KERNELERROR                        ; Let's give up    
 

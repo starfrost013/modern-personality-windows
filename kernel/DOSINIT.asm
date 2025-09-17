@@ -20,7 +20,7 @@ assumeS DS,CODE
 
 ; Might also be called "ENDINIT" (two symbols on same byte :v)
 ; Attributes: bp-based frame
-
+                PUBLIC INITLOADER
 INITLOADER      proc near               ; CODE XREF: BOOTSTRAP+27E↑j
 
 var_A           = word ptr -0Ah
@@ -255,6 +255,8 @@ SZNO5           db '#5',0               ; DATA XREF: INITFWDREF+B7↓o
 ; Note that all the functions are obtained by their ordinal number, so the kernel is dependent on the ordering of functions exported from the above modules
 ; to even boot. If you overwrite these in runtime (which is easy because they are always at the same offset from the kernel's CS start and it only has one segment),
 ; you can control the system when it calls system timer/exit/etc.
+
+                PUBLIC INITFWDREF
 INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                                         ; SLOWBOOT+86↑p ...
                 push    si
@@ -466,7 +468,7 @@ TESTEMM         endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC INITDOSVARP
 INITDOSVARP     proc near               ; CODE XREF: BOOTSTRAP+D3↑p
                 push    si
                 push    di

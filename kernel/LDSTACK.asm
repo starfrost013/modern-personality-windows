@@ -30,6 +30,7 @@ externNP LOADSEGMENT
 assumeS CS,CODE
 assumeS DS,CODE
 
+                PUBLIC GETSTACKPTR
 GETSTACKPTR     proc near               ; CODE XREF: STARTMODULE+90↑p
 
 arg_0           = word ptr  4
@@ -86,6 +87,7 @@ GETSTACKPTR     endp
 
 ; Attributes: bp-based frame
 
+                PUBLIC PATCHSTACK
 PATCHSTACK      proc near               ; CODE XREF: GNOTIFY+1A↓p
 
 arg_0           = word ptr  4
@@ -174,6 +176,7 @@ loc_3330:                               ; CODE XREF: PATCHSTACK+4F↑j
                 jmp     short loc_32F3
 ; ---------------------------------------------------------------------------
 
+PUBLIC FUSEDBP_CHECK
 FUSEDBP_CHECK:                           ; CODE XREF: PATCHSTACK:JMP_TO_FUSEDBP_CHECK↑j
                 xor     bx, bx
                 cmp     cs:FUSEDBP, bx
@@ -290,6 +293,7 @@ loc_33FE:                               ; CODE XREF: SEARCHSTACK+14↓j
 
 ; Attributes: bp-based frame
 
+                PUBLIC SEARCHSTACK
 SEARCHSTACK     proc near               ; CODE XREF: GNOTIFY+37↓p
 
 arg_0           = word ptr  4

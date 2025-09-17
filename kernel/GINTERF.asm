@@ -7,7 +7,7 @@
 ; gfree probably needs to be moved to gmem.asm or something
 INCLUDE KERNEL.inc
 INCLUDE KDATA.inc
-externNP CHECKGLOBALHEAP
+;externNP CHECKGLOBALHEAP temp
 externNP GENTER
 externNP GBTOP
 externNP GALLOC
@@ -55,9 +55,12 @@ arg_4           = word ptr  0Ah
                 push    ds
                 push    si
                 push    di
-                call    CHECKGLOBALHEAP
-                or      ax, ax
-                jz      short loc_6C7B
+                jmp     loc_6C7B
+
+                ;temp
+                ;call    CHECKGLOBALHEAP
+                ;or      ax, ax
+                ;jz      short loc_6C7B
                 or      ax, 200h
                 xor     bx, bx
                 push    ax
@@ -117,9 +120,11 @@ arg_6           = word ptr  0Ch
                 push    ds
                 push    si
                 push    di
-                call    CHECKGLOBALHEAP
-                or      ax, ax
-                jz      short loc_6CE3
+                jmp     loc_6CE3
+                ;temp
+                ;call    CHECKGLOBALHEAP
+                ;or      ax, ax
+                ;jz      short loc_6CE3
                 or      ax, 200h
                 xor     bx, bx
                 push    ax
@@ -177,9 +182,10 @@ arg_0           = word ptr  6
                 push    ds
                 push    si
                 push    di
-                call    CHECKGLOBALHEAP
-                or      ax, ax
-                jz      short loc_6D49
+                jmp     loc_6D49
+                ;call    CHECKGLOBALHEAP
+                ;or      ax, ax
+                ;jz      short loc_6D49
                 or      ax, 200h
                 xor     bx, bx
                 push    ax
@@ -258,9 +264,10 @@ arg_0           = word ptr  6
                 push    ds
                 push    si
                 push    di
-                call    CHECKGLOBALHEAP
-                or      ax, ax
-                jz      short loc_6DEE
+                jmp     loc_6DEE
+                ;call    CHECKGLOBALHEAP
+                ;or      ax, ax
+                ;jz      short loc_6DEE
                 or      ax, 200h
                 xor     bx, bx
                 push    ax
@@ -559,9 +566,10 @@ arg_0           = byte ptr  6
                 push    ds
                 push    si
                 push    di
-                call    CHECKGLOBALHEAP
-                or      ax, ax
-                jz      short loc_6F7F
+                jmp     loc_6F7F
+                ;call    CHECKGLOBALHEAP
+                ;or      ax, ax
+                ;jz      short loc_6F7F
                 or      ax, 200h
                 xor     bx, bx
                 push    ax

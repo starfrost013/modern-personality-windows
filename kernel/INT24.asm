@@ -15,7 +15,7 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
-
+                PUBLIC INT24HANDLER
 INT24HANDLER    proc far
                 inc     cs:INSCHEDULER
                 cmp     cs:INSCHEDULER, 1
@@ -173,7 +173,7 @@ INT24HANDLER    endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                PUBLIC SHOWDIALOGBOX2
 SHOWDIALOGBOX2  proc near               ; CODE XREF: PROMPT:loc_217D↑p
                                         ; INT24HANDLER+108↑j ...
                 xor     ax, ax

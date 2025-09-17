@@ -12,7 +12,6 @@ INCLUDE KDATA.inc
 externNP GETPROFILEINT
 externW PGLOBALHEAP
 externNP LRUSWEEP
-externNP LRUSWEEPFREQUENCY
 externNP DELETETASK
 externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
@@ -51,22 +50,20 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 ; ---------------------------------------------------------------------------
-HINITMEM        dw 0                    ; DATA XREF: BOOTSTRAP+CC↓w
-      
-                                        ; BOOTSTRAP:no_fastboot↓r ...
-SEGINITMEM      dw 0                    ; DATA XREF: BOOTSTRAP+25↓w
-                                        ; BOOTSTRAP+B0↓r ...
-CPSHRUNK        dw 0                    ; DATA XREF: BOOTSTRAP+17↓w
-                                        ; FINDFREESEG+91↓w ...
+globalW HINITMEM,0
+globalW SEGINITMEM,0
+
+globalW CPSHRUNK,0
 
 ; The app to load with Windows (appears to be the shell by default). You can override this. Not sure how...
-LPBOOTAPP       dd 0                    ; DATA XREF: SLOWBOOT+17↓w
-                                        ; SLOWBOOT:loc_8412↓w ...
+globalD LPBOOTAPP,0
 
 ; Memory reserved for various variables that change how Windows initialises.
 ; etc...to do this.
+PUBLIC BOOTEXECBLOCK
 BOOTEXECBLOCK   db 0Eh dup(0)           ; DATA XREF: SLOWBOOT+29↓w
                                         ; SLOWBOOT+41↓w ...
+PUBLIC WIN_SHOW 
 WIN_SHOW        db    2                 ; DATA XREF: SLOWBOOT↓o
                                         ; FASTBOOT+3FD↓o
                 db    0
@@ -82,6 +79,7 @@ SZENABLEHEAPCHECKING db 'EnableHeapChecking',0
 ; Debug WIN.INI setting to "freeze global motion". Not sure what this does.
 SZFREEZEGLOBALMOTION db 'FreezeGlobalMotion',0
 
+PUBLIC SZLRUSWEEPFREQUENCY
 ; Debug WIN.INI setting to modify the frequency of checking for and freeing the least recently used memory areas.
 SZLRUSWEEPFREQUENCY db 'LRUSweepFrequency',0
 word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
@@ -119,7 +117,7 @@ BOOTDONE        proc far                ; CODE XREF: SLOWBOOT+A4↓j
                 mov     es, cs:PGLOBALHEAP
                 mov     es:2, ax
                 mov     ax, offset SZKERNELNAME
-                mov     bx, offset LRUSWEEPFREQUENCY
+                mov     bx, offset SZLRUSWEEPFREQUENCY
                 mov     cx, 0FAh
                 push    cs
                 push    ax
@@ -706,7 +704,7 @@ LPRETURNONSLOWBOOTERROR:    ; CODE XREF: SLOWBOOT+BD↑j
                 jmp     boot_failure_01
 SLOWBOOT        endp ; sp-analysis failed
 
-UNKNOWNFASTBOOTVAR       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
+globalW UNKNOWNFASTBOOTVAR,0
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)
 ; ---------------------------------------------------------------------------
