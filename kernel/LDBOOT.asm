@@ -176,8 +176,8 @@ BOOTSTRAP       proc far
                 add     ax, bx
                 mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020) or pointer
                 mov     ax, cs
-                mov     bx, 93F0h
-                mov     si, 9670h               ; si->0x0280
+                mov     bx, offset INITDATA_UNK
+                mov     si, offset BOOTSTACK           ; si->0x0280
                 sub     si, bx
                 mov     cl, 4
                 shr     bx, cl                  ; * 16
@@ -189,10 +189,10 @@ BOOTSTRAP       proc far
                 mov     sp, si
                 sti                             ; restore interrupts
                 xor     bp, bp
-                mov     ss:word_93FE, si        ; 0x0280
-                mov     ss:word_93FC, sp        ; 0x0280
+                mov     ss:BOOTSTACKBOTTOM, si  ; not sure
+                mov     ss:BOOTSTACKTOP, sp     ; not sure
                 sub     si, 200h
-                mov     ss:word_93FA, si        ; 0x0080
+                mov     ss:UNUSED1_STACK, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
                 mov     ax, es:0FEh             ; this probably cchecks if windows is already running
                 cmp     ax, 5758h               ; 'WX' (FWINX)
                 jz      short fwinx_found       ; if we found it, jump here
@@ -368,8 +368,8 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
-                mov     cx, 93F0h
-                mov     si, 9670h
+                mov     cx, offset INITDATA_UNK
+                mov     si, offset BOOTSTACK
                 sub     si, cx
                 add     si, 800h
                 mov     es, cs:HEXEHEAD
@@ -411,9 +411,11 @@ loc_81C7:                               ; CODE XREF: BOOTSTRAP+1BA↑j
                 mov     es:[bx+10h], bp
                 mov     es:[bx+0Eh], bp
                 push    ax
-                mov     ax, 8234h
+                mov     ax, offset check_boot_type
                 push    ax
                 ret ; far return
+
+check_boot_type:
 ; ---------------------------------------------------------------------------
                 push    ss
                 call    SAVESTATE
@@ -709,12 +711,12 @@ globalW UNKNOWNFASTBOOTVAR,0
                 db 0Eh dup(0)
 ; ---------------------------------------------------------------------------
                 ;align 8
-                db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
+INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
                 db 28h, 16h dup(0)
-word_93FA       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
-word_93FC       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
-word_93FE       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
-                db 470h dup(0), 20h dup(0FFh)
+UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
+BOOTSTACKTOP       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
+BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
+BOOTSTACK       db 470h dup(0), 20h dup(0FFh)
 sEnd CODE
 
 END BOOTSTRAP

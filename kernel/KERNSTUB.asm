@@ -95,7 +95,7 @@ load_segment:
 	sub     cx, 4 ; segment table address is in paragraphs (16-bytes)
 	shl     ax, cl
 	mov     dx, cs
-	sub     dx, 28h ; 20h for larger MP kernstub, 8h 
+	sub     dx, 28h ; 20h for MZ header, 8h for larger MP kernstub
 	add     dx, ax
 	push    dx
 	push    word ptr [si].ne_csip ; initial CSIP value from our first code segment
