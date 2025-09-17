@@ -178,6 +178,7 @@ BOOTSTRAP       proc far
                 mov     ax, cs
                 mov     bx, offset INITDATA_UNK
                 mov     si, offset BOOTSTACK           ; si->0x0280
+                ; cvt to para pointer
                 sub     si, bx
                 mov     cl, 4
                 shr     bx, cl                  ; * 16
@@ -185,14 +186,13 @@ BOOTSTRAP       proc far
                 mov     cs:word_7F8C, bx        ; 0x093f
                 cli                             ; turn off interrupts
                 mov     ss, ax                  ; set up stack to be kernel internal stack? 
-                assume ss:nothing
                 mov     sp, si
                 sti                             ; restore interrupts
                 xor     bp, bp
-                mov     ss:BOOTSTACKBOTTOM, si  ; not sure
-                mov     ss:BOOTSTACKTOP, sp     ; not sure
+                mov     word ptr BOOTSTACKBOTTOM, si  ; not sure
+                mov     word ptr BOOTSTACKTOP, sp     ; not sure
                 sub     si, 200h
-                mov     ss:UNUSED1_STACK, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
+                mov     word ptr UNUSED1_STACK, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
                 mov     ax, es:0FEh             ; this probably cchecks if windows is already running
                 cmp     ax, 5758h               ; 'WX' (FWINX)
                 jz      short fwinx_found       ; if we found it, jump here
