@@ -52,9 +52,7 @@ loc_2571:                               ; CODE XREF: LOADEXEHEADER+10↑j
                 mov     ds, bx
                 xor     si, si
                 jmp     short loc_25CD
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_2583:                               ; CODE XREF: LOADEXEHEADER+21↑j
                 push    ss

@@ -178,7 +178,7 @@ BOOTSTRAP       proc far
                 mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020) or pointer
                 mov     ax, cs
                 mov     bx, offset INITDATA_UNK
-                mov     si, offset BOOTSTACK           ; si->0x0280
+                mov     si, offset BOOTSTACKEND           ; si->0x0280
                 ; cvt to para pointer
                 sub     si, bx
                 mov     cl, 4
@@ -370,7 +370,7 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
                 mov     cx, offset INITDATA_UNK
-                mov     si, offset BOOTSTACK
+                mov     si, offset BOOTSTACKEND
                 sub     si, cx
                 add     si, 800h
                 mov     es, cs:HEXEHEAD
@@ -718,6 +718,7 @@ UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
 BOOTSTACKTOP       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
 BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
 BOOTSTACK       db 470h dup(0), 20h dup(0FFh)
+BOOTSTACKEND        db 0
 sEnd CODE
 
 END BOOTSTRAP

@@ -1040,7 +1040,7 @@ loc_1270:                               ; CODE XREF: LOADSEGMENT+35↑j
                 push    bx
                 push    es
                 push    si
-                call    ALLOCSEG
+                call    ALLOCSEG        ; failing in 9-17-25 22:47 build    
                 pop     bx
                 or      ax, ax
                 jnz     short loc_1295
