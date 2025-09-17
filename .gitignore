@@ -5,6 +5,7 @@
 *.OBJ
 KERNSTUB.exe
 KERNEL.exe
+KDATA.exe
 
 # IDA stuff (debug)
 .i64*

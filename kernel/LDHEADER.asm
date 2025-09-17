@@ -19,7 +19,7 @@ sBegin CODE
 
 assumeS CS,CODE
 assumeS DS,CODE
-
+                PUBLIC LOADEXEHEADER
 LOADEXEHEADER   proc near               ; CODE XREF: LOADMODULE+F4↑p
                                         ; BOOTSTRAP+15D↓p ...
 

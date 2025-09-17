@@ -3,12 +3,11 @@
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; KERNEL.def: Defines NE exports and metadata for kernel
-
- DESCRIPTION 'Microsoft Windows Kernel Interface for 2.x and 3.x' ; Singletasking DOS
- EXETYPE WINDOWS
- STUB 'KERNSTUB.EXE' ; this must be built with regular LINK!
-
 LIBRARY KERNEL
+
+DESCRIPTION 'Microsoft Windows Kernel Interface for 2.x and 3.x' ; Singletasking DOS
+STUB 'KERNSTUB.EXE' ; this must be built with regular LINK!
+
 
 SEGMENTS
     IGROUP   CLASS 'CODE' PRELOAD FIXED  ; this is the only segment i think
@@ -129,7 +128,6 @@ EXPORTS
     OPENFILE                @ 74
     OPENPATHNAME            @ 75
     DELETEPATHNAME          @ 76
-    GETTEMPFILENAME         @ 91 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     GETTEMPDRIVE            @ 92 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     GETTEMPFILENAME         @ 97 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     GETLASTDISKCHANGE       @ 98 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything

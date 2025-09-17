@@ -72,7 +72,7 @@ INITATOMTABLE   endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+                public DELATOM
 DELATOM         proc near               ; CODE XREF: DELETEATOM+19↓p
                 mov     cl, 2
 DELATOM         endp

@@ -163,7 +163,6 @@ BOOTDONE        endp
 
 
 ; Initial kernel bootstrap functionality.
-                public BOOTSTRAP
 BOOTSTRAP       proc far
                 mov     cs:TOPPDB, es           ; set TOPPDB to pointer to MS-DOS Program Data Block (PDB) structure. (so it can be restored on Windows exiting)
                 mov     cs:HEADPDB, es          ; same for the pointer to the top of the list

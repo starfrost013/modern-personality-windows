@@ -27,6 +27,11 @@ createSeg   STACK,STACK,WORD,PUBLIC,DATA ; But there still needs to be a stack.
 ; DEFINE
 ;
 
+KEYBOARDINFO STRUC
+kbUnknown	DB	12 dup (0)  ; Probably Far East stuff. But it is just a placeholder!
+
+KEYBOARDINFO ENDS
+
 ; Fatalexit code (informally called "RIP codes - Rest in Peace")
 ERR_LHEAP_INVALID=100h                      ; Invalid local heap
 ERR_LHEAP_CRITICAL=140h                     ; Invalid heap locking state (critical section fucked)

@@ -586,7 +586,7 @@ GINIT           endp
 ; =============== S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
-
+                PUBLIC GLOBALINIT
 GLOBALINIT      proc far                ; CODE XREF: BOOTSTRAP+C7↑p
 
 arg_0           = word ptr  6
