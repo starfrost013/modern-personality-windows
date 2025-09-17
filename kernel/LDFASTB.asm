@@ -12,13 +12,49 @@
 ; than many small files
 ;
 ; ---------------------------------------------------------------------------
-                db 6 dup(0)
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+; Init stuff. Technically, this could be a globalB/globalW/globalD but it is only used here and LDBOOT
+externD LPBOOTAPP
+externB BOOTEXECBLOCK
+externW SEGINITMEM
+externW HINITMEM
+externW WIN_SHOW
+externW CPSHRUNK
+externW UNKNOWNFASTBOOTVAR ; something to do with the offset in fastboot or a pointer to the win100.bin/ovl
+externNP INITMODULE
+externNP MYLOCK
+externNP INCEXEUSAGE
+externNP LOADEXEHEADER 
+externNP TRIMEXEHEADER
+externNP DECEXEUSAGE
+externNP ALLOCSEG
+externNP LOADFIXEDSEG
+externNP FINDFREESEG
+externNP LOADSEGMENT
+externNP FINDEXEINFO
+externNP MYALLOC
+externNP RESALLOC
+externNP ADDMODULE
+externNP STARTMODULE
+externNP LOADMODULE
+externNP GENTER
+externNP GLEAVE
+externNP GLOBALALLOC
+externNP GLOBALREALLOC
+externNP GLOBALCOMPACT
+externNP GLOBALFREE
+externNP INITFWDREF
+externNP INITPROFILE
+externNP ENABLEINT21
+externNP GETSTRINGPTR
 
 sBegin CODE
 
 assumeS CS,CODE
 assumeS DS,CODE
+                db 6 dup(0)
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -47,12 +83,12 @@ var_2           = word ptr -2
                 mov     es, cs:SEGINITMEM
                 mov     ax, es:8
                 sub     ax, cs:CPSHRUNK
-                mov     cs:word_84B8, ax
+                mov     cs:UNKNOWNFASTBOOTVAR, ax
                 push    cs:HINITMEM
                 call    MYLOCK
                 xchg    ax, cs:SEGINITMEM
                 sub     ax, cs:SEGINITMEM
-                add     cs:word_84B8, ax
+                add     cs:UNKNOWNFASTBOOTVAR, ax
                 push    ax
                 call    SHRINK
                 pop     ax
@@ -77,7 +113,7 @@ loc_878B:                               ; CODE XREF: FASTBOOT+45↑j
                 cld
                 push    cs
                 pop     es
-                assume es:cseg01
+                assume es:_TEXT
                 stosw
                 cmp     di, 8743h
                 jb      short loc_878B
@@ -85,7 +121,7 @@ loc_878B:                               ; CODE XREF: FASTBOOT+45↑j
 
 loc_87A8:                               ; CODE XREF: FASTBOOT+3B6↓j
                 mov     ax, cs:SEGINITMEM
-                add     ax, cs:word_84B8
+                add     ax, cs:UNKNOWNFASTBOOTVAR
                 mov     es, ax
                 assume es:nothing
                 xor     di, di
@@ -124,7 +160,7 @@ loc_87A8:                               ; CODE XREF: FASTBOOT+3B6↓j
 
 loc_8807:                               ; CODE XREF: FASTBOOT+AD↑j
                 mov     ax, cs:SEGINITMEM
-                add     ax, cs:word_84B8
+                add     ax, cs:UNKNOWNFASTBOOTVAR
                 mov     cx, 0FFFFh
                 xor     di, di
                 push    ax
@@ -300,7 +336,7 @@ loc_8989:                               ; CODE XREF: FASTBOOT+232↑j
                                         ; FASTBOOT+239↑j
                 mov     [bp+var_6], ax
                 sub     ax, cs:CPSHRUNK
-                mov     cs:word_84B8, ax
+                mov     cs:UNKNOWNFASTBOOTVAR, ax
                 test    byte ptr es:[si+4], 2
                 jnz     short loc_89C1
                 push    es
@@ -464,15 +500,15 @@ loc_8AC4:                               ; CODE XREF: FASTBOOT+2EA↑j
                 jnz     short loc_8AD2
                 jmp     short FB6
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_8AD2:                               ; CODE XREF: FASTBOOT+38A↑j
                 sub     ax, cs:CPSHRUNK
-                mov     cs:word_84B8, ax
+                mov     cs:UNKNOWNFASTBOOTVAR, ax
                 push    cs:HINITMEM
                 call    MYLOCK
                 mov     cs:SEGINITMEM, ax
-                add     ax, cs:word_84B8
+                add     ax, cs:UNKNOWNFASTBOOTVAR
                 mov     es, ax
                 mov     cx, es:0
                 cmp     cx, 454Eh
@@ -487,7 +523,7 @@ loc_8AFC:                               ; CODE XREF: FASTBOOT+3B4↑j
                 pop     ds
                 push    cs
                 pop     es
-                assume es:cseg01
+                assume es:_TEXT
                 mov     si, 2
                 mov     di, 84BAh
                 cld
@@ -563,7 +599,7 @@ loc_8B97:                               ; CODE XREF: FASTBOOT+423↑j
 loc_8BB3:                               ; CODE XREF: FASTBOOT+45A↑j
                 mov     sp, bp
                 pop     bp
-                retn
+                ret
 FASTBOOT        endp
 
 
@@ -582,7 +618,7 @@ SHRINK          proc near               ; CODE XREF: FINDFREESEG:loc_8596↑p
                 inc     ax
                 mov     es, ax
                 xor     bx, bx
-                xchg    bx, cs:word_84B8
+                xchg    bx, cs:UNKNOWNFASTBOOTVAR
                 add     cs:CPSHRUNK, bx
                 mov     si, es
                 add     si, bx
@@ -615,7 +651,7 @@ loc_871A:                               ; CODE XREF: SHRINK+3A↓j
                 pop     di
                 pop     si
                 pop     es
-                retn
+                ret
 SHRINK          endp
 
 
@@ -654,7 +690,7 @@ loc_8BDF:                               ; CODE XREF: BIGMOVE+F↑j
                 shl     dx, cl
                 mov     cx, dx
                 rep movsw
-                retn
+                ret
 BIGMOVE    endp
 
 sEnd CODE

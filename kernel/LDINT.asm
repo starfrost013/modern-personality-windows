@@ -6,6 +6,13 @@
 ;
 ; Mostly this is just the INT 3F MS dynamic linking interface...
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP LOADSEGMENT
+externNP GETVERSION
+externNP GETMODULEHANDLE
+externNP GETPROCADDRESS
+externNP MYLOCK
 
 sBegin CODE
 
@@ -21,7 +28,7 @@ INT3FSAVEDSS    dw 0                    ; DATA XREF: INT3FTHUNK+20↓w
                                         ; SEARCHSTACK+103↓r ...
 INT3FSAVEDDS    dw 0                    ; DATA XREF: INT3FTHUNK+1A↓r
                                         ; SEARCHSTACK+125↓r ...
-INT3FSAVEDFRAME db 2 dup(0)
+INT3FSAVEDFRAME dw 0
 INT3FSAVEDIP    dw 0                    ; DATA XREF: INT3FTHUNK+6↓r
                                         ; SEARCHSTACK+11D↓r ...
 INT3FSAVEDCS    dw 0                    ; DATA XREF: INT3FTHUNK+10↓r
@@ -196,7 +203,7 @@ loc_18BB:                               ; CODE XREF: RETTHUNK+4↑j
                 push    cs:INT3FCURRENTCS
                 push    es
                 push    bx
-                retf
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_18D8:                               ; CODE XREF: RETTHUNK+52↑j
@@ -270,7 +277,7 @@ TESTDSAX        proc near               ; CODE XREF: INT3FHANDLER+35↑p
 
 done:                                   ; CODE XREF: TESTDSAX+4↑j
                                         ; TESTDSAX+F↑j ...
-                retn
+                ret
 TESTDSAX        endp
 
 sEnd CODE

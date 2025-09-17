@@ -1,11 +1,20 @@
-/* ****** modern:personality project ******
+; ****** modern:personality project ******
 ; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; Original code            © 1982-1986 Microsoft Corporation
 
 ; TASK.ASM: Everything to do with processes. Initalising them, setting up their dummy PDB (Process Data Block), inserting them into the task queue, removing them again... */
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
+
+externNP LOCALINIT
+externNP GLOBALALLOC
+externNP GLOBALCOMPACT
+externNP LOCKSEGMENT
+externNP UNLOCKSEGMENT
+externNP MYLOCK
+externNP SAVESTATE
+externNP CALCMAXNRSEG
 
 assumeS CS,CODE
 assumeS DS,CODE
@@ -119,7 +128,7 @@ loc_2A4B:                               ; CODE XREF: INITTASK+33↑j
                 mov     sp, bp
                 pop     bp
                 dec     bp
-                retf
+                ret
 INITTASK        endp
 
 
@@ -128,7 +137,7 @@ INITTASK        endp
 GETCURRENTTASK  proc far
                 mov     ax, cs:CURTDB   ; KERNEL_36
                 mov     dx, cs:HEADTDB
-                retf
+                ret
 GETCURRENTTASK  endp
 
 
@@ -291,7 +300,7 @@ loc_378F:                               ; CODE XREF: CREATETASK+43↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 CREATETASK      endp
 
 
@@ -346,7 +355,7 @@ loc_37E7:                               ; CODE XREF: INSERTTASK+2C↑j
                 pop     ds
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 INSERTTASK      endp
 
 
@@ -390,7 +399,7 @@ loc_381E:                               ; CODE XREF: DELETETASK+18↑j
                 pop     ds
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 DELETETASK      endp
 
 ;
@@ -411,7 +420,7 @@ LOCKCURRENTTASK proc far
 
 loc_3993:                               ; CODE XREF: LOCKCURRENTTASK+8↑j
                 mov     cs:LOCKTDB, ax
-                retf    2
+                ret     2
 LOCKCURRENTTASK endp
 
 
@@ -442,6 +451,7 @@ arg_8           = word ptr  0Eh
                 pushf
                 cli
                 call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
+loc_478C:
                 mov     [bp+var_4], al
                 les     di, cs:PCURRENTPDB
                 push    word ptr es:[di]
@@ -537,7 +547,7 @@ loc_489C:                               ; CODE XREF: BUILDPDB+E9↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 BUILDPDB        endp
 
 ;
@@ -557,7 +567,7 @@ GETCURRENTPDB   proc far
                 mov     dx, cs:TOPPDB
                 pop     si
                 pop     ds
-                retf
+                ret
 GETCURRENTPDB   endp
 
 ; no real good place to put this for now
@@ -572,7 +582,7 @@ GETCURRENTPDB   endp
                 public ISSCREENGRAB
 ISSCREENGRAB    proc far
                 mov     ax, cs:FWINX    ; KERNEL_43
-                retf
+                ret
 ISSCREENGRAB    endp
 
 sEnd CODE

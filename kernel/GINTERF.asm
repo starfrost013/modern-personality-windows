@@ -6,6 +6,27 @@
 
 ; gfree probably needs to be moved to gmem.asm or something
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP CHECKGLOBALHEAP
+externNP GENTER
+externNP GBTOP
+externNP GALLOC
+externNP GLEAVE
+externNP GMEMCHECK
+externNP GLOCK
+externNP GUNLOCK
+externNP GFREEALL
+externNP GHANDLE
+externNP GFREE
+externNP GALIGN
+externNP GAVAIL
+externNP GREALLOC
+externNP HALLOC
+externNP HEND
+
+if KDEBUG
+    externNP DEBUGFREESEGMENT
+endif
 
 sBegin CODE
 
@@ -70,7 +91,7 @@ loc_6C7B:                               ; CODE XREF: GLOBALALLOC+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 GLOBALALLOC     endp
 
 ;
@@ -132,7 +153,7 @@ loc_6CE3:                               ; CODE XREF: GLOBALREALLOC+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 GLOBALREALLOC   endp
 
 ;
@@ -213,7 +234,7 @@ loc_6D92:                               ; CODE XREF: GLOBALFREE+4C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 GLOBALFREE      endp
 
 ;
@@ -293,7 +314,7 @@ loc_6E17:                               ; CODE XREF: GLOBALFREEALL+60↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 GLOBALFREEALL   endp
 
 
@@ -419,7 +440,7 @@ loc_6E89:                               ; CODE XREF: GLOBALHANDLE+3↑j
                 dec     word ptr [di+18h]
                 pop     di
                 pop     ds
-                retf    2
+                ret     2
 GLOBALFLAGS     endp ; sp-analysis failed
 
 ;
@@ -582,7 +603,7 @@ loc_6F96:                               ; CODE XREF: GLOBALCOMPACT+5F↓j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 GLOBALCOMPACT   endp
 
 
@@ -592,7 +613,7 @@ GLOBALCOMPACT   endp
 GLOBALINFOPTR   proc near               ; CODE XREF: CHECKGLOBALHEAP+B↓p
                 mov     dx, cs:PGLOBALHEAP
                 xor     ax, ax
-                retn
+                ret
 GLOBALINFOPTR   endp
 
 ;
@@ -607,7 +628,7 @@ GLOBALINFOPTR   endp
 GLOBALMASTERHANDLE proc far
                 mov     ax, cs:HGLOBALHEAP ; KERNEL_28
                 mov     dx, cs:PGLOBALHEAP
-                retf
+                ret
 GLOBALMASTERHANDLE endp
 
 sEnd CODE

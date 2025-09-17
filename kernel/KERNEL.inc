@@ -6,6 +6,9 @@
 .8086
 .8087
 
+%out Modern Personality Operating System Version 1.03.01
+%out (c)2025 Starfrost
+
 ; Prevent implicit creation of segments
 ?NODATA = 1
 ?DF = 1
@@ -54,4 +57,3 @@ ERR_RESOURCE_LOAD_FAIL=505h                 ; Could not load resource
 ; Some functions that we need everywhere
 externNP KERNELERROR                        ; Let's give up    
 
-; Fix problems caused by MASM 4.0 hating you with this useless line

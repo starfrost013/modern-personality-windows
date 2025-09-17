@@ -5,7 +5,7 @@
 ; LDBOOT.ASM: Windows slow-boot code. Most of this is only in debug builds, but has been kept on for the purposes of validation and debugging
 ; until Setup has been reversed.
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 
 ; Externs used here. Yes this is how microsoft structured the code
 ; TODO: Move everything in KDATA to KERNEL.INC!
@@ -16,7 +16,6 @@ externNP LRUSWEEPFREQUENCY
 externNP DELETETASK
 externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
-externNP PTIMERPROC
 externNP VALIDATECODESEGMENTS
 externW TOPPDB
 externW HEADPDB
@@ -32,7 +31,6 @@ externNP GLOBALINIT
 externNP DEBUGINIT
 externNP INITDOSVARP
 externNP EXITKERNEL
-externNP PEXITPROC ; FP?
 
 ife KDEBUG
     externNP FASTBOOT
@@ -44,7 +42,6 @@ externNP INITLOADER
 externNP SAVESTATE
 externNP OPENFILE
 externNP ALLOCALLSEGS
-externNP PREVINT3FPROC
 externNP ENABLEINT21
 externNP GLOBALFREE
 externNP LOADEXEHEADER
@@ -710,11 +707,11 @@ LPRETURNONSLOWBOOTERROR:    ; CODE XREF: SLOWBOOT+BD↑j
                 jmp     boot_failure_01
 SLOWBOOT        endp ; sp-analysis failed
 
-word_84B8       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
+UNKNOWNFASTBOOTVAR       dw 0                    ; DATA XREF: FINDFREESEG:loc_853E↓r
                                         ; FINDFREESEG+8C↓w ...
                 db 0Eh dup(0)
 ; ---------------------------------------------------------------------------
-                align 8
+                ;align 8
                 db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
                 db 28h, 16h dup(0)
 word_93FA       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w

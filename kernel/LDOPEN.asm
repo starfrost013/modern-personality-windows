@@ -10,6 +10,12 @@
 ; Attributes (0001): Fixed Exported
 ;
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP GROWSFT
+externNP PATHDRVDSDX
+externNP CLOSEOPENFILES
+externNP SHOWDIALOGBOX2
 
 sBegin CODE
 
@@ -87,7 +93,7 @@ loc_1EE4:                               ; CODE XREF: OPENPATHNAME+23↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 OPENPATHNAME    endp
 
 ;
@@ -372,7 +378,7 @@ loc_20AC:                               ; CODE XREF: OPENFILE:loc_1FE0↑j
                 mov     ax, 0FFFFh
                 jmp     short loc_212A
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_20B8:                               ; CODE XREF: OPENFILE:loc_1FFC↑j
                 les     di, [bp+arg_2]
@@ -447,7 +453,7 @@ loc_212A:                               ; CODE XREF: OPENFILE+1C2↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 OPENFILE        endp
 
 
@@ -461,7 +467,7 @@ ISFLOPPY        proc near               ; CODE XREF: OPENFILE+163↑p
                 push    di
                 call    cs:PSYSPROC
                 cmp     al, 2
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_2144:                               ; CODE XREF: OPENFILE+17C↑p
@@ -469,7 +475,7 @@ loc_2144:                               ; CODE XREF: OPENFILE+17C↑p
                 call    loc_2184
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     dx, 16Dh
                 call    APPEND
                 mov     bx, 153h
@@ -500,7 +506,7 @@ loc_217D:                               ; CODE XREF: ISFLOPPY+21↑j
                                         ; PROMPT+1E↑j
                 call    SHOWDIALOGBOX2
                 mov     ax, 2
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_2184:                               ; CODE XREF: ISFLOPPY+10↑p
@@ -563,7 +569,7 @@ loc_21C2:                               ; CODE XREF: GETPURENAME+23↓j
 
 locret_21D9:                            ; CODE XREF: GETPURENAME+10↑j
                                         ; GETPURENAME+18↑j ...
-                retn
+                ret
 GETPURENAME     endp
 
 
@@ -791,7 +797,7 @@ loc_230F:                               ; CODE XREF: PARSEFILE+130↑j
                 add     ax, dx
 
 locret_231E:                            ; CODE XREF: PARSEFILE+9E↑j
-                retn
+                ret
 PARSEFILE       endp
 
 
@@ -892,7 +898,7 @@ loc_2399:                               ; CODE XREF: SEARCHPATH+22↑j
 loc_239C:                               ; CODE XREF: SEARCHPATH+73↑j
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 SEARCHPATH      endp
 
 
@@ -908,7 +914,7 @@ SEARCHPATH      endp
 GETLASTDISKCHANGE proc far
                 xor     ax, ax          ; KERNEL_98
                 xchg    al, cs:LASTDRIVESWAPPED
-                retf
+                ret
 GETLASTDISKCHANGE endp
 
 ;
@@ -959,7 +965,7 @@ loc_23E4:                               ; CODE XREF: GETTEMPDRIVE+19↑j
                 mov     ah, 3Ah ; ':'
                 pop     di
                 pop     si
-                retf    2
+                ret     2
 GETTEMPDRIVE    endp
 
 
@@ -979,11 +985,11 @@ HEXTOA          proc near               ; CODE XREF: GETTEMPFILENAME+8E↓p
 
 loc_23FD:                               ; CODE XREF: HEXTOA+E↑j
                 cmp     ah, 39h ; '9'
-                jbe     short locret_2405
+                jbe     short hextoa_done
                 add     ah, 7
 
-locret_2405:                            ; CODE XREF: HEXTOA+15↑j
-                retn
+hextoa_done:                            ; CODE XREF: HEXTOA+15↑j
+                ret
 HEXTOA          endp
 
 ;
@@ -1168,7 +1174,7 @@ loc_24E3:                               ; CODE XREF: GETTEMPFILENAME+B9↑j
                                         ; BX = file handle
                 jmp     short loc_24F1
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_24EC:                               ; CODE XREF: GETTEMPFILENAME+BF↑j
                                         ; GETTEMPFILENAME+D3↑j ...
@@ -1186,8 +1192,46 @@ loc_24F1:                               ; CODE XREF: GETTEMPFILENAME+A6↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ch
+                ret     0Ch
 GETTEMPFILENAME endp
+
+
+; =============== S U B R O U T I N E =======================================
+
+
+APPENDFIRST     proc near               ; CODE XREF: PROMPT+2D↑p
+                mov     cs:BUFPOS, 92h
+APPENDFIRST     endp
+
+
+; =============== S U B R O U T I N E =======================================
+
+
+APPEND          proc near               ; CODE XREF: ISFLOPPY+18↑p
+                                        ; PROMPT+B↑p ...
+                push    si
+                push    di
+                mov     di, cs
+                mov     es, di
+                assume es:_TEXT
+                mov     di, cs:BUFPOS
+                mov     si, dx
+
+loc_4A3A:                               ; CODE XREF: APPEND+11↓j
+                lodsb
+                stosb
+                or      al, al
+                jnz     short loc_4A3A
+                dec     di
+                mov     cs:BUFPOS, di
+                pop     di
+                pop     si
+                ret
+APPEND          endp
+
+sEnd CODE
+
+end
 
 
 ; =============== S U B R O U T I N E =======================================

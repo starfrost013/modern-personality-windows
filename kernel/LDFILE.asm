@@ -19,6 +19,15 @@
 
 ; This concept seems to have originated in Multitasking DOS 4 and showed up around Windows 1.0 alpha.
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP MYALLOC
+externNP MYLOCK
+
+externNP GLOBALALLOC
+externNP GLOBALFREE
+externNP GRESERVE
+externNP OPENFILE
 
 sBegin CODE
 
@@ -167,7 +176,7 @@ loc_D1B:                                ; CODE XREF: LOADNRTABLE+E5↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 LOADNRTABLE     endp
 
 
@@ -214,7 +223,7 @@ loc_D53:                                ; CODE XREF: FREENRTABLE+15↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 FREENRTABLE     endp
 
 
@@ -240,7 +249,7 @@ arg_4           = word ptr  8
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    6
+                ret     6
 GETSTRINGPTR    endp
 
 
@@ -291,7 +300,7 @@ loc_2555:                               ; CODE XREF: CALCMAXNRSEG+10↑j
                 call    GRESERVE
 
 locret_2558:                            ; CODE XREF: CALCMAXNRSEG+8↑j
-                retn
+                ret
 CALCMAXNRSEG    endp
 
 
@@ -406,7 +415,7 @@ loc_38CF:                               ; CODE XREF: GROWSFT+2E↑j
                 pop     ax
 
 locret_38D7:                            ; CODE XREF: CLOSEOPENFILES+1F↓j
-                retn
+                ret
 GROWSFT         endp
 
 
@@ -510,7 +519,7 @@ loc_397A:                               ; CODE XREF: CLOSEOPENFILES+2E↑j
                 loop    loc_3902
                 jmp     loc_38F1
 ; ---------------------------------------------------------------------------
-                retn
+                ret
 CLOSEOPENFILES  endp
 
 sEnd CODE

@@ -13,6 +13,12 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP LOCALALLOC
+externNP LOCALFREE
+externNP MYUPPER
+externNP GLOBALHANDLE
 
 sBegin CODE
 
@@ -60,7 +66,7 @@ loc_4A76:                               ; CODE XREF: INITATOMTABLE+A↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 INITATOMTABLE   endp
 
 
@@ -340,7 +346,7 @@ loc_4BE2:                               ; CODE XREF: LOOKUPATOM+91↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 LOOKUPATOM      endp
 
 ;
@@ -384,7 +390,7 @@ loc_4C0F:                               ; CODE XREF: DELETEATOM+1C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 DELETEATOM      endp
 
 ;
@@ -422,7 +428,7 @@ loc_4C2F:                               ; CODE XREF: GETATOMHANDLE+11↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 GETATOMHANDLE   endp
 
 ;
@@ -522,7 +528,7 @@ loc_4CAA:                               ; CODE XREF: GETATOMNAME+3A↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 GETATOMNAME     endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------

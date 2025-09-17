@@ -8,8 +8,14 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
+
+externNP MYALLOC
+externNP MYFREE
+externNP GETEXEPTR
+externNP GLOBALHANDLE
+externNP GLOBALREALLOC
 
 assumeS CS,CODE
 assumeS DS,CODE
@@ -44,7 +50,7 @@ loc_2E60:                               ; CODE XREF: MYRESALLOC+14↑j
                 mov     ax, dx
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 MYRESALLOC      endp
 
 ;
@@ -129,9 +135,7 @@ loc_2EC5:                               ; CODE XREF: ALLOCRESOURCE+55↑j
                 call    near ptr GLOBALHANDLE
                 xchg    ax, dx
                 jmp     short loc_2EE1
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_2EDD:                               ; CODE XREF: ALLOCRESOURCE+4F↑j
                 push    cx
@@ -156,7 +160,7 @@ loc_2EF0:                               ; CODE XREF: ALLOCRESOURCE+E↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 ALLOCRESOURCE   endp
 
 
@@ -195,9 +199,7 @@ arg_4           = dword ptr  8
                 cmp     [bp+var_2], bx
                 jnz     short loc_2F33
                 jmp     short loc_2FA7
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop 
 
 loc_2F33:                               ; CODE XREF: RESALLOC+30↑j
                                         ; RESALLOC+39↓j
@@ -269,7 +271,7 @@ loc_2FA7:                               ; CODE XREF: RESALLOC+32↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 RESALLOC        endp
 
 sEnd CODE

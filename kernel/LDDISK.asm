@@ -4,6 +4,15 @@
 
 ; KERNEL.def: LDDISK.ASM - Provides filename parsing and disk I/O services.
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP GROWSFT
+externNP PATHDRVDSDX
+externNP CSEG01
+externNP APPEND
+externNP APPENDFIRST
+externNP CLOSEOPENFILES
+externNP SHOWDIALOGBOX2
 
 sBegin CODE
 
@@ -86,7 +95,7 @@ loc_1EE4:                               ; CODE XREF: OPENPATHNAME+23↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 OPENPATHNAME    endp
 
 ;
@@ -371,7 +380,7 @@ loc_20AC:                               ; CODE XREF: OPENFILE:loc_1FE0↑j
                 mov     ax, 0FFFFh
                 jmp     short loc_212A
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_20B8:                               ; CODE XREF: OPENFILE:loc_1FFC↑j
                 les     di, [bp+arg_2]
@@ -446,7 +455,7 @@ loc_212A:                               ; CODE XREF: OPENFILE+1C2↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 OPENFILE        endp
 
 
@@ -460,7 +469,7 @@ ISFLOPPY        proc near               ; CODE XREF: OPENFILE+163↑p
                 push    di
                 call    cs:PSYSPROC
                 cmp     al, 2
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_2144:                               ; CODE XREF: OPENFILE+17C↑p
@@ -468,7 +477,7 @@ loc_2144:                               ; CODE XREF: OPENFILE+17C↑p
                 call    loc_2184
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     dx, 16Dh
                 call    APPEND
                 mov     bx, 153h
@@ -499,7 +508,7 @@ loc_217D:                               ; CODE XREF: ISFLOPPY+21↑j
                                         ; PROMPT+1E↑j
                 call    SHOWDIALOGBOX2
                 mov     ax, 2
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_2184:                               ; CODE XREF: ISFLOPPY+10↑p
@@ -562,7 +571,7 @@ loc_21C2:                               ; CODE XREF: GETPURENAME+23↓j
 
 locret_21D9:                            ; CODE XREF: GETPURENAME+10↑j
                                         ; GETPURENAME+18↑j ...
-                retn
+                ret
 GETPURENAME     endp
 
 
@@ -790,7 +799,7 @@ loc_230F:                               ; CODE XREF: PARSEFILE+130↑j
                 add     ax, dx
 
 locret_231E:                            ; CODE XREF: PARSEFILE+9E↑j
-                retn
+                ret
 PARSEFILE       endp
 
 
@@ -891,7 +900,7 @@ loc_2399:                               ; CODE XREF: SEARCHPATH+22↑j
 loc_239C:                               ; CODE XREF: SEARCHPATH+73↑j
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret    0Ah
 SEARCHPATH      endp
 
 sEnd CODE

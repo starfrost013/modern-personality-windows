@@ -4,6 +4,21 @@
 
 ; LDDEBUG.ASM: SYMDEB interop, system validation, and binary symbol loading.
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP _LCLOSE
+externNP _LREAD
+externNP _LWRITE
+externNP _LLSEEK
+externNP __LSHL
+externNP LSTRLEN
+externNP GETEXEHEAD
+externNP HTOA
+externNP MYLOCK
+externNP OPENPATHNAME
+if KDEBUG
+    externNP GETDEBUGSTRING
+endif 
 
 sBegin CODE
 
@@ -13,7 +28,7 @@ assumeS DS,CODE
 ; ---------------------------------------------------------------------------
 dword_6FBF      dd 0FBh                 ; DATA XREF: DEBUGINIT+2B↓r
                                         ; DEBUGDEFINESEGMENT+27↓r ...
-aSegdebug       db 'SEGDEBUG',0
+SZSEGDEBUG      db 'SEGDEBUG',0
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -24,7 +39,7 @@ DEBUGINIT       proc near               ; CODE XREF: BOOTSTRAP+D0↓p
                 push    es
                 xor     ax, ax
                 mov     es, ax
-                assume es:cseg01
+                assume es:_TEXT
                 mov     bx, es:HHANDLE
                 mov     es, bx
                 assume es:nothing
@@ -46,7 +61,7 @@ loc_6FFF:                               ; CODE XREF: DEBUGINIT+1B↑j
                 pop     es
                 pop     di
                 pop     si
-                retn
+                ret
 DEBUGINIT       endp
 
 
@@ -86,7 +101,7 @@ loc_7032:                               ; CODE XREF: DEBUGDEFINESEGMENT+A↑j
                 pop     es
                 mov     sp, bp
                 pop     bp
-                retn    0Ch
+                ret     0Ch
 DEBUGDEFINESEGMENT endp
 
 
@@ -114,7 +129,7 @@ arg_2           = word ptr  6
 loc_7056:                               ; CODE XREF: DEBUGMOVEDSEGMENT+9↑j
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 DEBUGMOVEDSEGMENT endp
 
 
@@ -142,7 +157,7 @@ loc_7077:                               ; CODE XREF: DEBUGFREESEGMENT+A↑j
                 pop     es
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 DEBUGFREESEGMENT endp
 
 
@@ -162,7 +177,7 @@ KERNELDBGMSG    proc near
                 mov     bp, sp
                 push    cs
                 pop     es
-                assume es:cseg01
+                assume es:_TEXT
                 mov     dx, [bp+12h]
                 mov     di, dx
                 mov     cx, 0FFFFh
@@ -175,7 +190,7 @@ KERNELDBGMSG    proc near
                 mov     [bp+12h], di
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     bx, 3
                 mov     ah, 40h ; '@'
                 int     21h             ; DOS - 2+ - WRITE TO FILE WITH HANDLE
@@ -197,7 +212,7 @@ KERNELDBGMSG    proc near
                 assume ds:nothing
                 pop     es
                 assume es:nothing
-                retn
+                ret
 KERNELDBGMSG    endp ; sp-analysis failed
 
 
@@ -554,7 +569,7 @@ loc_7ACE:                               ; CODE XREF: FINDSEGSYMS+2ED↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 FINDSEGSYMS     endp
 
 
@@ -727,7 +742,7 @@ loc_7C01:                               ; CODE XREF: FINDSYMBOL+11↑j
 loc_7C23:                               ; CODE XREF: FINDSYMBOL+E4↑j
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 FINDSYMBOL      endp
 
 
@@ -798,7 +813,7 @@ loc_7C95:                               ; CODE XREF: NEXTFRAME+1B↑j
 loc_7C98:                               ; CODE XREF: NEXTFRAME+54↑j
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 NEXTFRAME       endp
 
 
@@ -918,7 +933,7 @@ loc_7D6F:                               ; CODE XREF: STACKWALK+34↑j
                                         ; STACKWALK+8D↑j
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 STACKWALK       endp
 
 sEnd CODE

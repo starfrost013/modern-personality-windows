@@ -7,7 +7,32 @@
 
 ; In Windows 1.x, this is a C file. In later versions of Windows, it was rewritten in assembly.
 ; Currently, for the purposes of bootstrapping the kernel, it's an assembly file because it's critical for system operation.
-; Later on in the project, it will be rewritten
+; Later on in the project, it will be rewritten into C (see "RESMAN.C")
+INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+sBegin CODE
+externNP _LCLOSE
+externNP MYALLOC
+externNP MYLOCK
+externNP MYFREE
+externNP MYUPPER
+externNP OPENFILE
+externNP GETEXEPTR
+externNP GLOBALFREE
+externNP GLOBALHANDLE
+externNP GLOBALLOCK
+externNP GLOBALUNLOCK
+externNP GLOBALREALLOC
+externNP RESALLOC
+externNP MYRESALLOC
+
+if KDEBUG
+    externNP GETDEBUGSTRING
+endif
+
+assumeS CS,CODE
+assumeS DS,CODE
+
 
 ;
 ; External Entry #60 into the Module
@@ -160,7 +185,7 @@ loc_2BBA:                               ; CODE XREF: FINDRESOURCE+30↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 FINDRESOURCE    endp
 
 ;
@@ -375,7 +400,7 @@ loc_2D44:                               ; CODE XREF: LOADRESOURCE+128↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 LOADRESOURCE    endp
 
 ;
@@ -492,7 +517,7 @@ loc_2E28:                               ; CODE XREF: SETRESOURCEHANDLER+31↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 SETRESOURCEHANDLER endp
 
 
@@ -586,7 +611,7 @@ loc_30A2:                               ; CODE XREF: LOCKRESOURCE+15↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 LOCKRESOURCE    endp
 
 ;
@@ -684,7 +709,7 @@ loc_3135:                               ; CODE XREF: FREERESOURCE+B↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 FREERESOURCE    endp
 
 ;
@@ -724,7 +749,7 @@ loc_3162:                               ; CODE XREF: SIZEOFRESOURCE+22↓j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 SIZEOFRESOURCE  endp
 
 
@@ -782,7 +807,7 @@ loc_31AE:                               ; CODE XREF: DEFAULTRESOURCEHANDLER+F↑
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 DEFAULTRESOURCEHANDLER endp
 
 
@@ -853,7 +878,7 @@ loc_3222:                               ; CODE XREF: PRELOADRESOURCES+12↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 PRELOADRESOURCES endp
 
 
@@ -906,7 +931,7 @@ loc_3263:                               ; CODE XREF: GETRESORD+34↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 GETRESORD       endp
 
 
@@ -960,7 +985,7 @@ loc_329F:                               ; CODE XREF: CMPRESSTR+31↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 CMPRESSTR       endp
 
 
@@ -1014,9 +1039,7 @@ arg_2           = word ptr  8
 loc_2FED:                               ; CODE XREF: ACCESSRESOURCE+56↓j
                 mov     bx, 0FFFFh
                 jmp     short loc_3013
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_2FF3:                               ; CODE XREF: ACCESSRESOURCE+3B↑j
                 xor     ax, ax
@@ -1048,5 +1071,9 @@ loc_3013:                               ; CODE XREF: ACCESSRESOURCE+41↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 ACCESSRESOURCE  endp
+
+sEnd CODE
+
+end

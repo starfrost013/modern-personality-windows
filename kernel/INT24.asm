@@ -5,6 +5,11 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP APPEND
+externNP GENTER
+externNP GLEAVE
+
 sBegin CODE
 
 assumeS CS,CODE
@@ -15,7 +20,7 @@ INT24HANDLER    proc far
                 inc     cs:INSCHEDULER
                 cmp     cs:INSCHEDULER, 1
                 jz      short notinscheduler
-                jmp     inscheduler
+                jmp     aminscheduler
 ; ---------------------------------------------------------------------------
 
 notinscheduler:                         ; CODE XREF: INT24HANDLER+B↑j
@@ -32,7 +37,7 @@ notinscheduler:                         ; CODE XREF: INT24HANDLER+B↑j
                 mov     cs:CDEVAT, ch
                 push    cs
                 pop     es
-                assume es:cseg01
+                assume es:_TEXT
                 mov     di, 1DAh
                 mov     cx, 8
                 lea     si, [si+0Ah]
@@ -47,7 +52,7 @@ notinscheduler:                         ; CODE XREF: INT24HANDLER+B↑j
                 mov     bp, [bp+1Ch]
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     si, 92h
                 mov     BUFPOS, si
                 add     al, 41h ; 'A'
@@ -109,7 +114,7 @@ loc_498F:                               ; CODE XREF: INT24HANDLER+A9↑j
                 cmp     al, 2
                 jb      short dos31_or_above
 
-inscheduler:                            ; CODE XREF: INT24HANDLER+D↑j
+aminscheduler:                            ; CODE XREF: INT24HANDLER+D↑j
                 mov     al, 3
                 cmp     cs:DOS_VERSION, al
                 jb      short loc_49B3
@@ -162,7 +167,7 @@ loc_49D9:                               ; CODE XREF: INT24HANDLER+97↑p
                 mov     ss, di
                 mov     sp, si
                 sti
-                retn
+                ret
 INT24HANDLER    endp ; sp-analysis failed
 
 
@@ -185,7 +190,7 @@ SHOWDIALOGBOX2  proc near               ; CODE XREF: PROMPT:loc_217D↑p
                 cmp     ax, 2
 
 locret_4A25:                            ; CODE XREF: SHOWDIALOGBOX2+7↑j
-                retn
+                ret
 SHOWDIALOGBOX2  endp
 
 sEnd CODE

@@ -6,25 +6,14 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP GETMODULEHANDLE
+externNP GETPROCADDRESS
 
 sBegin CODE
 
 assumeS CS,CODE
 assumeS DS,CODE
-
-INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p
-                push    ds
-                push    si
-                push    di
-                mov     di, 0
-                call    BUFFERINIT
-                call    UNLOCKBUFFER
-                pop     di
-                pop     si
-                pop     ds
-                assume ds:nothing
-                retn
-INITPROFILE     endp
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -148,7 +137,7 @@ loc_8CB8:                               ; CODE XREF: INITLOADER+23↑j
                 pop     di
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 INITLOADER      endp
 
 ; ---------------------------------------------------------------------------
@@ -215,7 +204,7 @@ arg_2           = dword ptr  6
                 pop     ds
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 BOOTFAILUREEXIT endp
 
 ; ---------------------------------------------------------------------------
@@ -272,7 +261,7 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 push    di
                 push    cs
                 pop     ds ; DS=CS
-                assume ds:cseg01
+                assume ds:_TEXT
                 ; Set up the kernel internal variables with MS-DOS INT 20h (terminate program), INT 21h (API), INT 24h (fatal error), and INT 27h (old TSR) procs,
                 ; this is so they can be restored when entering into a legacy dos app (they are then set to the windows ones and returned when the DOS app exits)
                 mov     ax, 3520h
@@ -397,7 +386,7 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 call    near ptr GETPROCADDRESS ; get proc address of INQUIRE function
                 push    dx
                 push    ax ; push the pointer to it
-                retf
+                ret
 INITFWDREF      endp ; sp-analysis failed
 
 
@@ -429,7 +418,7 @@ is_far_east:                               ; CODE XREF: CHECKFAREAST+6↑j
 far_east_check_done:                               ; CODE XREF: CHECKFAREAST+B↑j
                 pop     di              ; restore 
                 pop     si
-                retn                    ; go 
+                ret                    ; go 
 CHECKFAREAST    endp ; sp-analysis failed
 
 
@@ -471,7 +460,7 @@ loc_8F30:                               ; CODE XREF: TESTEMM+16↑j
                                         ; TESTEMM+1E↑j ...
                 pop     ds
                 assume ds:nothing
-                retn
+                ret
 TESTEMM         endp
 
 
@@ -485,7 +474,7 @@ INITDOSVARP     proc near               ; CODE XREF: BOOTSTRAP+D3↑p
                 push    ds
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     ax, 3521h       ; get the DOS int 21 handler
                 int     21h             ; DOS - 2+ - GET INTERRUPT VECTOR
                                         ; AL = interrupt number
@@ -575,7 +564,7 @@ loc_8FC6:                               ; CODE XREF: INITDOSVARP+84↑j
                                         ; DS:DX = new vector to be used for specified interrupt
                 mov     ax, cs
                 mov     ds, ax
-                assume ds:cseg01
+                assume ds:_TEXT
                 or      si, si
                 jnz     short loc_8FDD
                 jmp     no_int_22h_handler
@@ -788,7 +777,7 @@ loc_91A9:                               ; CODE XREF: INITDOSVARP+265↑j
                 jz      short loc_91B4
                 jmp     short wrong_current_pdb
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_91B4:                               ; CODE XREF: INITDOSVARP+26A↑j
                                         ; INITDOSVARP+272↑j ...
@@ -822,7 +811,7 @@ loc_91EB:                               ; CODE XREF: INITDOSVARP+2AC↑j
                 mov     ax, 0FFFFh
                 jmp     short loc_9236
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 ; These are error messages for the MS-DOS version check. To prevent the DOS version from being spoofed, Windows
 ; makes a series of checks on the SYSVARS 
@@ -857,19 +846,19 @@ wrong_current_pdb:                      ; CODE XREF: INITDOSVARP+274↑j
                 mov     ax, offset SZERRCURRENTPDBNOTMATCH ; "CurrentPDB does not match$"
                 jmp     short print_boot_error
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 no_int_22h_handler:                     ; CODE XREF: INITDOSVARP+A8↑j
                 mov     ax, offset SZERRINT22HNOTFOUND ; "DOS int 22h not found$"
                 jmp     short print_boot_error
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 wrong_error_mode_flag:                  ; CODE XREF: INITDOSVARP+29E↑j
                 mov     ax, offset SZERRMODENOTMATCH ; "Error mode flag does not match$"
                 jmp     short print_boot_error
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 wrong_current_drive:                    ; CODE XREF: INITDOSVARP+2B7↑j
                 mov     ax, offset SZERRCURRENTDRIVENOTMATCH ; "Current drive does not match$"
@@ -898,9 +887,9 @@ loc_9236:                               ; CODE XREF: INITDOSVARP+2BF↑j
                 pop     es
                 pop     di
                 pop     si
-                retn
+                ret
 INITDOSVARP     endp
 
 sEnd CODE
 
-end
+END

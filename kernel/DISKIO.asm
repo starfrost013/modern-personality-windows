@@ -12,7 +12,7 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
 
 assumeS CS,CODE
@@ -49,7 +49,7 @@ _LCREAT         proc far
 
 loc_51FF:                               ; CODE XREF: _LCREAT+17↑j
                 pop     ds
-                retf    6
+                ret     6
 _LCREAT         endp
 
 ;
@@ -73,7 +73,7 @@ _LCLOSE         proc far                ; CODE XREF: STARTMODULE+42↑p
                 inc     ax
 
 locret_5213:                            ; CODE XREF: _LCLOSE+D↑j
-                retf    2
+                ret     2
 _LCLOSE         endp
 
 ;
@@ -101,7 +101,7 @@ _LLSEEK         proc far                ; CODE XREF: FINDSEGSYMS+1F4↓p
                 cwd
 
 locret_5232:                            ; CODE XREF: _LLSEEK+16↑j
-                retf    8
+                ret    8
 _LLSEEK         endp
 
 ;
@@ -146,7 +146,7 @@ _LWRITE         proc far                ; CODE XREF: KERNELERROR+26↓p
 
 loc_5256:                               ; CODE XREF: _LWRITE+19↑j
                 pop     ds
-                retf    8
+                ret     8
 _LWRITE         endp
 
 sEnd CODE

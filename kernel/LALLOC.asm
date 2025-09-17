@@ -6,6 +6,10 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP LCOMPACT
+externNP HDREF ; dereference handle
 
 sBegin CODE
 
@@ -19,7 +23,7 @@ LJOIN           proc near               ; CODE XREF: LFREE+22↓p
                 and     word ptr [bx], 3
                 or      [bx], si
                 mov     [si+2], bx
-                retn
+                ret
 LJOIN           endp
 
 
@@ -32,7 +36,7 @@ LREPSETUP       proc near               ; CODE XREF: LZERO+C↓p
                 push    ds
                 pop     es
                 cld
-                retn
+                ret
 LREPSETUP       endp
 
 
@@ -54,7 +58,7 @@ LZERO           proc near               ; CODE XREF: LALLOC+B2↓p
 
 loc_5422:                               ; CODE XREF: LZERO+5↑j
                 pop     di
-                retn
+                ret
 LZERO           endp
 
 
@@ -102,7 +106,7 @@ loc_5454:                               ; CODE XREF: LALLOC+78↓j
                 pop     si
                 jnz     short LALLOC
                 xor     ax, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5466:                               ; CODE XREF: LALLOC+21↑j
@@ -176,7 +180,7 @@ loc_54C5:                               ; CODE XREF: LALLOC+50↑j
 loc_54D9:                               ; CODE XREF: LALLOC+AB↑j
                 pop     si
                 or      ax, ax
-                retn
+                ret
 LALLOC          endp
 
 
@@ -217,7 +221,7 @@ loc_550E:                               ; CODE XREF: LFREE+2C↑j
 
 loc_5511:                               ; CODE XREF: LFREE+4↑j
                 or      si, si
-                retn
+                ret
 LFREE           endp
 
 
@@ -262,7 +266,7 @@ loc_5537:                               ; CODE XREF: LMOVE+1F↑j
                 inc     si
                 inc     di
                 inc     di
-                retn
+                ret
 LMOVE           endp
 
 
@@ -294,7 +298,7 @@ SZERRORENTERCRIT db 'EnterCrit: local heap is busy',0
 
 locret_5742:                            ; CODE XREF: LENTER+A↑j
                                         ; LENTER+1C↑j
-                retn
+                ret
 LENTER          endp
 
 
@@ -307,7 +311,7 @@ LLEAVE          proc near               ; CODE XREF: LOCALALLOC:loc_5896↓p
                 xor     cx, cx
                 xchg    cx, [di+1Ah]
                 jcxz    short loc_574F
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_574F:                               ; CODE XREF: LLEAVE+9↑j
@@ -344,7 +348,7 @@ loc_5789:                               ; CODE XREF: LALIGN↑j
                 mov     dx, 0FFFCh
 
 locret_5796:                            ; CODE XREF: LALIGN+D↑j
-                retn
+                ret
 LALIGN          endp
 
 
@@ -365,7 +369,7 @@ LDREF           proc near               ; CODE XREF: LOCALREALLOC+52↓p
                 sub     bx, 4
 
 locret_57AD:                            ; CODE XREF: LDREF+C↑j
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_57AE:                               ; CODE XREF: LDREF+6↑j
@@ -402,7 +406,7 @@ loc_57F3:                               ; CODE XREF: LDREF+3D↑j
 loc_57F5:                               ; CODE XREF: LDREF+1D↑j
                                         ; LDREF+2B↑j
                 or      ax, ax
-                retn
+                ret
 LDREF           endp
 
 
@@ -421,7 +425,7 @@ LNOTIFY         proc near               ; CODE XREF: LALLOC+36↑p
 
 loc_5806:                               ; CODE XREF: LNOTIFY+4↑j
                 or      ax, ax
-                retn
+                ret
 LNOTIFY         endp
 sEnd CODE
 

@@ -4,6 +4,16 @@
 
 ; GALLOC.ASM: Defines a global object and provides routines to allocate memory shared across processes.
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+; This file uses handle and local stuff
+externNP HDREF
+externNP HALLOC
+externNP HEND
+externNP HENUM
+externNP HFREE
+externNP GCOMPACT
+externNP GNOTIFY
+
 
 sBegin CODE
 
@@ -32,7 +42,7 @@ loc_5E92:                               ; CODE XREF: GALIGN+2B↓j
                 jz      short loc_5EB7
 
 locret_5EAD:                            ; CODE XREF: GALIGN+C↑j
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5EAE:                               ; CODE XREF: GALIGN+6↑j
@@ -44,7 +54,7 @@ loc_5EAE:                               ; CODE XREF: GALIGN+6↑j
 loc_5EB7:                               ; CODE XREF: GALIGN+17↑j
                                         ; GALIGN+1D↑j ...
                 xor     ax, ax
-                retn
+                ret
 GALIGN          endp
 
 
@@ -102,7 +112,7 @@ loc_5F14:                               ; CODE XREF: GHANDLE+70↓j
                 mov     dx, ax
                 or      dx, dx
                 mov     ax, bx
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5F1E:                               ; CODE XREF: GHANDLE+9↑j
@@ -112,7 +122,7 @@ loc_5F1E:                               ; CODE XREF: GHANDLE+9↑j
 loc_5F20:                               ; CODE XREF: GHANDLE+54↑j
                 xor     cx, cx
                 mov     dx, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5F25:                               ; CODE XREF: GHANDLE+2F↑j
@@ -181,7 +191,7 @@ loc_5F6A:                               ; CODE XREF: GALLOC+2↑j
 loc_5F88:                               ; CODE XREF: GALLOC+17↑j
                                         ; GALLOC+23↑j ...
                 mov     cx, ax
-                retn
+                ret
 GALLOC          endp
 
 
@@ -456,7 +466,7 @@ loc_612F:                               ; CODE XREF: GREALLOC+20↑j
                 mov     cx, ax
                 mov     sp, bp
                 pop     bp
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_6135:                               ; CODE XREF: GREALLOC+18A↑j
@@ -524,7 +534,7 @@ loc_6197:                               ; CODE XREF: GFREE+5↑j
 
 loc_619A:                               ; CODE XREF: GFREE+20↓j
                 mov     cx, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_619D:                               ; CODE XREF: GFREE+9↑j
@@ -568,7 +578,7 @@ loc_61C8:                               ; CODE XREF: GFREEALL+29↓j
 ; ---------------------------------------------------------------------------
 
 locret_61DC:                            ; CODE XREF: GFREEALL+23↑j
-                retn
+                ret
 GFREEALL        endp
 
 
@@ -582,7 +592,7 @@ GLOCK           proc near               ; CODE XREF: LOCKSEGMENT+5↓p
                 mov     [bx+3], ch
 
 locret_61E4:                            ; CODE XREF: GLOCK+2↑j
-                retn
+                ret
 GLOCK           endp
 
 
@@ -605,174 +615,9 @@ loc_61F9:                               ; CODE XREF: GUNLOCK+5↑j
                 xor     cx, cx
 
 locret_61FB:                            ; CODE XREF: GUNLOCK+A↑j
-                retn
+                ret
 GUNLOCK         endp
 
-
-; =============== S U B R O U T I N E =======================================
-
-
-GLRUTOP         proc near               ; CODE XREF: GETCODEHANDLE+53↑p
-                                        ; GUNLOCK+11↑p ...
-                push    es
-                push    cx
-                push    dx
-                push    si
-                cmp     [di+1Ah], bx
-                jz      short loc_6257
-                test    byte ptr [bx+2], 1
-                jz      short loc_6257
-                test    byte ptr [bx+2], 40h
-                jnz     short loc_6257
-                mov     dx, bx
-                mov     bx, [bx]
-                dec     bx
-                mov     es, bx
-                push    es
-                mov     bx, es:[di+0Eh]
-                mov     si, es:[di+0Ch]
-                mov     cx, [bx]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Ch], si
-                mov     cx, [si]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Eh], bx
-                mov     bx, dx
-                xchg    bx, [di+1Ah]
-                mov     cx, [bx]
-                dec     cx
-                mov     es, cx
-                mov     si, dx
-                xchg    si, es:[di+0Ch]
-                mov     cx, [si]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Eh], dx
-                pop     es
-                mov     es:[di+0Ch], si
-                mov     es:[di+0Eh], bx
-                mov     bx, dx
-
-loc_6257:                               ; CODE XREF: GLRUTOP+7↑j
-                                        ; GLRUTOP+D↑j ...
-                pop     si
-                pop     dx
-                pop     cx
-                pop     es
-                retn
-GLRUTOP         endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-GLRUADD         proc near               ; CODE XREF: GALLOC+40↑p
-                                        ; GREALLOC:loc_6004↑p ...
-                mov     bx, es:[di+0Ah]
-                test    byte ptr [bx+2], 1
-                jz      short locret_6299
-                mov     dx, bx
-                xchg    bx, [di+1Ah]
-                inc     word ptr [di+1Ch]
-                or      bx, bx
-                jz      short loc_6291
-                mov     cx, [bx]
-                dec     cx
-                push    es
-                mov     es, cx
-                mov     si, dx
-                xchg    si, es:[di+0Ch]
-                mov     cx, [si]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Eh], dx
-                pop     es
-                mov     es:[di+0Ch], si
-                mov     es:[di+0Eh], bx
-                retn
-; ---------------------------------------------------------------------------
-
-loc_6291:                               ; CODE XREF: GLRUADD+14↑j
-                mov     es:[di+0Ch], dx
-                mov     es:[di+0Eh], dx
-
-locret_6299:                            ; CODE XREF: GLRUADD+8↑j
-                retn
-GLRUADD         endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-GLRUDEL         proc near               ; CODE XREF: GREALLOC+38↑p
-                                        ; GREALLOC+5E↑p ...
-                push    si
-                push    cx
-                mov     cx, es:[di+0Ah]
-                jcxz    short loc_62E2
-                mov     bx, cx
-                test    byte ptr [bx+2], 1
-                jz      short loc_62E2
-                test    byte ptr [bx+2], 40h
-                jnz     short loc_62E2
-                mov     bx, es:[di+0Eh]
-                mov     si, es:[di+0Ch]
-                push    es
-                mov     cx, [bx]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Ch], si
-                mov     cx, [si]
-                dec     cx
-                mov     es, cx
-                mov     es:[di+0Eh], bx
-                pop     es
-                dec     word ptr [di+1Ch]
-                mov     cx, es:[di+0Ah]
-                cmp     [di+1Ah], cx
-                jnz     short loc_62E2
-                mov     [di+1Ah], bx
-                cmp     bx, cx
-                jnz     short loc_62E2
-                sub     [di+1Ah], bx
-
-loc_62E2:                               ; CODE XREF: GLRUDEL+6↑j
-                                        ; GLRUDEL+E↑j ...
-                pop     cx
-                pop     si
-                retn
-GLRUDEL         endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-GLRUPREV        proc near               ; CODE XREF: GDISCARD+40↓p
-                or      si, si
-                jnz     short loc_62EF
-                mov     si, [di+1Ah]
-                mov     cx, [di+1Ch]
-
-loc_62EF:                               ; CODE XREF: GLRUPREV+2↑j
-                jcxz    short loc_6304
-                dec     cx
-                mov     si, [si]
-                dec     si
-                mov     es, si
-                mov     si, es:[di+0Ch]
-                test    byte ptr [si+2], 40h
-                jnz     short loc_6304
-                or      si, si
-                retn
-; ---------------------------------------------------------------------------
-
-loc_6304:                               ; CODE XREF: GLRUPREV:loc_62EF↑j
-                                        ; GLRUPREV+1A↑j
-                xor     si, si
-                retn
-GLRUPREV        endp
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -804,7 +649,7 @@ GSPLICE         proc near               ; CODE XREF: GREALLOC+EC↑p
                 dec     cx
                 mov     es:[di+3], cx
                 pop     si
-                retn
+                ret
 GSPLICE         endp
 
 
@@ -824,7 +669,7 @@ GJOIN           proc near               ; CODE XREF: GREALLOC+111↑p
                 neg     si
                 dec     si
                 mov     es:[di+3], si
-                retn
+                ret
 GJOIN           endp
 
 
@@ -869,7 +714,7 @@ loc_6396:                               ; CODE XREF: GZERO+13↑j
                 assume es:nothing
                 pop     di
                 pop     ax
-                retn
+                ret
 GZERO           endp
 
 
@@ -965,7 +810,7 @@ loc_642D:                               ; CODE XREF: GSEARCH+90↑j
                 pop     ax
                 pop     cx
                 xor     ax, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_6432:                               ; CODE XREF: GSEARCH+72↑j
@@ -1014,7 +859,7 @@ loc_6485:                               ; CODE XREF: GSEARCH+DF↑j
                 mov     es, si
                 call    GMARKFREE
                 or      ax, ax
-                retn
+                ret
 GSEARCH         endp
 
 
@@ -1053,7 +898,7 @@ loc_64BD:                               ; CODE XREF: GMARKFREE+27↑j
 loc_64CA:                               ; CODE XREF: GMARKFREE+4↑j
                                         ; GMARKFREE+37↑j
                 or      si, si
-                retn
+                ret
 GMARKFREE       endp
 
 
@@ -1084,7 +929,7 @@ loc_64E6:                               ; CODE XREF: GFINDFREE+12↑j
 loc_64E8:                               ; CODE XREF: GFINDFREE+D↑j
                 pop     cx
                 pop     es
-                retn
+                ret
 GFINDFREE       endp
 
 
@@ -1131,7 +976,7 @@ loc_652C:                               ; CODE XREF: GCHECKFREE+20↑j
 loc_652D:                               ; CODE XREF: GCHECKFREE+8↑j
                                         ; GCHECKFREE+E↑j ...
                 cmp     ax, dx
-                retn
+                ret
 GCHECKFREE      endp
 
 ; ---------------------------------------------------------------------------
@@ -1189,7 +1034,7 @@ loc_65E3:                               ; CODE XREF: GMOVE+2A↑j
                 cli
                 push    cs
                 pop     ss
-                assume ss:cseg01
+                assume ss:STACK
                 mov     sp, 65B0h
                 sti
 
@@ -1264,7 +1109,7 @@ loc_6668:                               ; CODE XREF: GMOVE+A6↑j
                 pop     si
                 pop     es
                 cld
-                retn
+                ret
 GMOVE           endp
 
 ; =============== S U B R O U T I N E =======================================
@@ -1280,14 +1125,14 @@ GMOVEABLE       proc near               ; CODE XREF: GSLIDE+A↓p
                 test    byte ptr es:[di+5], 8
                 jz      short loc_671D
                 cmp     bl, 8
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_671D:                               ; CODE XREF: GMOVEABLE+12↑j
                 cmp     [di+1Eh], di
                 jz      short loc_6728
                 cmp     bl, 6
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_6726:                               ; CODE XREF: GMOVEABLE+6↑j
@@ -1296,7 +1141,7 @@ loc_6726:                               ; CODE XREF: GMOVEABLE+6↑j
 
 loc_6728:                               ; CODE XREF: GMOVEABLE+1B↑j
                 or      si, si
-                retn
+                ret
 GMOVEABLE       endp
 
 
@@ -1311,7 +1156,7 @@ GSLIDE          proc near               ; CODE XREF: GCMPHEAP+1E↑p
                 call    GMOVEABLE
                 pop     es
                 jnz     short GSLIDECOMMON
-                retn
+                ret
 GSLIDE          endp
 
 
@@ -1402,7 +1247,7 @@ loc_67AA:                               ; CODE XREF: GSLIDECOMMON+67↑j
                 mov     es:[di+0Eh], di
                 call    GMARKFREE
                 or      ax, ax
-                retn
+                ret
 GSLIDECOMMON    endp
 
 
@@ -1467,7 +1312,7 @@ loc_6886:                               ; CODE XREF: GMOVEBUSY+2D↑j
                                         ; GMOVEBUSY+65↑j
                 pop     dx
                 pop     cx
-                retn
+                ret
 GMOVEBUSY       endp
 
 
@@ -1553,7 +1398,7 @@ loc_6912:                               ; CODE XREF: GDISCARD+45↑j
                 pop     dx
                 pop     ax
                 pop     es
-                retn
+                ret
 GDISCARD        endp
 
 sEnd CODE

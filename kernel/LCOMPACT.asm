@@ -6,6 +6,14 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP LNOTIFY
+externNP LFREE
+externNP LJOIN
+externNP LMOVE
+externNP LALLOC
+externW HTHREAD
+externW HENUM
 
 sBegin CODE
 
@@ -59,7 +67,7 @@ loc_5580:                               ; CODE XREF: LBESTFIT+F↑j
                 pop     dx
                 pop     cx
                 pop     bx
-                retn
+                ret 
 LBESTFIT        endp
 
 
@@ -109,7 +117,7 @@ loc_55B0:                               ; CODE XREF: LCOMPACT+42↓j
 loc_55C6:                               ; CODE XREF: LCOMPACT+2B↑j
                                         ; LCOMPACT+35↑j
                 pop     si
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_55C8:                               ; CODE XREF: LCOMPACT+39↑j
@@ -270,6 +278,7 @@ loc_56C1:                               ; CODE XREF: LCOMPACT+130↑j
                 sub     cx, si
                 pop     bx
                 jmp     short loc_567E
+LOCALINIT_LCOMPACT:
 ; ---------------------------------------------------------------------------
                 xor     ax, ax
                 mov     bx, cx
@@ -293,7 +302,7 @@ loc_56C1:                               ; CODE XREF: LCOMPACT+130↑j
 
 loc_5702:                               ; CODE XREF: LCOMPACT+163↑j
                 mov     cx, ax
-                retn
+                ret
 LCOMPACT        endp
 
 sEnd CODE

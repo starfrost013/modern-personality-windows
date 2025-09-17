@@ -8,6 +8,12 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP MYALLOC
+externNP MYFREE
+externNP MYUPPER
+externNP FREENRTABLE ; free the nonresident name table
 
 sBegin CODE
 
@@ -361,6 +367,7 @@ loc_27E7:                               ; CODE XREF: LOADEXEHEADER+271↑j
 loc_27FE:                               ; CODE XREF: LOADEXEHEADER+2B1↓j
                                         ; LOADEXEHEADER+2C1↓j ...
                 lods    byte ptr es:[si]
+LOADMODULE_LOADEXEHEADER:
                 or      ax, ax
                 jz      short loc_285B
                 mov     dx, ax
@@ -375,8 +382,6 @@ loc_27FE:                               ; CODE XREF: LOADEXEHEADER+2B1↓j
                 shl     dx, 1
                 add     si, dx
                 jmp     short loc_27FE
-; ---------------------------------------------------------------------------
-
 loc_281C:                               ; CODE XREF: LOADEXEHEADER+2B9↑j
                                         ; LOADEXEHEADER+2CD↓j
                 test    byte ptr es:[si], 2
@@ -462,7 +467,7 @@ loc_28BA:                               ; CODE XREF: LOADEXEHEADER+71↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 LOADEXEHEADER   endp
 
 
@@ -490,7 +495,7 @@ arg_0           = word ptr  4
 loc_28E0:                               ; CODE XREF: TRIMEXEHEADER+F↑j
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret    2
 TRIMEXEHEADER   endp
 
 sEnd CODE

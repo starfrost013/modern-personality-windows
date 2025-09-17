@@ -1,8 +1,8 @@
 .[Bb][Ii][Nn]
-.bak
-.BAK
-.obj
-.OBJ
+*.bak
+*.BAK
+*.obj
+*.OBJ
 KERNSTUB.exe
 KERNEL.exe
 

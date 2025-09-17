@@ -6,7 +6,7 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
 
 assumeS CS,CODE
@@ -30,7 +30,7 @@ arg_0           = word ptr  4
                 mov     es, ax
                 xor     ax, ax
                 mov     ds, ax
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     di, 20h ; ' '
                 mov     si, 0
                 movsw
@@ -101,7 +101,7 @@ loc_3A32:                               ; CODE XREF: SAVESTATE+8F↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 SAVESTATE       endp
 
 
@@ -126,7 +126,7 @@ arg_2           = word ptr  6
                 mov     si, 20h ; ' '
                 xor     ax, ax
                 mov     es, ax
-                assume es:cseg01
+                assume es:_TEXT
                 mov     di, 0
                 movsw
                 movsw
@@ -201,7 +201,7 @@ loc_3AE0:                               ; CODE XREF: RESTORESTATE+9C↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 RESTORESTATE    endp
 
 
@@ -222,7 +222,7 @@ STATEXJUMP      proc near               ; CODE XREF: SAVESTATE+2D↑p
                 mov     cx, cs:F8087
                 call    dword ptr es:18h
                 pop     ds
-                retn
+                ret
 STATEXJUMP      endp
 
 sEnd CODE

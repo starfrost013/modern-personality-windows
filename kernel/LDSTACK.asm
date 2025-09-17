@@ -10,8 +10,22 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
+
+; Dynamic Linking INT 3F stuff
+externW INT3FBP
+externW INT3FSAVEDFRAME 
+externW INT3FSAVEDSS
+externW INT3FSAVEDBP
+externW INT3FSAVEDIP
+externW INT3FSAVEDCS
+externW INT3FSAVEDDS
+externW FUSEDBP
+
+externNP JMP_TO_FUSEDBP_CHECK
+externNP GLOBALHANDLE
+externNP LOADSEGMENT
 
 assumeS CS,CODE
 assumeS DS,CODE
@@ -65,10 +79,10 @@ loc_B77:                                ; CODE XREF: GETSTACKPTR+56↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 GETSTACKPTR     endp
 
-======= S U B R O U T I N E =======================================
+; ======= S U B R O U T I N E =======================================
 
 ; Attributes: bp-based frame
 
@@ -92,7 +106,7 @@ arg_2           = word ptr  6
 loc_32C3:                               ; CODE XREF: PATCHSTACK+87↓j
                                         ; PATCHSTACK:loc_3389↓j
                 pop     cx
-                jcxz    short loc_32A9
+                jcxz    short JMP_TO_FUSEDBP_CHECK
                 mov     es, cx
                 push    word ptr es:0
                 mov     ax, es:4
@@ -160,7 +174,7 @@ loc_3330:                               ; CODE XREF: PATCHSTACK+4F↑j
                 jmp     short loc_32F3
 ; ---------------------------------------------------------------------------
 
-loc_3349:                               ; CODE XREF: PATCHSTACK:loc_32A9↑j
+FUSEDBP_CHECK:                           ; CODE XREF: PATCHSTACK:JMP_TO_FUSEDBP_CHECK↑j
                 xor     bx, bx
                 cmp     cs:FUSEDBP, bx
                 jnz     short loc_3357
@@ -172,7 +186,7 @@ loc_3349:                               ; CODE XREF: PATCHSTACK:loc_32A9↑j
 loc_3357:                               ; CODE XREF: PATCHSTACK+A4↑j
                 jmp     short loc_338C
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_335A:                               ; CODE XREF: PATCHSTACK+8B↑j
                                         ; PATCHSTACK+92↑j ...
@@ -200,7 +214,7 @@ loc_338C:                               ; CODE XREF: PATCHSTACK:loc_3357↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 PATCHSTACK      endp
 
 
@@ -247,7 +261,7 @@ loc_33DE:                               ; CODE XREF: PATCHSTACKINTERNAL+28↑j
                 pop     es
                 xchg    dx, si
                 mov     cx, es:[bx+2]
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_33E7:                               ; CODE XREF: PATCHSTACKINTERNAL+3F↑j
@@ -260,7 +274,7 @@ loc_33E7:                               ; CODE XREF: PATCHSTACKINTERNAL+3F↑j
                 mov     dx, es
                 pop     bx
                 pop     es
-                retn
+                ret
 PATCHSTACKINTERNAL endp
 
 ; ---------------------------------------------------------------------------
@@ -270,7 +284,7 @@ loc_33FE:                               ; CODE XREF: SEARCHSTACK+14↓j
                 jmp     short loc_3468
 ; END OF FUNCTION CHUNK FOR SEARCHSTACK
 ; ---------------------------------------------------------------------------
-                db 90h
+                nop
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -347,7 +361,7 @@ loc_3468:                               ; CODE XREF: SEARCHSTACK:loc_33FE↑j
 
 loc_3476:                               ; CODE XREF: SEARCHSTACK+6E↑j
                 mov     es, bx
-                assume es:cseg01
+                assume es:_TEXT
 
 loc_3478:                               ; CODE XREF: SEARCHSTACK+22↑j
                                         ; SEARCHSTACK+91↓j ...
@@ -453,7 +467,7 @@ loc_3535:                               ; CODE XREF: SEARCHSTACK+109↑j
                 mov     word ptr es:[bx+2], offset INT3FSAVEDFRAME
                 push    cs
                 pop     es
-                assume es:cseg01
+                assume es:_TEXT
                 mov     bx, offset SZSEARCHSTACKINVALIDBPCHAIN
                 jmp     loc_34C7
 ; ---------------------------------------------------------------------------
@@ -482,7 +496,7 @@ loc_359C:                               ; CODE XREF: SEARCHSTACK+7B↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 SEARCHSTACK     endp ; sp-analysis failed
 
 ;
@@ -537,7 +551,7 @@ loc_35EB:                               ; CODE XREF: THROW+61↓j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 CATCH           endp
 
 ;

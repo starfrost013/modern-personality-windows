@@ -6,6 +6,11 @@
 ; behind a single "HANDLE" structure,
 
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP COPYNAME
+externNP FINDEXEINFO
+externNP GETEXEPTR
+externNP MYLOCK
 
 sBegin CODE
 
@@ -28,7 +33,7 @@ loc_5DDB:                               ; CODE XREF: HALLOC+26↓j
                 mov     [di+10h], ax
                 mov     ax, bx
                 mov     cx, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5DEA:                               ; CODE XREF: HALLOC+5↑j
@@ -49,7 +54,7 @@ loc_5DFC:                               ; CODE XREF: HALLOC+1B↑j
                 xor     ax, ax
                 pop     dx
                 pop     dx
-                retn
+                ret
 HALLOC          endp
 
 
@@ -72,7 +77,7 @@ loc_5E05:                               ; CODE XREF: HTHREAD+C↓j
                 loop    loc_5E05
                 mov     [di-4], cx
                 pop     ax
-                retn
+                ret
 HTHREAD         endp
 
 
@@ -93,12 +98,12 @@ HFREE           proc near               ; CODE XREF: LOCALFREE:loc_5AC7↑p
 
 loc_5E28:                               ; CODE XREF: HFREE+2↑j
                 xor     ax, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5E2B:                               ; CODE XREF: HFREE+B↑j
                 dec     ax
-                retn
+                ret
 HFREE           endp
 
 
@@ -119,7 +124,7 @@ HDREF           proc near               ; CODE XREF: LDREF:loc_57AE↑p
 loc_5E3D:                               ; CODE XREF: HDREF+6↑j
                                         ; HDREF+C↑j
                 or      ax, ax
-                retn
+                ret
 HDREF           endp
 
 
@@ -157,7 +162,7 @@ loc_5E50:                               ; CODE XREF: HENUM+32↓j
 loc_5E6C:                               ; CODE XREF: HENUM+B↑j
                                         ; HENUM+1B↑j
                 or      si, si
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5E6F:                               ; CODE XREF: HENUM+2↑j
@@ -179,12 +184,12 @@ HEND            proc near               ; CODE XREF: GREALLOC+D9↓p
                 and     dl, 0FEh
                 cmp     dx, bx
                 jb      short loc_5E84
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_5E84:                               ; CODE XREF: HEND↑j HEND+A↑j
                 mov     dx, 0FFFEh
-                retn
+                ret
 HEND            endp
 
 
@@ -254,7 +259,7 @@ loc_1E3B:                               ; CODE XREF: GETMODULEHANDLE+28↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 GETMODULEHANDLE endp
 
 ;
@@ -340,7 +345,7 @@ loc_1EA0:                               ; CODE XREF: DEFINEHANDLETABLE+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 DEFINEHANDLETABLE endp
 
 sEnd CODE

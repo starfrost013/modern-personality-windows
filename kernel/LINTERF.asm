@@ -4,6 +4,35 @@
 
 ; LINTERF.asm: Shims the Windows near pointer / per-task L* alloc functions with Windows NE exports (LOCAL*) so that apps can use them in a relatively safe way.
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP GLOBALCOMPACT
+
+externNP GLOBALHANDLE
+externNP GLOBALREALLOC
+externNP GLOBALSIZE
+externNP HALLOC
+
+externNP HFREE
+externNP LOCKSEGMENT
+externNP UNLOCKSEGMENT
+externNP LALIGN
+externNP LALLOC
+externNP LCOMPACT
+externNP LOCALINIT_LCOMPACT
+externNP LDREF
+externNP LFREE
+externNP LENTER
+externNP LJOIN
+externNP LLEAVE
+externNP LNOTIFY
+externNP LREPSETUP
+externNP LZERO
+
+
+if KDEBUG
+    externNP CHECKLOCALHEAP
+endif
+
 sBegin CODE
 
 assumeS CS,CODE
@@ -99,7 +128,7 @@ loc_5896:                               ; CODE XREF: LOCALALLOC+88↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 LOCALALLOC      endp
 
 ;
@@ -231,9 +260,7 @@ loc_5977:                               ; CODE XREF: LOCALREALLOC:loc_59C4↓j
                 jz      short loc_5997
                 inc     word ptr [di+4]
                 jmp     short loc_599E
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_5997:                               ; CODE XREF: LOCALREALLOC+E7↑j
                 mov     si, [si+2]
@@ -250,9 +277,7 @@ loc_59A5:                               ; CODE XREF: LOCALREALLOC+9A↑j
 
 loc_59A8:                               ; CODE XREF: LOCALREALLOC+92↑j
                 jmp     short loc_5A1E
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_59AB:                               ; CODE XREF: LOCALREALLOC+CD↑j
                 test    byte ptr [bx], 1
@@ -337,7 +362,7 @@ loc_5A28:                               ; CODE XREF: LOCALREALLOC+17B↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 LOCALREALLOC    endp
 
 ;
@@ -420,7 +445,7 @@ loc_5AC7:                               ; CODE XREF: LOCALFREE+48↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 LOCALFREE       endp
 
 ;
@@ -444,7 +469,7 @@ LOCALSIZE       proc far
 loc_5AEB:                               ; CODE XREF: LOCALSIZE+A↑j
                 mov     cx, ax
                 pop     si
-                retf    2
+                ret     2
 LOCALSIZE       endp
 
 ;
@@ -469,7 +494,7 @@ loc_5B02:                               ; CODE XREF: LOCALFLAGS+C↑j
                 xchg    cl, ch
                 mov     ax, cx
                 pop     si
-                retf    2
+                ret     2
 LOCALFLAGS      endp
 
 ;
@@ -529,7 +554,7 @@ loc_5B62:                               ; CODE XREF: LOCALLOCK+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 LOCALLOCK       endp
 
 ;
@@ -593,7 +618,7 @@ loc_5BD5:                               ; CODE XREF: LOCALUNLOCK+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 LOCALUNLOCK     endp
 
 ;
@@ -619,7 +644,7 @@ LOCALHANDLE     proc far
 loc_5BF9:                               ; CODE XREF: LOCALHANDLE+9↑j
                                         ; LOCALHANDLE+12↑j
                 mov     ax, bx
-                retf    2
+                ret     2
 LOCALHANDLE     endp
 
 ;
@@ -681,7 +706,7 @@ loc_5C54:                               ; CODE XREF: LOCALCOMPACT+51↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 LOCALCOMPACT    endp
 
 ;
@@ -700,7 +725,7 @@ LOCALNOTIFY     proc far
                 mov     bx, ds:6
                 xchg    ax, [bx+16h]
                 xchg    dx, [bx+18h]
-                retf    4
+                ret     4
 LOCALNOTIFY     endp
 
 
@@ -815,7 +840,7 @@ loc_5D1B:                               ; CODE XREF: LOCALNOTIFYDEFAULT:loc_5CAF
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 LOCALNOTIFYDEFAULT endp
 
 ;
@@ -880,7 +905,7 @@ loc_5D54:                               ; CODE XREF: LOCALINIT+13↑j
                 mov     [di+6], dx
                 mov     word ptr [di+16h], offset LOCALNOTIFYDEFAULT
                 mov     word ptr [di+18h], cs
-                mov     word ptr [di+14h], offset loc_56E0
+                mov     word ptr [di+14h], offset LOCALINIT_LCOMPACT
                 mov     word ptr [di+1Ch], 200h
                 clc
                 call    LALIGN
@@ -914,7 +939,7 @@ loc_5DC5:                               ; CODE XREF: LOCALINIT+3C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 LOCALINIT       endp
 
 sEnd CODE

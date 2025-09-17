@@ -12,6 +12,22 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP LOADNRTABLE
+externNP FREENRTABLE
+externNP LOADMODULE
+externNP LOADSEGMENT
+externNP MYLOCK
+externNP GENTER
+externNP GLRUTOP
+externNP GLEAVE
+externNP GETEXEPTR
+externNP GLOBALALLOC
+externNP ENTPROCADDRESS
+externNP GETCHKSUMADDR
+externNP CHECKSEGCHKSUM
+externNP FUSEDBP_CHECK ; why are these based in different files lol
 
 sBegin CODE
 
@@ -151,7 +167,7 @@ loc_9A4:                                ; CODE XREF: FINDORDINAL+9B↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    6
+                ret     6
 FINDORDINAL     endp
 
 
@@ -199,7 +215,7 @@ loc_80F:                                ; CODE XREF: FINDEXEINFO+F↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    6
+                ret     6
 FINDEXEINFO     endp
 
 
@@ -228,7 +244,7 @@ LOADLIBRARY     proc far
                 pop     ds
                 pop     bp
                 dec     bp
-                retf
+                ret
 LOADLIBRARY     endp
 
 ;
@@ -303,7 +319,7 @@ loc_19BD:                               ; CODE XREF: GETCODEHANDLE+46↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 GETCODEHANDLE   endp
 
 
@@ -344,9 +360,9 @@ loc_19EA:                               ; CODE XREF: COPYNAME+14↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 ; ---------------------------------------------------------------------------
-                retn
+                ret  ; dead code
 COPYNAME        endp
 
 ;
@@ -382,7 +398,7 @@ GETPROCADDRESS  proc far                ; CODE XREF: RETTHUNK+82↑p
 
 var_42          = byte ptr -42h
 arg_0           = word ptr  6           ; calling module
-arg_2           = word ptr  8           ; hModule
+hmodule           = word ptr  8           ; hModule
 arg_4           = word ptr  0Ah         ; lpProcName
 
                 inc     bp              ; KERNEL_50 (stack frame)
@@ -396,8 +412,8 @@ arg_4           = word ptr  0Ah         ; lpProcName
                 xor     dx, dx          ; was it successful?
                 jcxz    short get_proc_address_done  ; no, return NULL
                 mov     si, ax
-                cmp     [bp+arg_2], 0   ; was hModule null?
-                jnz     short loc_1A21  ; no, we're getting another module's ProcAddress
+                cmp     [bp+hmodule], 0   ; was hModule null?
+                jnz     short get_other_module_proc_address  ; no, we're getting another module's ProcAddress
                 mov     ax, [bp+arg_0]  ; it was null, so we're getting a procaddress inside the current module
                 jmp     short actually_get_proc_address ; go get it
 ; ---------------------------------------------------------------------------
@@ -406,7 +422,7 @@ get_other_module_proc_address:                               ; CODE XREF: GETPRO
                 lea     bx, [bp+var_42] 
                 mov     dx, 0FFh
                 mov     dx, 1A00h
-                push    [bp+arg_2]
+                push    [bp+hmodule]
                 push    [bp+arg_0]
                 push    bx
                 push    dx
@@ -431,7 +447,7 @@ get_proc_address_done:                               ; CODE XREF: GETPROCADDRESS
                 pop     ds
                 pop     bp              ; restore regs
                 dec     bp
-                retf    6               ; 6 stack frames (we called a lot of kernel functions)
+                ret     6               ; 6 stack frames (we called a lot of kernel functions)
 GETPROCADDRESS  endp   
 
 ;
@@ -486,7 +502,7 @@ loc_1A87:                               ; CODE XREF: GETMODULEFILENAME+D↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 GETMODULEFILENAME endp
 
 ;
@@ -520,7 +536,7 @@ loc_1AA9:                               ; CODE XREF: GETMODULEUSAGE+B↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 GETMODULEUSAGE  endp
 
 ;
@@ -572,7 +588,7 @@ loc_1ADC:                               ; CODE XREF: GETINSTANCEDATA+11↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 GETINSTANCEDATA endp
 
 ;
@@ -673,7 +689,7 @@ loc_1B5C:                               ; CODE XREF: MAKEPROCINSTANCE+67↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    6
+                ret     6
 MAKEPROCINSTANCE endp
 
 ;
@@ -728,7 +744,7 @@ loc_1BB3:                               ; CODE XREF: FREEPROCINSTANCE+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    4
+                ret     4
 FREEPROCINSTANCE endp
 
 
@@ -778,7 +794,7 @@ loc_1BF5:                               ; CODE XREF: PATCHPROLOG+14↑j
                 pop     bx
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 PATCHPROLOG     endp
 
 
@@ -1073,7 +1089,7 @@ loc_1E03:                               ; CODE XREF: PATCHTHUNKS:loc_1C7E↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 PATCHTHUNKS     endp
 
 
@@ -1136,7 +1152,7 @@ loc_2A96:                               ; CODE XREF: VALIDATECODESEGMENTS+12↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf
+                ret
 VALIDATECODESEGMENTS endp
 
 ; ---------------------------------------------------------------------------
@@ -1145,8 +1161,8 @@ FUSEDBP         dw 0                    ; DATA XREF: PATCHSTACK+12↓w
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR PATCHSTACK
 
-loc_32A9:                               ; CODE XREF: PATCHSTACK+18↓j
-                jmp     loc_3349
+JMP_TO_FUSEDBP_CHECK:                               ; CODE XREF: PATCHSTACK+18↓j
+                jmp     FUSEDBP_CHECK
 ; END OF FUNCTION CHUNK FOR PATCHSTACK
 
 sEnd CODE

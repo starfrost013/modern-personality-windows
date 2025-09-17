@@ -7,6 +7,12 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP GCHECKFREE
+externNP GDISCARD
+externNP GSLIDE
+externNP GMOVEABLE
+externNP GMOVEBUSY
 
 sBegin CODE
 
@@ -47,7 +53,7 @@ loc_6697:                               ; CODE XREF: GCOMPACT+1E↑j
 loc_66A7:                               ; CODE XREF: GCOMPACT+23↑j
                                         ; GCOMPACT+29↑j ...
                 pop     si
-                retn
+                ret
 GCOMPACT        endp
 
 
@@ -69,7 +75,7 @@ loc_66B5:                               ; CODE XREF: GCMPHEAP+2B↓j
                 mov     es, word ptr es:[bx]
                 loop    loc_66AF
                 pop     ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_66BC:                               ; CODE XREF: GCMPHEAP+A↑j
@@ -161,7 +167,7 @@ loc_6808:                               ; CODE XREF: GBESTFIT+C↑j
                 call    GMOVEBUSY
 
 locret_6816:                            ; CODE XREF: GBESTFIT+3C↑j
-                retn
+                ret
 GBESTFIT        endp
 
 sEnd CODE

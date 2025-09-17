@@ -9,8 +9,21 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
+
+externNP INT21ALLOC
+externNP INT21REALLOC
+externNP INT21ENTERCURRENTPDB
+externNP INT24HANDLER
+externNP LOADMODULE
+externNP FREEMODULE
+externNP BOOTSCHEDULE ; yes it jumps into the middle of RESCHEDULE
+externNP GLOBALFREE
+externNP DELETETASK
+externNP GLOBALFREEALL
+externNP GROWSFT
+
 
 assumeS CS,CODE
 assumeS DS,CODE
@@ -28,7 +41,7 @@ assumeS DS,CODE
                 public DOS3CALL
 DOS3CALL        proc far
                 int     21h             ; KERNEL_102
-                retf
+                ret
 DOS3CALL        endp
 
 ;
@@ -50,7 +63,7 @@ DOS3CALL        endp
                 public NETBIOSCALL
 NETBIOSCALL     proc far
                 int     5Ch             ; KERNEL_103
-                retf
+                ret
 NETBIOSCALL     endp
 
 ; ---------------------------------------------------------------------------
@@ -237,7 +250,7 @@ NOHOOKDOSCALL   proc far
                 pushf                   ; KERNEL_101
                 cli
                 call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
-                retf
+                ret
 NOHOOKDOSCALL   endp
 
 ;
@@ -304,7 +317,7 @@ loc_3E96:                               ; CODE XREF: ENABLEDOS+47↑j
                 push    ds
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     dx, offset INT24HANDLER
                 mov     ax, 2524h
                 int     21h             ; DOS - SET INTERRUPT VECTOR
@@ -347,7 +360,7 @@ loc_3EDF:                               ; CODE XREF: ENABLEDOS+A3↑j
 
 loc_3EE7:                               ; CODE XREF: ENABLEDOS+F↑j
                 pop     si
-                retf
+                ret
 ENABLEDOS       endp
 
 ;
@@ -400,7 +413,7 @@ loc_3F34:                               ; CODE XREF: DISABLEDOS+31↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 DISABLEDOS      endp
 
 
@@ -426,7 +439,7 @@ ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                 call    near ptr ENABLEDOS
                 xor     bx, bx
                 mov     es, bx
-                assume es:cseg01
+                assume es:_TEXT
                 mov     bx, 80h
                 cli
                 mov     word ptr es:[bx], offset INT20HANDLER
@@ -438,7 +451,7 @@ ENABLEINT21     proc near               ; CODE XREF: SLOWBOOT+89↓p
                 sti
 
 locret_3F75:                            ; CODE XREF: ENABLEINT21+9↑j
-                retn
+                ret
 ENABLEINT21     endp
 
 
@@ -482,7 +495,7 @@ DISABLEINT21    proc near               ; CODE XREF: EXITKERNEL+24↓p
                 sti
 
 locret_3FC4:                            ; CODE XREF: DISABLEINT21+9↑j
-                retn
+                ret
 DISABLEINT21    endp
 
 ;
@@ -565,7 +578,7 @@ EXITKERNEL      endp                    ; AL = exit code
 GETLPERRMODE    proc far
                 mov     ax, word ptr cs:PERRMODE ; KERNEL_99
                 mov     dx, word ptr cs:PERRMODE+2
-                retf
+                ret
 GETLPERRMODE    endp
 
 
@@ -584,7 +597,7 @@ arg_0           = word ptr  0Ah
                 mov     bp, sp
                 xor     ax, ax
                 mov     ds, ax
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     ds, word ptr PREVINT3FPROC
                 assume ds:nothing
                 mov     ax, [bp+var_s4]
@@ -606,7 +619,7 @@ arg_0           = word ptr  0Ah
                 mov     ds, word ptr ds:3D78h
                 sti
                 mov     ah, cl
-                retf
+                ret
 PDB_CALL_SYSTEM_ENTRY endp ; sp-analysis failed
 
 
@@ -674,7 +687,7 @@ loc_409E:                               ; CODE XREF: INT21HANDLER+17↓j
                 mov     bp, sp
                 add     bp, 4
                 sti
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_40B2:                               ; CODE XREF: DOSIoctlHook+16↓p
@@ -692,7 +705,7 @@ loc_40B2:                               ; CODE XREF: DOSIoctlHook+16↓p
                 push    cs:word_3D74
                 cld
                 sti
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_40CB:                               ; CODE XREF: INT21HANDLER+A1↓p
@@ -712,7 +725,7 @@ loc_40CB:                               ; CODE XREF: INT21HANDLER+A1↓p
                 jmp     cs:word_3D74
 ; ---------------------------------------------------------------------------
 
-DOSTSRHook:                             ; DATA XREF: cseg01:3E0D↑o
+DOSTSRHook:                             ; DATA XREF: _TEXT:3E0D↑o
                 mov     ah, 1Bh
                 jmp     short loc_40E7
 ; ---------------------------------------------------------------------------
@@ -787,10 +800,10 @@ loc_415B:                               ; CODE XREF: INT21HANDLER+B6↑j
 
 locret_415E:                            ; CODE XREF: INT21HANDLER+66↑j
                                         ; INT21HANDLER+6D↑j ...
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
-DOSNetRedirectorHook:                   ; DATA XREF: cseg01:3DCE↑o
+DOSNetRedirectorHook:                   ; DATA XREF: _TEXT:3DCE↑o
                 cmp     ax, 5F03h
                 jnz     short loc_41DC  ; these are all handlers for int21 function
                 cmp     bl, 4
@@ -811,7 +824,7 @@ DOSNetRedirectorHook:                   ; DATA XREF: cseg01:3DCE↑o
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
 
-DOSTruenameHook:                        ; DATA XREF: cseg01:3DD4↑o
+DOSTruenameHook:                        ; DATA XREF: _TEXT:3DD4↑o
                 push    dx
                 mov     dx, si
                 call    near ptr PATHDRVDSDX
@@ -826,31 +839,31 @@ DOSTruenameHook:                        ; DATA XREF: cseg01:3DD4↑o
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
 
-DOSGeneralFileHook2:                    ; DATA XREF: cseg01:3D98↑o
-                                        ; cseg01:3D9B↑o ...
+DOSGeneralFileHook2:                    ; DATA XREF: _TEXT:3D98↑o
+                                        ; _TEXT:3D9B↑o ...
                 call    near ptr PATHDRVDSDX
                 jnb     short loc_41DC
                 call    near ptr PREVINT21RETURN_1
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
 
-DOSDiskHook:                            ; DATA XREF: cseg01:3DB9↑o
-                                        ; cseg01:3DD1↑o
+DOSDiskHook:                            ; DATA XREF: _TEXT:3DB9↑o
+                                        ; _TEXT:3DD1↑o
                 call    sub_425B
                 jnb     short loc_41DC
                 call    PREVINT21RETURN_2
                 jmp     loc_44E6
 ; ---------------------------------------------------------------------------
 
-DOSCwdHook:                             ; DATA XREF: cseg01:3DB6↑o
+DOSCwdHook:                             ; DATA XREF: _TEXT:3DB6↑o
                 call    sub_425B
                 jnb     short loc_41DC
                 call    PREVINT21RETURN_2
                 jmp     loc_4541
 ; ---------------------------------------------------------------------------
 
-DOSFcbHook:                             ; DATA XREF: cseg01:3DBC↑o
-                                        ; cseg01:3DBF↑o ...
+DOSFcbHook:                             ; DATA XREF: _TEXT:3DBC↑o
+                                        ; _TEXT:3DBF↑o ...
                 push    dx
                 push    si
                 mov     si, dx
@@ -888,7 +901,7 @@ loc_41DF:                               ; CODE XREF: INT21HANDLER+14A↑j
                 jmp     loc_44E6
 ; ---------------------------------------------------------------------------
 
-DOSRenameHook:                          ; DATA XREF: cseg01:3DAD↑o
+DOSRenameHook:                          ; DATA XREF: _TEXT:3DAD↑o
                 call    near ptr PATHDRVDSDX
                 jb      short loc_420A
                 xchg    di, dx
@@ -941,7 +954,7 @@ loc_4238:                               ; CODE XREF: PATHDRVDSDX+8↑j
 loc_4239:                               ; CODE XREF: PATHDRVDSDX+1C↑j
                 pop     dx
                 pop     si
-                retn
+                ret
 PATHDRVDSDX     endp
 
 
@@ -960,7 +973,7 @@ PREVINT21RETURN_1 proc far              ; CODE XREF: INT21HANDLER+119↑p
                 call    cs:PREVINT21PROC ; Indirect INT 21h (MS-DOS API) call (see KDATA.ASM)
                 pop     word ptr [si]
                 pop     si
-                retn
+                ret
 PREVINT21RETURN_1 endp
 
 
@@ -977,7 +990,7 @@ PREVINT21RETURN_2 proc near             ; CODE XREF: INT21HANDLER+124↑p
                 pop     dx
 
 nullsub_3:                              ; CODE XREF: SftThing+B↓j
-                retn
+                ret
 PREVINT21RETURN_2 endp
 
 
@@ -1007,7 +1020,7 @@ loc_4276:                               ; CODE XREF: sub_425B+8↑j
 loc_4277:                               ; CODE XREF: sub_425B+19↑j
                 pop     dx
                 pop     bx
-                retn
+                ret
 sub_425B        endp
 
 
@@ -1054,7 +1067,7 @@ loc_4292:                               ; CODE XREF: sub_427A+4↑j
                 pop     ds
 
 loc_4296:                               ; CODE XREF: INT21HANDLER:loc_41DC↑j
-                                        ; DATA XREF: cseg01:3E10↑o
+                                        ; DATA XREF: _TEXT:3E10↑o
                 cmp     ah, 29h ; ')'
                 jb      short loc_42AA
                 cmp     ah, 30h ; '0'
@@ -1078,7 +1091,7 @@ loc_42AA:                               ; CODE XREF: SftThing+11↑j
                 inc     cs:INSCHEDULER
                 xor     ax, ax
                 mov     es, ax
-                assume es:cseg01
+                assume es:_TEXT
                 mov     bx, 90h
                 mov     ax, 48E2h
                 xchg    ax, es:[bx]
@@ -1205,14 +1218,14 @@ loc_43A3:                               ; CODE XREF: sub_4338+1A↑j
                                         ; sub_4338+50↑j ...
                 pop     bx
                 pop     es
-                retn
+                ret
 sub_4338        endp
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSIoctlHook    proc far                ; DATA XREF: cseg01:3DDD↑o
+DOSIoctlHook    proc far                ; DATA XREF: _TEXT:3DDD↑o
                 cmp     al, 6
                 jz      short loc_43B9
                 cmp     al, 4
@@ -1236,7 +1249,7 @@ loc_43C4:                               ; CODE XREF: DOSIoctlHook+6↑j
                 jmp     DOSGeneralFileHook
 ; ---------------------------------------------------------------------------
 
-DOSWriteHook:                           ; DATA XREF: cseg01:3D83↑o
+DOSWriteHook:                           ; DATA XREF: _TEXT:3D83↑o
                 call    loc_40B2
                 call    sub_4336
                 jnz     short loc_43ED
@@ -1246,7 +1259,7 @@ DOSWriteHook:                           ; DATA XREF: cseg01:3D83↑o
                 jmp     loc_44DF
 ; ---------------------------------------------------------------------------
 
-DOSReadHook:                            ; DATA XREF: cseg01:3DEF↑o
+DOSReadHook:                            ; DATA XREF: _TEXT:3DEF↑o
                 call    loc_40B2
                 call    sub_4336
                 jnz     short loc_43ED
@@ -1277,7 +1290,7 @@ loc_4410:                               ; CODE XREF: DOSIoctlHook+55↑j
                 jmp     cs:PREVINT21PROC
 ; ---------------------------------------------------------------------------
 
-DOSFlushBufferStdinHook:                ; DATA XREF: cseg01:3DE9↑o
+DOSFlushBufferStdinHook:                ; DATA XREF: _TEXT:3DE9↑o
                 call    sub_4280
                 call    loc_40B2
                 push    dx
@@ -1301,7 +1314,7 @@ DOSFlushBufferStdinHook:                ; DATA XREF: cseg01:3DE9↑o
                 jmp     loc_44DF
 ; ---------------------------------------------------------------------------
 
-DOSDirectOutHook:                       ; DATA XREF: cseg01:3DD7↑o
+DOSDirectOutHook:                       ; DATA XREF: _TEXT:3DD7↑o
                 cmp     cs:word_3D72, 3D7Ch
                 jz      short loc_4458
                 cmp     dl, 0FFh
@@ -1340,7 +1353,7 @@ DOSIoctlHook    endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSDirectNoEchoHook proc far            ; DATA XREF: cseg01:3DE0↑o
+DOSDirectNoEchoHook proc far            ; DATA XREF: _TEXT:3DE0↑o
                 call    sub_4280
                 call    loc_40B2
                 jmp     short loc_447B
@@ -1350,8 +1363,8 @@ DOSDirectNoEchoHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSStdinHook    proc far                ; DATA XREF: cseg01:3DDA↑o
-                                        ; cseg01:3DEC↑o
+DOSStdinHook    proc far                ; DATA XREF: _TEXT:3DDA↑o
+                                        ; _TEXT:3DEC↑o
                 call    sub_4280
                 call    loc_40B2
 
@@ -1369,7 +1382,7 @@ DOSStdinHook    endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSBufferedInputHook proc far           ; DATA XREF: cseg01:3DE6↑o
+DOSBufferedInputHook proc far           ; DATA XREF: _TEXT:3DE6↑o
                 call    sub_4280
                 call    loc_40B2
 
@@ -1394,7 +1407,7 @@ DOSBufferedInputHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSPrintStringHook proc far             ; DATA XREF: cseg01:3D80↑o
+DOSPrintStringHook proc far             ; DATA XREF: _TEXT:3D80↑o
                 call    loc_428B
                 call    loc_40B2
                 mov     di, ds
@@ -1412,7 +1425,7 @@ DOSPrintStringHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSPrintCharHook proc far               ; DATA XREF: cseg01:3D7D↑o
+DOSPrintCharHook proc far               ; DATA XREF: _TEXT:3D7D↑o
                 call    loc_428B
                 call    loc_40B2
 
@@ -1441,7 +1454,7 @@ DOSPrintCharHook endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSStdInNoEchoHook proc far             ; DATA XREF: cseg01:3DE3↑o
+DOSStdInNoEchoHook proc far             ; DATA XREF: _TEXT:3DE3↑o
                 call    sub_4280
                 call    loc_40B2
                 mov     ah, 7
@@ -1452,7 +1465,7 @@ DOSStdInNoEchoHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSSelectDefaultDriveHook proc far      ; DATA XREF: cseg01:3DF2↑o
+DOSSelectDefaultDriveHook proc far      ; DATA XREF: _TEXT:3DF2↑o
                 cmp     cs:word_3D72, 3D7Ch
                 jnz     short loc_450A
                 push    dx
@@ -1492,7 +1505,7 @@ DOSSelectDefaultDriveHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSChdirHook    proc far                ; DATA XREF: cseg01:3DF5↑o
+DOSChdirHook    proc far                ; DATA XREF: _TEXT:3DF5↑o
                 cmp     cs:word_3D72, 3D7Ch
                 jnz     short loc_451B
                 call    near ptr PATHDRVDSDX
@@ -1509,7 +1522,7 @@ DOSChdirHook    endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSSetInterruptVectorHook proc far      ; DATA XREF: cseg01:3DF8↑o
+DOSSetInterruptVectorHook proc far      ; DATA XREF: _TEXT:3DF8↑o
                 pop     ds
                 pop     bp
                 dec     bp
@@ -1528,7 +1541,7 @@ DOSSetInterruptVectorHook endp ; sp-analysis failed
 
 
 DOSGeneralFileHook proc near            ; CODE XREF: DOSIoctlHook:loc_43C4↑j
-                                        ; DATA XREF: cseg01:3D86↑o ...
+                                        ; DATA XREF: _TEXT:3D86↑o ...
                 push    es
                 push    di
                 les     di, cs:PCURRENTPDB
@@ -1547,7 +1560,7 @@ DOSGeneralFileHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSResizeMemoryHook proc far            ; DATA XREF: cseg01:3E01↑o
+DOSResizeMemoryHook proc far            ; DATA XREF: _TEXT:3E01↑o
 
 ; FUNCTION CHUNK AT 45B0 SIZE 00000016 BYTES
 
@@ -1587,7 +1600,7 @@ DOSResizeMemoryHook endp
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSAllocMemoryHook proc near            ; DATA XREF: cseg01:3DFB↑o
+DOSAllocMemoryHook proc near            ; DATA XREF: _TEXT:3DFB↑o
                 call    loc_40B2
                 call    INT21ALLOC
 DOSAllocMemoryHook endp
@@ -1619,10 +1632,10 @@ loc_45C0:                               ; CODE XREF: PREVINT21RETURN_1+376↑j
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSFreeMemoryHook proc far              ; DATA XREF: cseg01:3DFE↑o
+DOSFreeMemoryHook proc far              ; DATA XREF: _TEXT:3DFE↑o
                 call    loc_40B2
                 mov     dx, es
-                call    j_GENTERCURRENTPDB
+                call    INT21ENTERCURRENTPDB
                 or      ax, ax
                 jnz     short loc_45B9
                 jmp     short loc_45C0
@@ -1634,7 +1647,7 @@ SZWINOLDAP      db 'WINOLDAP.MOD',0
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSExecHook     proc far                ; DATA XREF: cseg01:3E04↑o
+DOSExecHook     proc far                ; DATA XREF: _TEXT:3E04↑o
                 cmp     cs:word_3D72, 3D7Ch
                 jnz     short loc_45F5
                 call    near ptr PATHDRVDSDX
@@ -1765,7 +1778,7 @@ DOSExecHook     endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-DOSTerminateOldHook proc near           ; DATA XREF: cseg01:3E07↑o
+DOSTerminateOldHook proc near           ; DATA XREF: _TEXT:3E07↑o
                 xor     ax, ax
                 lds     si, cs:PCURRENTPDB
                 mov     si, [si]
@@ -1779,7 +1792,7 @@ DOSTerminateOldHook endp
 
 
 DOSTerminateHook proc far               ; CODE XREF: DOSTerminateOldHook+C↑j
-                                        ; DATA XREF: cseg01:3E0A↑o
+                                        ; DATA XREF: _TEXT:3E0A↑o
                 lds     si, cs:PCURRENTPDB
                 mov     bx, [si]
                 mov     ds, bx

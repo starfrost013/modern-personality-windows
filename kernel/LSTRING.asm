@@ -7,7 +7,7 @@
 ;
 ; Todo: Check 1.02 JPN, probably depends on the specified language in KERNEL.MAK(?)
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
 
 assumeS CS,CODE
@@ -36,7 +36,7 @@ LSTRLEN         proc far                ; CODE XREF: LOADMODULE+23↑p
                 dec     ax
                 dec     ax
                 pop     di
-                retf    4
+                ret     4
 LSTRLEN         endp
 
 
@@ -66,7 +66,7 @@ loc_5284:                               ; CODE XREF: LSTRCPY+E↓j
                 pop     di
                 pop     si
                 pop     ds
-                retf    8
+                ret     8
 ; END OF FUNCTION CHUNK FOR LSTRCPY
 ;
 ; External Entry #88 into the Module
@@ -209,7 +209,7 @@ ANSIUPPER       proc far
 loc_530A:                               ; CODE XREF: ANSIUPPER+F↑j
                 pop     si
                 pop     di
-                retf    4
+                ret     4
 ANSIUPPER       endp
 
 ;
@@ -237,7 +237,7 @@ ANSILOWER       proc far
 loc_5329:                               ; CODE XREF: ANSILOWER+F↑j
                 pop     si
                 pop     di
-                retf    4
+                ret     4
 ANSILOWER       endp
 
 ;
@@ -282,7 +282,8 @@ loc_5350:                               ; CODE XREF: ANSIPREV+5↑j
 ANSIPREV        endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
-                db 2 dup(90h)
+                nop 
+                nop
 ;
 ; External Entry #77 into the Module
 ; Attributes (0001): Fixed Exported
@@ -309,7 +310,7 @@ loc_536E:                               ; CODE XREF: ANSINEXT+C↑j
                 mov     ax, di
                 mov     dx, es
                 pop     di
-                retf    4
+                ret     4
 ANSINEXT        endp
 
 
@@ -336,7 +337,7 @@ loc_5385:                               ; CODE XREF: MYANSIUPPER+8↑j
                 stosb
                 or      al, al
                 jnz     short loc_5379
-                retn
+                ret
 MYANSIUPPER     endp
 
 
@@ -363,7 +364,7 @@ loc_539D:                               ; CODE XREF: MYANSILOWER+8↑j
                 stosb
                 or      al, al
                 jnz     short loc_5391
-                retn
+                ret
 MYANSILOWER     endp
 
 
@@ -386,7 +387,7 @@ loc_53B6:                               ; CODE XREF: MYUPPER+6↑j
 
 locret_53B8:                            ; CODE XREF: MYUPPER+2↑j
                                         ; MYUPPER+A↑j ...
-                retn
+                ret
 MYUPPER         endp
 
 
@@ -409,7 +410,7 @@ loc_53C9:                               ; CODE XREF: MYLOWER+6↑j
 
 locret_53CB:                            ; CODE XREF: MYLOWER+2↑j
                                         ; MYLOWER+A↑j ...
-                retn
+                ret
 MYLOWER         endp
 
 
@@ -439,7 +440,7 @@ loc_53E5:                               ; CODE XREF: ISKANJI+13↑j
 
 loc_53F6:                               ; CODE XREF: ISKANJI+17↑j
                 clc
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_53F8:                               ; CODE XREF: ISKANJI+F↑j
@@ -448,43 +449,9 @@ loc_53F8:                               ; CODE XREF: ISKANJI+F↑j
 
 locret_53F9:                            ; CODE XREF: ISKANJI+6↑j
                                         ; ISKANJI+24↑j
-                retn
+                ret
 ISKANJI         endp
 
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-APPENDFIRST     proc near               ; CODE XREF: PROMPT+2D↑p
-                mov     cs:BUFPOS, 92h
-APPENDFIRST     endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-APPEND          proc near               ; CODE XREF: ISFLOPPY+18↑p
-                                        ; PROMPT+B↑p ...
-                push    si
-                push    di
-                mov     di, cs
-                mov     es, di
-                assume es:cseg01
-                mov     di, cs:BUFPOS
-                mov     si, dx
-
-loc_4A3A:                               ; CODE XREF: APPEND+11↓j
-                lodsb
-                stosb
-                or      al, al
-                jnz     short loc_4A3A
-                dec     di
-                mov     cs:BUFPOS, di
-                pop     di
-                pop     si
-                retn
-APPEND          endp
 
 sEnd CODE
 

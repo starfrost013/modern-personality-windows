@@ -6,6 +6,22 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP GALIGN
+externNP GCOMPACT
+externNP GHANDLE
+externNP GFINDFREE
+externNP GREALLOC
+
+externNP HALLOC
+externNP HTHREAD
+externNP PATCHSTACK    
+externNP SEARCHSTACK
+externNP PATCHTHUNKS
+
+if KDEBUG
+    externNP DEBUGMOVEDSEGMENT
+endif
 
 sBegin CODE
 
@@ -23,7 +39,7 @@ GENTERCURRENTPDB proc near              ; CODE XREF: INT21ALLOC↓p
                 jz      short GENTER
                 lds     di, ds:48h
                 inc     word ptr [di+18h]
-                retn
+                ret
 GENTERCURRENTPDB endp
 
 
@@ -38,7 +54,7 @@ GENTER          proc near               ; CODE XREF: GETCODEHANDLE+50↑p
                 mov     ds, cs:PGLOBALHEAP
                 xor     di, di
                 inc     word ptr [di+18h] ; increment memory block reference count
-                retn
+                ret
 GENTER          endp
 
 
@@ -48,7 +64,7 @@ GENTER          endp
 GLEAVE          proc near               ; CODE XREF: GETCODEHANDLE+56↑p
                                         ; INT24HANDLER+94↑p ...
                 dec     word ptr [di+18h] ; decrement memory block reference count
-                retn
+                ret
 GLEAVE          endp
 
 
@@ -117,7 +133,7 @@ loc_6A23:                               ; CODE XREF: GBTOP+49↑j
                 dec     cx
                 mov     es, cx
                 mov     cx, es:[di+1]
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_6A3C:                               ; CODE XREF: GBTOP+5D↑j
@@ -125,7 +141,7 @@ loc_6A3C:                               ; CODE XREF: GBTOP+5D↑j
                 mov     cx, es:[si]
 
 locret_6A44:                            ; CODE XREF: GBTOP+1D↑j
-                retn
+                ret
 GBTOP           endp
 
 
@@ -167,7 +183,7 @@ loc_6A79:                               ; CODE XREF: GRESERVE+13↑j
                 call    GLEAVE
                 pop     di
                 pop     ds
-                retn
+                ret
 GRESERVE        endp
 
 
@@ -182,7 +198,7 @@ GRTEST          proc near               ; CODE XREF: GRESERVE+20↑p
                 mov     es, word ptr [di+8]
                 call    GFINDFREE
                 or      ax, ax
-                retn
+                ret
 GRTEST          endp
 
 
@@ -285,7 +301,7 @@ loc_6B31:                               ; CODE XREF: GAVAIL+9A↑j
                                         ; GAVAIL+9D↑j
                 and     al, 0FEh
                 xor     dx, dx
-                retn
+                ret
 GAVAIL          endp
 
 
@@ -368,7 +384,7 @@ loc_6BA9:                               ; CODE XREF: GNOTIFY+26↑j
                 pop     di
                 pop     si
                 or      ax, ax
-                retn
+                ret
 GNOTIFY         endp
 
 
@@ -424,13 +440,13 @@ GHEXPAND        proc near
                 mov     [di], cx
                 mov     di, bx
                 mov     cx, ax
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_6C19:                               ; CODE XREF: GHEXPAND+7↑j
                                         ; GHEXPAND+1C↑j ...
                 xor     cx, cx
-                retn
+                ret
 GHEXPAND        endp
 
 
@@ -441,7 +457,7 @@ GMEMCHECK       proc near               ; CODE XREF: GLOBALALLOC+56↓p
                                         ; GLOBALREALLOC+59↓p
                 or      ax, ax
                 jz      short GMEMFAIL
-                retn
+                ret
 GMEMCHECK       endp
 
 
@@ -449,7 +465,7 @@ GMEMCHECK       endp
 
 
 GMEMFAIL        proc near               ; CODE XREF: GMEMCHECK+2↑j
-                retn
+                ret
 GMEMFAIL        endp
 
 ;
@@ -467,7 +483,7 @@ SETSWAPHOOK     proc far
                 mov     dx, ss:[bx+6]
                 xchg    ax, word ptr cs:PSWAPHOOK
                 xchg    dx, word ptr cs:PSWAPHOOK+2
-                retf    4
+                ret     4
 SETSWAPHOOK     endp
 
 
@@ -563,7 +579,7 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 pop     ax
                 pop     dx
                 pop     bx
-                retn
+                ret
 GINIT           endp
 
 
@@ -612,7 +628,7 @@ loc_9347:                               ; CODE XREF: GLOBALINIT+1D↑j
                 xor     ax, ax
                 jmp     short loc_93BD
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_934C:                               ; CODE XREF: GLOBALINIT+15↑j
                                         ; GLOBALINIT+30↑j
@@ -668,7 +684,7 @@ loc_93BD:                               ; CODE XREF: GLOBALINIT+34↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 GLOBALINIT      endp
 
 sEnd CODE

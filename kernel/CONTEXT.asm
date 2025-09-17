@@ -16,6 +16,11 @@
 ; Attributes: bp-based frame
 
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+externNP DELETETASK
+externNP INSERTTASK
+externNP SAVESTATE
+externNP RESTORESTATE
 
 sBegin CODE
 
@@ -74,7 +79,7 @@ loc_3C21:                               ; CODE XREF: WAITEVENT:loc_3C1E↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 WAITEVENT       endp
 ;
 ; External Entry #29 into the Module
@@ -131,30 +136,30 @@ yield_done:                               ; CODE XREF: YIELD+C↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf
+                ret
 YIELD           endp ; sp-analysis failed
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-GETTASKHANDLE_VARIANT_UNDOCUMENTED proc near ; CODE XREF: SETTASKQUEUE↓p
+GETTASKHANDLE_VARIANT_UNDOC proc near ; CODE XREF: SETTASKQUEUE↓p
                                         ; SETPRIORITY↓p
                 mov     bx, sp
                 mov     ax, ss:[bx+8]
                 mov     bx, ss:[bx+6]
                 jmp     short GETTASKHANDLE
-GETTASKHANDLE_VARIANT_UNDOCUMENTED endp
+GETTASKHANDLE_VARIANT_UNDOC endp
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 proc near ; CODE XREF: POSTEVENT↓p
+GETTASKHANDLE_VARIANT_UNDOC_2 proc near ; CODE XREF: POSTEVENT↓p
                                         ; GETTASKQUEUE↓p
                 mov     bx, sp
                 mov     ax, ss:[bx+6]
-GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 endp
+GETTASKHANDLE_VARIANT_UNDOC_2 endp
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -173,7 +178,7 @@ GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 endp
 
 
 GETTASKHANDLE   proc near               ; CODE XREF: WAITEVENT+8↑p
-                                        ; GETTASKHANDLE_VARIANT_UNDOCUMENTED+A↑j ...
+                                        ; GETTASKHANDLE_VARIANT_UNDOC+A↑j ...
                 or      ax, ax                          ; did the user provide a hTask pointer?
                 jnz     short verify_and_return_handle  ; if they did, branch
                 mov     ax, cs:CURTDB                   ; if they didn't, get the current TDB (task data block) segaddr 
@@ -182,7 +187,7 @@ verify_and_return_handle:
                 mov     es, ax                          ; convert to segaddress so it can be referenced as a segment
                 cmp     word ptr es:7Eh, 4454h          ; is 0x7E of the task data block the string "TD"? (same as MDOS4!)
                 jnz     short invalid_task_handle       ; If not, this is considered a fatal error (as it can't be a TDB). 
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 invalid_task_handle:                               ; CODE XREF: GETTASKHANDLE+11↑j
@@ -203,7 +208,7 @@ SZERRINVALIDTASKHANDLE db 'GetTaskHandle: Invalid task handle',0
 ; ---------------------------------------------------------------------------
 
 locret_3CF1:                            ; CODE XREF: GETTASKHANDLE+24↑j
-                retn
+                ret
 GETTASKHANDLE   endp
 
 ;
@@ -216,9 +221,9 @@ GETTASKHANDLE   endp
 
                 public POSTEVENT
 POSTEVENT       proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 ; KERNEL_31
+                call    GETTASKHANDLE_VARIANT_UNDOC_2 ; KERNEL_31
                 inc     word ptr es:6
-                retf    2
+                ret     2
 POSTEVENT       endp
 
 ;
@@ -231,9 +236,9 @@ POSTEVENT       endp
 
                 public GETTASKQUEUE
 GETTASKQUEUE    proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED_2 ; KERNEL_35
+                call    GETTASKHANDLE_VARIANT_UNDOC_2 ; KERNEL_35
                 mov     ax, es:12h
-                retf    2
+                ret     2
 GETTASKQUEUE    endp
 
 ; ---------------------------------------------------------------------------
@@ -278,7 +283,7 @@ SETTASKSWITCHPROC proc far
                 mov     bl, cl
                 xchg    ax, es:[bx]
                 xchg    dx, es:[bx+2]
-                retf    6
+                ret     6
 SETTASKSWITCHPROC endp
 
 ;
@@ -291,10 +296,10 @@ SETTASKSWITCHPROC endp
 
                 public SETTASKQUEUE
 SETTASKQUEUE    proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; KERNEL_34
+                call    GETTASKHANDLE_VARIANT_UNDOC ; KERNEL_34
                 mov     ax, bx
                 xchg    ax, es:12h
-                retf    4
+                ret     4
 SETTASKQUEUE    endp
 
 ;
@@ -316,7 +321,7 @@ SETTASKQUEUE    endp
 
                 public SETPRIORITY
 SETPRIORITY     proc far
-                call    GETTASKHANDLE_VARIANT_UNDOCUMENTED ; get the TDB from hTask, this will fatalexit if the task is wrong
+                call    GETTASKHANDLE_VARIANT_UNDOC ; get the TDB from hTask, this will fatalexit if the task is wrong
                 add     bl, es:8                    ; get new task priority by adding the old task priority (TDB:0008h) to bl (nChangeAmount)
                 cmp     bl, 0E0h                    ; is new priority above or equal to -15?
                 jge     short check_priority_high   ; branch   
@@ -340,7 +345,7 @@ set_priority:                               ; CODE XREF: SETPRIORITY+12↑j
                 dec     byte ptr es:8               ; decrement the priority by 1 for some reason (we incremented it ealrier)
                 pop     ax                          ; return value from INSERTTASK 
                 cbw                                 ; sign extend it for calling convention
-                retf    4                           
+                ret     4                           
 SETPRIORITY     endp
 
 
@@ -360,14 +365,11 @@ RESCHEDULE      proc far                ; CODE XREF: WAITEVENT+29↓j
                 push    si
                 push    di
                 push    ax              
-RESCHEDULE      endp ; sp-analysis failed
-
       
 ; =============== S U B R O U T I N E =======================================
 
 ; is actually the second half of RESCHEDULE, this is called during boot
-; TODO: CHANGE TO LABEL
-BOOTSCHEDULE    proc far                ; CODE XREF: BOOTSCHEDULE+A↓j
+BOOTSCHEDULE:                           ; CODE XREF: BOOTSCHEDULE+A↓j
                                         ; BOOTSCHEDULE+E3↓j ...
                 mov     ax, cs:HEADTDB  ; get currently running process
 ; nothing to do...so sleep :)
@@ -400,7 +402,7 @@ loc_3B18:                               ; CODE XREF: BOOTSCHEDULE+6↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf                    ; go back to whatever we were doing before
+                ret                     ; go back to whatever we were doing before
 ; ---------------------------------------------------------------------------
 
 reschedule_check_supertask:                               ; CODE XREF: BOOTSCHEDULE+21↑j
@@ -474,7 +476,7 @@ reschedule_abort:                               ; CODE XREF: BOOTSCHEDULE+34↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_3BBD:                               ; CODE XREF: BOOTSCHEDULE+A4↑j
@@ -504,7 +506,7 @@ loc_3BBD:                               ; CODE XREF: BOOTSCHEDULE+A4↑j
                 pop     es
                 pop     cx
                 jmp     near ptr BOOTSCHEDULE
-BOOTSCHEDULE    endp ; sp-analysis failed
+RESCHEDULE      endp ; sp-analysis failed
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -530,7 +532,7 @@ BOOTSCHEDULE    endp ; sp-analysis failed
                 public GETVERSION
 GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p
                 mov     ax, 301h        ; 0103h = Windows 1.03
-                retf
+                ret
 GETVERSION      endp
 
 sEnd CODE

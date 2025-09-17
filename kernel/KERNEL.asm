@@ -4,7 +4,7 @@
 
 ; kernel.asm: Misc unidentified crap.
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
 
 assumeS CS,CODE
@@ -27,7 +27,7 @@ sub_48C1        proc far
                 ror     word ptr [bx+si+2Eh], cl
                 mov     ds:48BEh, bx
                 mov     word ptr cs:unk_48C0, es
-                retf
+                ret
 sub_48C1        endp
 
 
@@ -41,7 +41,7 @@ sub_48D3        proc far
                 mov     word ptr [bx+3], 300h
                 pop     bx
                 pop     ds
-                retf
+                ret
 sub_48D3        endp
 
 sEnd CODE

@@ -1,4 +1,4 @@
-/* ****** modern:personality project ******
+; ****** modern:personality project ******
 ; Reverse engineered code  © 2022-2025 starfrost. See licensing information in the licensing file
 ; Original code            © 1982-1986 Microsoft Corporation
 
@@ -6,11 +6,50 @@
 
 ; In Windows 1.x, this is a C file. In later versions of Windows, it was rewritten in assembly.
 ; Currently, for the purposes of bootstrapping the kernel, it's an assembly file because it's critical for system operation.
-; Later on in the project, it will be rewritten
+; Later on in the project, it will be rewritten (see LD.c)
 
 ; #ifdef DEBUG 
 
 ; =============== S U B R O U T I N E =======================================
+INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP LOADMODULE_LOADEXEHEADER
+
+; Yes,a lmost all of this got assembly-ised and moved to LDUTIL. This codebase is a mess...
+externNP _LCLOSE
+externNP LSTRLEN
+externNP FINDEXEINFO
+externNP OPENFILE
+externNP STARTPROCADDRESS
+externNP GLOBALCOMPACT
+externNP LOADSEGMENT
+externNP CREATETASK
+externNP GETEXEPTR
+; exe header shit
+externNP LOADEXEHEADER
+externNP TRIMEXEHEADER
+externNP INCEXEUSAGE
+externNP DECEXEUSAGE
+externNP CALCMAXNRSEG
+
+; Internal Kernel wrappers
+externNP MYFREE
+externNP MYLOCK
+externNP DELETETASK
+externNP PRELOADRESOURCES
+externNP GETSTRINGPTR
+externNP ALLOCALLSEGS
+externNP GLOBALFREE
+externNP GLOBALFREEALL
+externNP YIELD
+externNP GETSTACKPTR
+externNP GETINSTANCE
+
+sBegin CODE
+
+assumeS CS,CODE
+assumeS DS,CODE
 
 ; Attributes: bp-based frame
 
@@ -60,7 +99,7 @@ loc_1429:                               ; CODE XREF: ADDMODULE+3A↑j
                                         ; ADDMODULE+48↑j
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 ADDMODULE       endp
 
 
@@ -105,7 +144,7 @@ loc_145E:                               ; CODE XREF: DELMODULE+19↑j
                 call    CALCMAXNRSEG
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 DELMODULE       endp
 
 ;
@@ -161,7 +200,7 @@ loc_14AF:                               ; CODE XREF: FREEMODULE+12↑j
                 xor     ax, ax
                 jmp     short loc_1519
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_14B4:                               ; CODE XREF: FREEMODULE+1D↑j
                 mov     es, [bp+var_4]
@@ -221,7 +260,7 @@ loc_1519:                               ; CODE XREF: FREEMODULE+3A↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 FREEMODULE      endp
 
 
@@ -334,7 +373,7 @@ loc_3AE:                                ; CODE XREF: STARTMODULE+47↑j
                                         ; STARTMODULE+8B↑j ...
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 STARTMODULE     endp
 
 
@@ -421,7 +460,7 @@ loc_421:                                ; CODE XREF: LOADMODULE+67↑j
                 lea     ax, [bp-9Ch]
                 push    ss
                 push    ax
-                mov     ax, offset loc_2800
+                mov     ax, offset LOADMODULE_LOADEXEHEADER
                 push    ax
                 nop
                 push    cs
@@ -863,7 +902,7 @@ loc_7D6:                                ; CODE XREF: LOADMODULE+A7↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    8
+                ret     8
 LOADMODULE      endp
 
 
@@ -907,7 +946,7 @@ loc_2919:                               ; CODE XREF: STARTLIBRARY+2F↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 STARTLIBRARY    endp
 
 
@@ -971,7 +1010,7 @@ loc_298D:                               ; CODE XREF: STARTTASK+9↑j
                 pop     di
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 ; ---------------------------------------------------------------------------
 
 loc_2996:                               ; CODE XREF: STARTTASK+22↑j
@@ -985,5 +1024,10 @@ loc_2996:                               ; CODE XREF: STARTTASK+22↑j
                 xor     di, di
                 jmp     short loc_298D
 STARTTASK       endp
+
+sEnd CODE
+
+end
+
 
 ; #endif

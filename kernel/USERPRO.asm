@@ -10,11 +10,36 @@
 ;
 ; Maybe they thought people would like keep folders full of them for different users or something lmao
 INCLUDE KERNEL.inc
-
+INCLUDE KDATA.inc
 sBegin CODE
+
+externW HFILE
+
+externNP GLOBALALLOC
+externNP GLOBALREALLOC
+externNP GLOBALFREE
+externNP GLOBALLOCK
+externNP GLOBALUNLOCK 
+externNP MYALLOC 
+externNP MYLOWER
+externNP OPENFILE
 
 assumeS CS,CODE
 assumeS DS,CODE
+
+INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p
+                push    ds
+                push    si
+                push    di
+                mov     di, 0
+                call    BUFFERINIT
+                call    UNLOCKBUFFER
+                pop     di
+                pop     si
+                pop     ds
+                assume ds:nothing
+                ret
+INITPROFILE     endp
 
 ;
 ; External Entry #57 into the Module
@@ -43,7 +68,7 @@ arg_8           = word ptr  0Eh
                 push    di
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 push    [bp+arg_8]
                 push    [bp+arg_6]
                 push    [bp+arg_4]
@@ -86,7 +111,7 @@ loc_4CFC:                               ; CODE XREF: GETPROFILEINT+20↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ah
+                ret     0Ah
 GETPROFILEINT   endp
 
 ;
@@ -117,7 +142,7 @@ arg_10          = word ptr  16h
                 push    di
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     ax, [bp+arg_A]
                 mov     dx, [bp+arg_C]
                 or      ax, dx
@@ -131,7 +156,7 @@ arg_10          = word ptr  16h
                 jnb     short loc_4D93
                 jmp     short loc_4D52
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_4D38:                               ; CODE XREF: GETPROFILESTRING+11↑j
                 push    [bp+arg_10]
@@ -197,7 +222,7 @@ loc_4D93:                               ; CODE XREF: GETPROFILESTRING+25↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    12h
+                ret     12h
 GETPROFILESTRING endp
 
 
@@ -225,7 +250,7 @@ arg_6           = dword ptr  0Ah
                 jnz     short loc_4DBC
                 jmp     short loc_4E33
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_4DBC:                               ; CODE XREF: GETKEYS+12↑j
                 dec     [bp+arg_0]
@@ -323,7 +348,7 @@ loc_4E34:                               ; CODE XREF: GETKEYS+8C↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret    0Ah
 GETKEYS         endp
 
 
@@ -411,7 +436,7 @@ loc_4EA9:                               ; CODE XREF: GETSTRING+13↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 GETSTRING       endp
 
 
@@ -440,7 +465,7 @@ loc_4EC0:                               ; CODE XREF: PROFILESTRINGTOLOWER+5↑j
                 jz      short PROFILESTRINGTOLOWER
 
 locret_4ED2:                            ; CODE XREF: PROFILESTRINGTOLOWER+B↑j
-                retn
+                ret
 PROFILESTRINGTOLOWER endp
 
 
@@ -454,7 +479,7 @@ BUFFERINIT      proc near               ; CODE XREF: GETKEYS+8↑p
 
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 mov     ax, BUFFER
                 or      ax, ax
                 jz      short loc_4EE9
@@ -462,7 +487,7 @@ BUFFERINIT      proc near               ; CODE XREF: GETKEYS+8↑p
                 mov     bx, ax
                 or      bx, dx
                 jz      short loc_4EE6
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_4EE6:                               ; CODE XREF: BUFFERINIT+10↑j
@@ -556,7 +581,7 @@ loc_4F62:                               ; CODE XREF: BUFFERINIT+3C↑j
                 mov     ds:22h, ax
                 mov     ds:24h, ax
                 mov     ds:26h, dx
-                retn
+                ret
 BUFFERFREE      endp
 
 ; ---------------------------------------------------------------------------
@@ -663,7 +688,7 @@ LOCKBUFFER      proc near               ; CODE XREF: BUFFERINIT+9↑p
                 call    near ptr GLOBALLOCK
                 mov     ds:24h, ax
                 mov     ds:26h, dx
-                retn
+                ret
 LOCKBUFFER      endp
 
 
@@ -687,7 +712,7 @@ UNLOCKBUFFER    proc near               ; CODE XREF: GETPROFILEINT+41↑p
                                         ; BX = file handle
 
 locret_500B:                            ; CODE XREF: UNLOCKBUFFER+12↑j
-                retn
+                ret
 UNLOCKBUFFER    endp
 
 
@@ -704,7 +729,7 @@ loc_500F:                               ; CODE XREF: BUFFERINIT+41↑p
                 xor     dx, dx
                 int     21h             ; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK)
                                         ; AL = method: offset from beginning of file
-                retn
+                ret
 MOVEBUFFERPOINTER endp
 
 ;
@@ -735,7 +760,7 @@ arg_8           = dword ptr  0Eh
                 push    di
                 push    cs
                 pop     ds
-                assume ds:cseg01
+                assume ds:_TEXT
                 xor     ax, ax
                 xchg    ax, BUFFER
                 push    ax
@@ -960,7 +985,7 @@ loc_51B2:                               ; CODE XREF: WRITEPROFILESTRING+24↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    0Ch
+                ret     0Ch
 WRITEPROFILESTRING endp ; sp-analysis failed
 
 
@@ -976,7 +1001,7 @@ BUFFERWRITE     proc far                ; CODE XREF: WRITEPROFILESTRING+D7↑p
                 cmp     ax, cx
                 jnz     short loc_51CD
                 add     [bp-0Ah], cx
-                retn
+                ret
 ; ---------------------------------------------------------------------------
 
 loc_51CD:                               ; CODE XREF: BUFFERWRITE+4↑j
@@ -996,7 +1021,7 @@ loc_51D4:                               ; CODE XREF: BUFFERWRITE+1A↓j
                 ja      short loc_51D4
                 neg     cx
                 add     cx, di
-                retn
+                ret
 BUFFERWRITE     endp ; sp-analysis failed
 
 sEnd CODE

@@ -8,7 +8,16 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
 
+externNP GALLOC
+
+externNP GENTERCURRENTPDB
+
+externNP GFREE
+
+externNP GLEAVE
+externNP GREALLOC
 
 sBegin CODE
 
@@ -18,7 +27,8 @@ assumeS DS,CODE
 INT21ALLOC      proc near               ; CODE XREF: DOSAllocMemoryHook+3↑p
                 call    GENTERCURRENTPDB
                 call    GALLOC
-                jmp     short GLEAVE 
+                ;jmp     short GLEAVE ; optimisation
+                jmp     GLEAVE        ; TODO: Figure out how to change to above so that we match
 INT21ALLOC      endp
 
 ; ---------------------------------------------------------------------------
@@ -30,18 +40,19 @@ INT21ALLOC      endp
 INT21REALLOC    proc near               ; CODE XREF: DOSResizeMemoryHook+35↑p
                 call    GENTERCURRENTPDB
                 call    GREALLOC
-                jmp     short GLEAVE
+                ;jmp     short GLEAVE ; optimisation
+                jmp     GLEAVE        ; TODO: Figure out how to change to above so that we match
 INT21REALLOC    endp
 
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 ; =============== S U B R O U T I N E =======================================
 
 
-j_GENTERCURRENTPDB proc near            ; CODE XREF: DOSFreeMemoryHook+5↑p
+INT21ENTERCURRENTPDB proc near            ; CODE XREF: DOSFreeMemoryHook+5↑p
                 call    GENTERCURRENTPDB
-j_GENTERCURRENTPDB endp
+INT21ENTERCURRENTPDB endp
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -50,7 +61,8 @@ j_GENTERCURRENTPDB endp
 INT21FREE       proc near
                 xor     cx, cx
                 call    GFREE
-                jmp     short GLEAVE
+                ;jmp     short GLEAVE ; optimisation
+                jmp     GLEAVE        ; TODO: Figure out how to change to above so that we match
 INT21FREE       endp
 
 sEnd CODE

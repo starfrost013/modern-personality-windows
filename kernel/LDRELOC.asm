@@ -9,6 +9,28 @@
 
 ; =============== S U B R O U T I N E =======================================
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP MYALLOC
+externNP MYFREE
+externNP MYLOCK
+externNP GLOBALALLOC
+externNP GLOBALREALLOC
+externNP GLOBALCOMPACT
+externNP GLOBALFREE
+externNP GLOBALFREEALL
+externNP GETEXEPTR
+externNP LOCKSEGMENT
+externNP GETSTRINGPTR
+externNP DECEXEUSAGE
+externNP CALCMAXNRSEG
+externNP ENTPROCADDRESS
+externNP FINDORDINAL
+externNP OPENFILE
+
+if KDEBUG
+    externNP DEBUGDEFINESEGMENT
+endif
 
 sBegin CODE
 
@@ -56,7 +78,7 @@ loc_DB1:                                ; CODE XREF: GETCHKSUMADDR+34↑j
 loc_DC6:                                ; CODE XREF: GETCHKSUMADDR+E↑j
                                         ; GETCHKSUMADDR+15↑j ...
                 pop     dx
-                retn
+                ret
 GETCHKSUMADDR   endp
 
 
@@ -111,7 +133,7 @@ SZSEGMENTCONTENTSTRASHED db 'Segment contents trashed ',0
 
 check_seg_done:                             ; CODE XREF: CHECKSEGCHKSUM+5↑j
                                         ; CHECKSEGCHKSUM+24↑j ...
-                retn
+                ret
 CHECKSEGCHKSUM  endp
 
 
@@ -195,7 +217,7 @@ loc_EA4:                                ; CODE XREF: ALLOCSEG+3A↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 ALLOCSEG        endp
 
 
@@ -310,7 +332,7 @@ loc_F68:                                ; CODE XREF: ALLOCALLSEGS+94↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 ALLOCALLSEGS    endp
 
 
@@ -615,7 +637,7 @@ loc_1176:                               ; CODE XREF: SEGLOAD+1FD↑j
                 mov     word ptr es:[bx], 9090h
                 jmp     short loc_11A0
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_1196:                               ; CODE XREF: SEGLOAD+1BE↑j
                 jmp     short loc_11B8
@@ -688,7 +710,7 @@ loc_120F:                               ; CODE XREF: SEGLOAD+FD↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    0Ah
+                ret     0Ah
 SEGLOAD         endp
 
 
@@ -883,7 +905,7 @@ loc_1306:                               ; CODE XREF: LOADSEGMENT+E0↑j
 loc_133C:                               ; CODE XREF: LOADSEGMENT+111↑j
                 xor     si, si
                 mov     es, si
-                assume es:cseg01
+                assume es:_TEXT
 
 loc_1340:                               ; CODE XREF: LOADSEGMENT+EB↑j
                 push    [bp+arg_6]
@@ -968,7 +990,7 @@ loc_13D2:                               ; CODE XREF: LOADSEGMENT+1A7↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    8
+                ret     8
 LOADSEGMENT     endp
 
 
@@ -1022,7 +1044,7 @@ loc_1429:                               ; CODE XREF: ADDMODULE+3A↑j
                                         ; ADDMODULE+48↑j
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 ADDMODULE       endp
 
 
@@ -1067,7 +1089,7 @@ loc_145E:                               ; CODE XREF: DELMODULE+19↑j
                 call    CALCMAXNRSEG
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 DELMODULE       endp
 
 ;
@@ -1123,7 +1145,7 @@ loc_14AF:                               ; CODE XREF: FREEMODULE+12↑j
                 xor     ax, ax
                 jmp     short loc_1519
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_14B4:                               ; CODE XREF: FREEMODULE+1D↑j
                 mov     es, [bp+var_4]
@@ -1183,7 +1205,7 @@ loc_1519:                               ; CODE XREF: FREEMODULE+3A↑j
                 pop     ds
                 pop     bp
                 dec     bp
-                retf    2
+                ret     2
 FREEMODULE      endp
 
 
@@ -1518,7 +1540,7 @@ loc_173F:                               ; CODE XREF: SEGRELOC+1EF↑j
 loc_1741:
                 jmp     short loc_177C
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_1744:                               ; CODE XREF: SEGRELOC:loc_15FD↑j
                 mov     es, [bp+arg_E]
@@ -1542,7 +1564,7 @@ loc_1777:                               ; CODE XREF: SEGRELOC+228↑j
                 xor     ax, ax
                 jmp     short loc_177C
 ; ---------------------------------------------------------------------------
-                align 2
+                ;align 2
 
 loc_177C:                               ; CODE XREF: SEGRELOC+D4↑j
                                         ; SEGRELOC:loc_16A4↑j ...
@@ -1550,7 +1572,7 @@ loc_177C:                               ; CODE XREF: SEGRELOC+D4↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    10h
+                ret     10h
 SEGRELOC        endp
 
 sEnd CODE

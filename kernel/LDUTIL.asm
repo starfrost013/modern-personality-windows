@@ -8,6 +8,22 @@
 
 ; Attributes: bp-based frame
 INCLUDE KERNEL.inc
+INCLUDE KDATA.inc
+
+externNP DELMODULE
+
+externNP GLOBALALLOC
+
+externNP GLOBALHANDLE
+externNP GLOBALUNLOCK
+externNP GLOBALFREE
+externNP LOADSEGMENT
+externNP PATCHTHUNKS
+
+if KDEBUG
+    externNP DEBUGFREESEGMENT
+endif
+
 sBegin CODE
 
 assumeS CS,CODE
@@ -49,7 +65,7 @@ loc_9F8:                                ; CODE XREF: INCEXEUSAGE+7↑j
                 pop     di
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 INCEXEUSAGE     endp
 
 
@@ -103,7 +119,7 @@ loc_A59:                                ; CODE XREF: DECEXEUSAGE+9↑j
                 pop     di
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 DECEXEUSAGE     endp
 
 
@@ -217,10 +233,7 @@ loc_894:                                ; CODE XREF: ENTPROCADDRESS+1D↑j
                 mov     dx, ax
                 mov     ax, si
                 jmp     short loc_8D0
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
-
+                nop
 loc_8BF:                                ; CODE XREF: ENTPROCADDRESS+86↑j
                 mov     ax, bx
                 shl     bx, 1
@@ -237,7 +250,7 @@ loc_8D0:                                ; CODE XREF: ENTPROCADDRESS+7A↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 ENTPROCADDRESS  endp
 
 ; =============== S U B R O U T I N E =======================================
@@ -272,7 +285,7 @@ loc_A86:                                ; CODE XREF: STARTPROCADDRESS+12↑j
                 pop     di
                 mov     sp, bp
                 pop     bp
-                retn    4
+                ret     4
 STARTPROCADDRESS endp
 
 
@@ -302,7 +315,7 @@ loc_AAB:                                ; CODE XREF: GETINSTANCE+F↑j
                 mov     cx, ax
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 GETINSTANCE     endp
 
 
@@ -365,7 +378,7 @@ loc_B14:                                ; CODE XREF: GETEXEPTR+B↑j
                 mov     cx, ax
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 GETEXEPTR       endp
 
 
@@ -437,7 +450,7 @@ loc_BCE:                                ; CODE XREF: MYALLOC+4A↑j
                 pop     dx
                 mov     sp, bp
                 pop     bp
-                retn    6
+                ret     6
 MYALLOC         endp
 
 
@@ -459,7 +472,7 @@ arg_0           = word ptr  4
                 xchg    ax, dx
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 MYLOCK          endp
 
 
@@ -516,7 +529,7 @@ loc_C20:                                ; CODE XREF: MYFREE+6↑j
                 call    near ptr GLOBALFREE
                 mov     sp, bp
                 pop     bp
-                retn    2
+                ret     2
 MYFREE          endp
 
 sEnd CODE
