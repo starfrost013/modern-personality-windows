@@ -4,6 +4,8 @@
 *.obj
 *.OBJ
 *.CRF
+*.IDB
+*.I64
 *.LST
 *.MAP
 KERNSTUB.exe

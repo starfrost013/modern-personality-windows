@@ -1,4 +1,4 @@
-@echo off
+echo off
 
 echo Building Kernel...
 
@@ -25,6 +25,13 @@ del *.crf
 del *.obj 
 copy kernstub.exe out
 copy kernel.exe out
+copy kernel.map out
+copy kernstub.map out
+
+del kernstub.exe
+del kernel.exe
+del kernel.map
+del kernstub.map 
 
 REM get out of ms-dos player
 exit 

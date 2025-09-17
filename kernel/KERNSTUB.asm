@@ -46,9 +46,10 @@ assumes DS,CODE
 start PROC FAR
 	push    cs
 	pop     ds
-	mov     si, 130h
-	add     si, 3FFh ; was 1FFh
-	and     si, 0FE00h ; 0x200 - location of NE header in binary
+	mov     si, 180h
+	; the MP kernstub is larger than the retail microsoft one. so we just do this.
+	;add     si, 1FFh 
+	;and     si, 0FE00h ; 0x200 - location of NE header in binary
 	cmp     word ptr [si], 454Eh ; check for NE header magic
 	jnz     short call_boot_failure ; jump to fail code if it is not 0x4E45 ("NE")
 	mov     ax, ds
@@ -94,7 +95,7 @@ load_segment:
 	sub     cx, 4 ; segment table address is in paragraphs (16-bytes)
 	shl     ax, cl
 	mov     dx, cs
-	sub     dx, 20h 
+	sub     dx, 28h ; 20h for larger MP kernstub, 8h 
 	add     dx, ax
 	push    dx
 	push    word ptr [si].ne_csip ; initial CSIP value from our first code segment
@@ -105,11 +106,11 @@ load_segment:
 
 ; DEBUG message so that we can see if we booted properly.
 boot:
-	push cs
-	pop ds
-	mov dx, word ptr lol_msg
-	mov ah, 9
-	int 21h
+	;push cs
+	;pop ds
+	;mov dx, word ptr lol_msg
+	;mov ah, 9
+	;int 21h
 	
 	; this is RETF because this is a far proc
 	ret ; return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
