@@ -164,7 +164,7 @@ GALLOC          proc near               ; CODE XREF: INT21ALLOC+3↓p
                 jcxz    short loc_5F64
                 or      dh, 40h
                 mov     [bx+2], dh
-                jmp     short loc_5F88
+                jmp     short done
 ; ---------------------------------------------------------------------------
 
 loc_5F5E:                               ; CODE XREF: GALLOC+32↓j
@@ -176,14 +176,14 @@ loc_5F64:                               ; CODE XREF: GALLOC+8↑j
                                         ; GALLOC+F↑j
                 xor     dx, dx
                 xor     ax, ax
-                jmp     short loc_5F88
+                jmp     short done
 ; ---------------------------------------------------------------------------
 
 loc_5F6A:                               ; CODE XREF: GALLOC+2↑j
                 call    GSEARCH
-                jz      short loc_5F88
+                jz      short done
                 test    dl, 2
-                jz      short loc_5F88
+                jz      short done
                 call    HALLOC
                 jcxz    short loc_5F5E
                 mov     si, [bx]
@@ -193,7 +193,7 @@ loc_5F6A:                               ; CODE XREF: GALLOC+2↑j
                 mov     [bx+2], dh
                 call    GLRUADD
 
-loc_5F88:                               ; CODE XREF: GALLOC+17↑j
+done:                               ; CODE XREF: GALLOC+17↑j
                                         ; GALLOC+23↑j ...
                 mov     cx, ax
                 ret
@@ -741,7 +741,7 @@ GSEARCH         proc near               ; CODE XREF: GALLOC:loc_5F6A↑p
                 mov     bl, 6
 
 loc_63B4:                               ; CODE XREF: GSEARCH+13↑j
-                mov     es, word ptr es:[bx]
+                mov     es, word ptr es:[bx] ; ends up here. bx=8
 
 loc_63B7:                               ; CODE XREF: GSEARCH+5B↓j
                                         ; GSEARCH+81↓j
@@ -787,8 +787,8 @@ loc_63F7:                               ; CODE XREF: GSEARCH+2A↑j
 ; ---------------------------------------------------------------------------
 
 loc_6409:                               ; CODE XREF: GSEARCH+21↑j
-                call    GCHECKFREE
-                jnb     short loc_6432
+                call    GCHECKFREE      ; ax=001c
+                jnb     short gsearch_success
                 cmp     [di+1Eh], di
                 jz      short loc_6418
                 cmp     bl, 6
@@ -805,21 +805,20 @@ loc_641D:                               ; CODE XREF: GSEARCH+64↑j
                 call    GCOMPACT
                 pop     bx
                 cmp     ax, dx
-                jnb     short loc_6432
+                jnb     short gsearch_success
                 mov     dx, ax
                 or      dx, dx
-                jz      short loc_642D
+                jz      short gsearch_fail
                 dec     dx
-
-loc_642D:                               ; CODE XREF: GSEARCH+90↑j
+; getting here for some reason
+gsearch_fail:                               ; CODE XREF: GSEARCH+90↑j
                 pop     ax
                 pop     cx
                 xor     ax, ax
                 ret
 ; ---------------------------------------------------------------------------
 
-loc_6432:                               ; CODE XREF: GSEARCH+72↑j
-                                        ; GSEARCH+8A↑j
+gsearch_success:                               ; there's free memory
                 mov     ax, es:[di+3]
                 inc     ax
                 mov     cx, ax

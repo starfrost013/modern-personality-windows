@@ -532,7 +532,6 @@ loc_4CAA:                               ; CODE XREF: GETATOMNAME+3A↑j
 GETATOMNAME     endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
-                db '[]',0Dh,0Ah,'='
 sEnd CODE
 
 end

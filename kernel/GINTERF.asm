@@ -44,10 +44,11 @@ assumeS DS,CODE
 
                 public GLOBALALLOC
 GLOBALALLOC     proc far                ; CODE XREF: MYALLOC+44↑p
-                                        ; LOADSEGMENT+103↑p ...
+                                            ; LOADSEGMENT+103↑p ...
 
-arg_0           = byte ptr  6
-arg_4           = word ptr  0Ah
+; might be the other way around
+dwBytes           = byte ptr  6
+wFlags           = word ptr  0Ah
 
                 inc     bp              ; KERNEL_15
                 push    bp
@@ -55,12 +56,12 @@ arg_4           = word ptr  0Ah
                 push    ds
                 push    si
                 push    di
-                jmp     loc_6C7B
+                jmp     do_alloc
 
                 ;temp
                 ;call    CHECKGLOBALHEAP
                 ;or      ax, ax
-                ;jz      short loc_6C7B
+                ;jz      short do_alloc
                 or      ax, 200h
                 xor     bx, bx
                 push    ax
@@ -70,19 +71,19 @@ arg_4           = word ptr  0Ah
                 push    dx
                 push    bx
                 call    KERNELERROR
-                jmp     short loc_6C7B
+                jmp     short do_alloc
 ; ---------------------------------------------------------------------------
 SZERRGLOBALALLOC db 'GlobalAlloc: Invalid global heap',0
                                         ; DATA XREF: GLOBALALLOC+14↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-loc_6C7B:                               ; CODE XREF: GLOBALALLOC+C↑j
+do_alloc:                               ; CODE XREF: GLOBALALLOC+C↑j
                                         ; GLOBALALLOC+1E↑j
                 call    GENTER
                 xor     dx, dx
-                mov     ax, [bp+arg_4]
-                lea     bx, [bp+arg_0]
+                mov     ax, [bp+wFlags]
+                lea     bx, [bp+dwBytes]
                 call    GBTOP
                 call    GALLOC
                 call    GLEAVE

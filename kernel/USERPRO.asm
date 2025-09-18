@@ -25,6 +25,9 @@ externNP OPENFILE
 assumeS CS,CODE
 assumeS DS,CODE
 
+; INI section and key/value delimiters
+SZINISECTION    db '[]',0Dh,0Ah,'='
+
                 PUBLIC INITPROFILE
 INITPROFILE     proc near               ; CODE XREF: FASTBOOT+62↑p
                 push    ds

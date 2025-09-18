@@ -12,9 +12,11 @@
 ; Prevent implicit creation of segments
 ?NODATA = 1
 ?DF = 1
+SWAPPRO = 0 ; can we remove this entirely?`
 
 ; Include CMACROS
 include CMACROS.inc
+include NEWEXE.inc
 
 ; 0 = Retail Windows
 KDEBUG=1

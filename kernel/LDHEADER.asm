@@ -29,7 +29,7 @@ var_4           = word ptr -4
 var_2           = word ptr -2
 arg_2           = word ptr  6
 arg_4           = word ptr  8
-arg_6           = word ptr  0Ah
+arg_6           = word ptr  0Ah          ; if arg_4=arg_6, the file is not already in memory, so load it from disk
 
                 push    bp
                 mov     bp, sp
@@ -42,67 +42,65 @@ arg_6           = word ptr  0Ah
                 jz      short loc_2571
                 lds     si, [bp+4]
                 mov     al, [si]
-                inc     ax
+                inc     ax              ;ax=16
 
-loc_2571:                               ; CODE XREF: LOADEXEHEADER+10↑j
+loc_2571:                               
                 mov     [bp+var_2], ax
                 mov     bx, [bp+arg_6]
                 cmp     [bp+arg_4], bx
-                jz      short loc_2583
-                mov     ds, bx
-                xor     si, si
-                jmp     short loc_25CD
+                jz      short file_not_in_memory ; if arg_4=arg_6, the file is not already in memory, so load it from disk
+                mov     ds, bx          ; load ds with the segaddr of the header
+                xor     si, si          ; go to the start
+                jmp     short read_ne_file
                 nop
-
-loc_2583:                               ; CODE XREF: LOADEXEHEADER+21↑j
+; the file we want to read the header from is not already load
+file_not_in_memory:                               
                 push    ss
                 pop     ds
                 lea     si, [bp+var_46]
                 mov     dx, si
-                mov     cx, 40h ; '@'
+                mov     cx, 40h ; '@'    ; read the first 0x40 bytes of the file
                 mov     bx, [bp+arg_6]
-                mov     ah, 3Fh ; '?'
+                mov     ah, 3Fh ; '?'  
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read
                                         ; DS:DX -> buffer
-                jb      short loc_25C8
+                jb      short file_not_valid_ne
                 cmp     ax, cx
-                jb      short loc_25C8
-                cmp     word ptr [si], 5A4Dh
-                jnz     short loc_25C8
+                jb      short file_not_valid_ne
+                cmp     word ptr [si], 5A4Dh    ; check for mz magic
+                jnz     short file_not_valid_ne ; check if file is mz
                 mov     cx, [si+3Eh]
                 mov     dx, [si+3Ch]
                 mov     ax, cx
                 or      ax, dx
-                jz      short loc_25C8
+                jz      short file_not_valid_ne
                 mov     ax, 4200h
                 int     21h             ; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK)
                                         ; AL = method: offset from beginning of file
-                jb      short loc_25C8
-                mov     cx, 40h ; '@'
+                jb      short file_not_valid_ne
+                mov     cx, 40h ; '@'   ; read *next* 0x40 bytes
                 mov     dx, si
-                mov     ah, 3Fh ; '?'
+                mov     ah, 3Fh ; '?'   
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read
                                         ; DS:DX -> buffer
-                jb      short loc_25C8
-                cmp     ax, cx
-                jnz     short loc_25C8
-                cmp     word ptr [si], 454Eh
-                jz      short loc_25CD
+                jb      short file_not_valid_ne
+                cmp     ax, cx          ; make sure that many actually exist
+                jnz     short file_not_valid_ne
+                cmp     word ptr [si], 454Eh ; 'NE' (New Executable)
+                jz      short read_ne_file
 
-loc_25C8:                               ; CODE XREF: LOADEXEHEADER+3B↑j
-                                        ; LOADEXEHEADER+3F↑j ...
+file_not_valid_ne:                               
                 xor     ax, ax
-                jmp     loc_28BA
+                jmp     done
 ; ---------------------------------------------------------------------------
 
-loc_25CD:                               ; CODE XREF: LOADEXEHEADER+27↑j
-                                        ; LOADEXEHEADER+6D↑j
-                mov     [bp+var_6], bx
-                mov     di, [si+4]
-                add     di, [si+6]
-                mov     cx, [si+1Ch]
+read_ne_file:                               
+                mov     [bp+var_6], bx ; 0fd3 (right)
+                mov     di, word ptr [si].ne_enttab     ; offset of entry table
+                add     di, word ptr [si].ne_cbenttab   ; es:di pointing to end of entry table
+                mov     cx, word ptr [si].ne_cseg       ; number of segments
                 add     di, cx
                 shl     cx, 1
                 add     di, cx
@@ -111,7 +109,7 @@ loc_25CD:                               ; CODE XREF: LOADEXEHEADER+27↑j
                 add     cx, 2
                 shl     cx, 1
                 add     di, cx
-                mov     cx, [si+30h]
+                mov     cx, [si+30h]    ; 0066
                 add     di, cx
                 shl     cx, 1
                 shl     cx, 1
@@ -120,12 +118,12 @@ loc_25CD:                               ; CODE XREF: LOADEXEHEADER+27↑j
                 add     di, [bp+var_2]
                 mov     ax, 7
                 xor     bx, bx
-                push    ax
-                push    di
-                push    bx
+                push    ax              ; 0007
+                push    di              ; 04f1
+                push    bx              ; 0000 (xor'd above)
                 call    MYALLOC
                 or      ax, ax
-                jz      short loc_263D
+                jz      short alloc_fail ; did MYALLOC fail?
                 sub     di, [bp+var_2]
                 mov     [bp+var_4], ax
                 mov     es, ax
@@ -147,26 +145,26 @@ loc_25CD:                               ; CODE XREF: LOADEXEHEADER+27↑j
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read
                                         ; DS:DX -> buffer
-                jb      short loc_263D
+                jb      short alloc_fail
                 lea     si, [di-40h]
                 cmp     ax, cx
                 jz      short loc_2649
 
-loc_263D:                               ; CODE XREF: LOADEXEHEADER+AF↑j
+alloc_fail:                               ; CODE XREF: LOADEXEHEADER+AF↑j
                                         ; LOADEXEHEADER+DB↑j ...
                 push    [bp+var_4]
-                call    MYFREE
+                call    MYFREE          ; free the allocated memory in case it was paritally alloc'd
                 xor     ax, ax
-                inc     ax
-                jmp     loc_28BA
+                inc     ax              ; ax=0001 (Error 0001 - Failed to Allocate Memory)
+                jmp     done
 ; ---------------------------------------------------------------------------
 
 loc_2649:                               ; CODE XREF: LOADEXEHEADER+C0↑j
                                         ; LOADEXEHEADER+E2↑j
-                test    word ptr [si+0Ch], 2000h
-                jnz     short loc_263D
+                test    word ptr [si+0Ch], 2000h            ; check that "Errors in Image" is not set
+                jnz     short alloc_fail
                 cmp     byte ptr [si+2], 4
-                jl      short loc_263D
+                jl      short alloc_fail
                 xor     di, di
                 mov     cx, 40h ; '@'
                 cld
@@ -461,7 +459,7 @@ loc_28AF:                               ; CODE XREF: LOADEXEHEADER+345↑j
                 mov     word ptr ds:1, es
                 mov     ax, es
 
-loc_28BA:                               ; CODE XREF: LOADEXEHEADER+71↑j
+done:                               ; CODE XREF: LOADEXEHEADER+71↑j
                                         ; LOADEXEHEADER+ED↑j
                 pop     di
                 pop     si

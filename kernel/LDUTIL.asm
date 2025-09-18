@@ -402,7 +402,7 @@ arg_4           = word ptr  8
 
                 push    bp
                 mov     bp, sp
-                mov     cx, [bp+arg_4]
+                mov     cx, [bp+arg_4] ; number of paragraphs probably (16-byte blocks)
                 mov     al, 7
                 and     al, cl
                 mov     bx, 0F000h
@@ -428,9 +428,9 @@ loc_BA5:                                ; CODE XREF: MYALLOC+22↑j
                 or      bl, 2
 
 loc_BAD:                                ; CODE XREF: MYALLOC+2A↑j
-                xor     dx, dx
-                mov     ax, [bp+arg_2]
-                mov     cx, [bp+arg_0]
+                xor     dx, dx          ; ends here 
+                mov     ax, [bp+arg_2]  ; 04f1
+                mov     cx, [bp+arg_0]  ; 1073
                 jcxz    short loc_BBD
 
 loc_BB7:                                ; CODE XREF: MYALLOC+3D↓j
@@ -439,9 +439,9 @@ loc_BB7:                                ; CODE XREF: MYALLOC+3D↓j
                 loop    loc_BB7
 
 loc_BBD:                                ; CODE XREF: MYALLOC+37↑j
-                push    bx
-                push    dx
-                push    ax
+                push    bx              ; 0000
+                push    dx              ; 0000
+                push    ax              ; 04f1
                 nop
                 push    cs
                 call    near ptr GLOBALALLOC

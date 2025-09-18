@@ -34,37 +34,37 @@ NEMAGIC     = 454Eh
 NERESBYTES  = 0
 
 NEW_EXE         STRUC
-ne_magic        DW  ?           ; Magic value 'NE'
-ne_ver          DB  ?           ; version number
-ne_rev          DB  ?           ; revision number
-ne_enttab       DW  ?           ; offset to entry table
-ne_cbenttab     DW  ?           ; number of bytes in entry table
+ne_magic        DW  ?           ; Magic value 'NE' - 0x0000
+ne_ver          DB  ?           ; version number - 0x0002
+ne_rev          DB  ?           ; revision number - 0x0003
+ne_enttab       DW  ?           ; offset to entry table - 0x0004
+ne_cbenttab     DW  ?           ; number of bytes in entry table - 0x0006
 
-ne_crc          DD  ?           ; CRC of file
+ne_crc          DD  ?           ; CRC of file - 0x0008
 
-ne_flags        DW  ?           ; flag word
-ne_autodata     DW  ?           ; segment number of auto data segment
-ne_heap         DW  ?           ; initial size of local heap
-ne_stack        DW  ?           ; initial size of stack
+ne_flags        DW  ?           ; flag word - 0x000C
+ne_autodata     DW  ?           ; segment number of auto data segment - 0x000E
+ne_heap         DW  ?           ; initial size of local heap - 0x0010
+ne_stack        DW  ?           ; initial size of stack - 0x0012
 
-ne_csip         DD  ?           ; CS:IP start address
+ne_csip         DD  ?           ; CS:IP start address - 0x0014
 ne_sssp         DD  ?           ; SS:SP initial stack pointer.  0 if
-                                ; stack size word non-zero
+                                ; stack size word non-zero - 0x0018
 
-ne_cseg         DW  ?           ; number of segment in segment table
-ne_cmod         DW  ?           ; number of entries in module reference table
-ne_cbnrestab    DW  ?           ; number of bytes in non-resident name table
+ne_cseg         DW  ?           ; number of segment in segment table - 0x001C 
+ne_cmod         DW  ?           ; number of entries in module reference table - 0x001E
+ne_cbnrestab    DW  ?           ; number of bytes in non-resident name table = 0x0020
 
-ne_segtab       DW  ?           ; NE relative offset to segment table
-ne_rsrctab      DW  ?           ; NE relative offset to resource table
-ne_restab       DW  ?           ; NE relative offset to resident name table
-ne_modtab       DW  ?           ; NE relative offset to module reference table
-ne_imptab       DW  ?           ; NE relative offset to imported name table
-ne_nrestab      DD  ?           ; file offset to non-resident name table
-ne_cmovent      DW  ?           ; Count of movable entries
-ne_align        DW  ?           ; Alignment shift count for segment data
-ne_cres         DW  ?           ; Count of resource segments
-ne_exetyp	DB  ?		; Target operating system
+ne_segtab       DW  ?           ; NE relative offset to segment table - 0x0022
+ne_rsrctab      DW  ?           ; NE relative offset to resource table - 0x0024
+ne_restab       DW  ?           ; NE relative offset to resident name table - 0x0026
+ne_modtab       DW  ?           ; NE relative offset to module reference table - 0x0028
+ne_imptab       DW  ?           ; NE relative offset to imported name table - 0x002A
+ne_nrestab      DD  ?           ; file offset to non-resident name table - 0x002C
+ne_cmovent      DW  ?           ; Count of movable entries - 0x0030
+ne_align        DW  ?           ; Alignment shift count for segment data - 0x0032
+ne_cres         DW  ?           ; Count of resource segments - 0x0034
+ne_exetyp	DB  ?		; Target operating system - 0x0036
 
 ; NOT USED BY WINDOWS 1.03 BUT KEPT HERE SO WE CAN LOAD """FUTURE""" FILES
 ne_flagsothers	DB  ?		; Other .EXE flags (not used by Windows 1.03)

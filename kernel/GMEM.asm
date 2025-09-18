@@ -509,6 +509,7 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 and     al, 0FEh
                 mov     ds, si
                 xor     bx, bx
+                ;setup 2 dummy entries with a size of 1 and an owner of 0FFFFh
                 mov     byte ptr [bx], 4Dh ; 'M'
                 mov     word ptr [bx+3], 1
                 mov     word ptr [bx+1], 0FFFFh
@@ -555,13 +556,13 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 mov     [bx+6], di
                 mov     ds, di
                 mov     [bx+8], ax
-                sub     ax, di
+                sub     ax, di                      ; wut
                 dec     ax
                 mov     byte ptr [bx], 4Dh ; 'M'
-                mov     [bx+1], bx
-                mov     [bx+3], ax
-                mov     [bx+6], si
-                mov     [bx+0Ah], bx
+                mov     [bx+1], bx                  ; ga_owner
+                mov     [bx+3], ax                  ; ga_size
+                mov     [bx+6], si                  ; ga_prev
+                mov     [bx+0Ah], bx            
                 pop     cx
                 pop     dx
                 shl     cx, 1
@@ -642,7 +643,7 @@ loc_934C:                               ; CODE XREF: GLOBALINIT+15↑j
                 mov     [di+18h], di
                 mov     [di+1Eh], di
                 mov     word ptr [di+12h], 20h ; ' '
-                mov     word ptr [di+14h], word ptr GHEXPAND
+                mov     word ptr [di+14h], offset GHEXPAND
                 lea     bx, [di+23h]
                 and     bl, 0FCh
                 mov     [di+0Eh], bx
