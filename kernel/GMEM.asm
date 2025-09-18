@@ -642,7 +642,7 @@ loc_934C:                               ; CODE XREF: GLOBALINIT+15↑j
                 mov     [di+18h], di
                 mov     [di+1Eh], di
                 mov     word ptr [di+12h], 20h ; ' '
-                mov     word ptr [di+14h], 6BAEh
+                mov     word ptr [di+14h], word ptr GHEXPAND
                 lea     bx, [di+23h]
                 and     bl, 0FCh
                 mov     [di+0Eh], bx
