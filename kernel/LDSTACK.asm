@@ -23,7 +23,6 @@ externW INT3FSAVEDCS
 externW INT3FSAVEDDS
 externW FUSEDBP
 
-externNP JMP_TO_FUSEDBP_CHECK
 externNP GLOBALHANDLE
 externNP LOADSEGMENT
 
@@ -82,6 +81,11 @@ loc_B77:                                ; CODE XREF: GETSTACKPTR+56↑j
                 pop     bp
                 ret     2
 GETSTACKPTR     endp
+
+; This is some absolute terribleness.
+; For some reason there is specifically a SHORT jump above.
+JMP_TO_FUSEDBP_CHECK:                               ; CODE XREF: PATCHSTACK+18↓j
+                jmp     FUSEDBP_CHECK
 
 ; ======= S U B R O U T I N E =======================================
 
@@ -612,6 +616,8 @@ loc_3651:                               ; CODE XREF: THROW+42↑j
                 mov     ax, di
                 jmp     short loc_35EB
 THROW           endp
+
+
 
 sEnd CODE
 

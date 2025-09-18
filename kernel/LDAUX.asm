@@ -27,7 +27,6 @@ externNP GLOBALALLOC
 externNP ENTPROCADDRESS
 externNP GETCHKSUMADDR
 externNP CHECKSEGCHKSUM
-externNP FUSEDBP_CHECK ; why are these based in different files lol
 
 sBegin CODE
 
@@ -1165,9 +1164,7 @@ FUSEDBP         dw 0                    ; DATA XREF: PATCHSTACK+12↓w
                                         ; PATCHSTACK+3E↓w ...
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR PATCHSTACK
-PUBLIC JMP_TO_FUSEDBP_CHECK ; why
-JMP_TO_FUSEDBP_CHECK:                               ; CODE XREF: PATCHSTACK+18↓j
-                jmp     FUSEDBP_CHECK
+
 ; END OF FUNCTION CHUNK FOR PATCHSTACK
 
 sEnd CODE

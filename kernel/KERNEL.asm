@@ -17,4 +17,12 @@ assumeS DS,CODE
 
 sEnd CODE
 
+; Some boot data like BOOTTDB needs to be moved here...
+BOOTSTACKSIZE = 512 
+
+sBegin  STACK
+    
+    db BOOTSTACKSIZE dup (?)
+sEnd STACK
+
 end
