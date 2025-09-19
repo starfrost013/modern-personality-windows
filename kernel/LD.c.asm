@@ -462,7 +462,7 @@ loc_421:                                ; CODE XREF: LOADMODULE+67↑j
                 lea     ax, [bp-9Ch]
                 push    ss
                 push    ax
-                mov     ax, offset LOADMODULE_LOADEXEHEADER
+                mov     ax, 2800h ; offset LOADMODULE_LOADEXEHEADER
                 push    ax
                 nop
                 push    cs
