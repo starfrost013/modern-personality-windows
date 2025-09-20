@@ -16,7 +16,8 @@ assumeS DS,CODE
 
 PUBLIC INITDATA_UNK
 INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
-                db 28h, 16h dup(0)
+                db 28h, 
+BOOTSTACK_START db 16h dup(0)
 PUBLIC UNUSED1_STACK
 UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
 PUBLIC BOOTSTACKTOP 
@@ -27,9 +28,6 @@ BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
 
 PUBLIC BOOTSTACK
 BOOTSTACK       db 470h dup(0), 20h dup(0FFh)   ; Last part is for the FinalArena
-
-PUBLIC BOOTSTACKEND
-BOOTSTACKEND        db 0
 
 sEnd CODE
 END

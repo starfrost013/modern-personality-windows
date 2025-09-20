@@ -18,7 +18,7 @@ externNP GLOBALREALLOC
 externNP VALIDATECODESEGMENTS
 externNP INT3FHANDLER
 externB INITDATA_UNK
-externB BOOTSTACKEND
+externB BOOTSTACK_START
 
 
 
@@ -184,8 +184,8 @@ BOOTSTRAP       proc far
                 add     ax, bx
                 mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020) or pointer
                 mov     ax, cs
-                mov     bx, offset INITDATA_UNK
-                mov     si, offset BOOTSTACKEND           ; si->0x0280
+                mov     bx, offset BOOTSTACK_START
+                mov     si, offset BOOTSTACK_START+280h ; TODO: FIGURE OUT WHAT THIS REFERS TO. THIS IS A TERRIBLE WAY OF DOING THIS!
                 ; cvt to para pointer
                 sub     si, bx
                 mov     cl, 4
@@ -376,8 +376,8 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
-                mov     cx, offset INITDATA_UNK
-                mov     si, offset BOOTSTACKEND
+                mov     cx, offset BOOTSTACK_START
+                mov     si, offset BOOTSTACK_START+280h ; test
                 sub     si, cx
                 add     si, 800h
                 mov     es, cs:HEXEHEAD
