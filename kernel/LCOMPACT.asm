@@ -12,8 +12,8 @@ externNP LFREE
 externNP LJOIN
 externNP LMOVE
 externNP LALLOC
-externW HTHREAD
-externW HENUM
+externNP HTHREAD
+externNP HENUM
 
 sBegin CODE
 
