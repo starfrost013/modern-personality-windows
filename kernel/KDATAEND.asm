@@ -35,7 +35,9 @@ PUBLIC BOOTSTACK_END
 BOOTSTACK_END           dw 0
 
 PUBLIC BOOTSTACK
-BOOTSTACK       db 1E8h dup(0), 20h dup(0FFh)   ; Last part is for the FinalArena
+BOOTSTACK       db 1E8h dup(0), 
+
+FINALARENA      db 20h dup(0FFh)   ; Last part is for the FinalArena
 
 ; force this crap compiler to do things properly
 

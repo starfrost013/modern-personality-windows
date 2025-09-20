@@ -90,7 +90,7 @@ EXPORTS
     GETCODEHANDLE           @ 93 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     DEFINEHANDLETABLE       @ 94 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     LOADLIBRARY             @ 95 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
-    ;FREELIBRARY             @ 96 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
+    FREELIBRARY             @ 96 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
     VALIDATECODESEGMENTS    @ 100 ; Added after Win1.0 Beta (1985-05-08), when they stopped neatly ordering everything
 
     ; Exception handling? (also a part of the process loader)

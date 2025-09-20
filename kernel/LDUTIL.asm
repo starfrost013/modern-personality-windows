@@ -153,7 +153,7 @@ arg_2           = word ptr  6
                 push    di
                 mov     es, [bp+arg_2]
                 mov     cx, [bp+arg_0]
-                jcxz    short loc_85D
+                jcxz    short ordinal_is_invalid
                 dec     cx
                 mov     si, es:4
 
@@ -162,7 +162,7 @@ loc_82B:                                ; CODE XREF: ENTPROCADDRESS+27↓j
                 xor     ax, ax
                 lods    byte ptr es:[si]
                 or      ax, ax
-                jz      short loc_85D
+                jz      short ordinal_is_invalid
                 cmp     ax, cx
                 jg      short loc_894
                 sub     cx, ax
@@ -189,8 +189,7 @@ loc_84D:                                ; CODE XREF: ENTPROCADDRESS+2B↑j
                 jmp     short loc_82B
 ; ---------------------------------------------------------------------------
 
-loc_85D:                                ; CODE XREF: ENTPROCADDRESS+B↑j
-                                        ; ENTPROCADDRESS+19↑j ...
+ordinal_is_invalid:                                
                 xor     bx, bx
                 mov     ax, 403h ; errCode for kernelerror
                 push    ax
@@ -216,7 +215,7 @@ loc_88E:                                ; CODE XREF: ENTPROCADDRESS+55↑j
 loc_894:                                ; CODE XREF: ENTPROCADDRESS+1D↑j
                 lods    byte ptr es:[si]
                 cmp     al, 0
-                jz      short loc_85D
+                jz      short ordinal_is_invalid
                 mov     bx, cx
                 cmp     al, 0FFh
                 jz      short loc_8BF
@@ -231,7 +230,7 @@ loc_894:                                ; CODE XREF: ENTPROCADDRESS+1D↑j
                 call    LOADSEGMENT ; load segment containing function
                 xor     dx, dx
                 or      ax, ax
-                jz      short loc_85D
+                jz      short ordinal_is_invalid
                 mov     dx, ax
                 mov     ax, si
                 jmp     short loc_8D0

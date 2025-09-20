@@ -161,6 +161,9 @@ DELMODULE       endp
 
 ; Attributes: bp-based frame
 
+; This is a function that gets exported but falls into Freemodule. Why?
+labelFP PUBLIC,FREELIBRARY
+
                 public FREEMODULE
 FREEMODULE      proc far                ; CODE XREF: LOADMODULE+3DF↑p
                                         ; DOSTerminateHook+C0↓p
