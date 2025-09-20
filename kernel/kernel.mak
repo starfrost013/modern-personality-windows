@@ -135,6 +135,9 @@ ATOM.OBJ: 	$(SRC)\ATOM.ASM
 USERPRO.OBJ: 	$(SRC)\USERPRO.ASM
 	$(MASMARGS) $(SRC)\USERPRO.ASM USERPRO.OBJ,,,
 
+KDATAEND.OBJ: 	$(SRC)\KDATAEND.ASM
+	$(MASMARGS) $(SRC)\KDATAEND.ASM KDATAEND.OBJ,,,
+
 # This needs to be split, due to the maximum size of macros in MASM 4
 OBJ = 	KERNSTUB.OBJ 	\
 		KDATA.OBJ		\

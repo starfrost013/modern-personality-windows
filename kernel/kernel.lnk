@@ -4,7 +4,7 @@ int21 int24 i21mem lalloc lcompact ldheader +
 ldreloc ldaux lddebug lddisk ld ldfile ldint +
 ldopen ldseg ldstack ldutil +
 linterf lstring userpro task schedule +
-context atom resman resaux
+context atom resman resaux kdataend
 kernel.exe
 kernel.map
 

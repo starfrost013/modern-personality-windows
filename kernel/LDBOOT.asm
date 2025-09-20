@@ -17,11 +17,18 @@ externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
 externNP VALIDATECODESEGMENTS
 externNP INT3FHANDLER
+externB INITDATA_UNK
+externB BOOTSTACKEND
+
+
+
 externW TOPPDB
 externW HEADPDB
 externW HEADTDB ; Windows tdb
 externW CURTDB
-
+externW BOOTSTACKTOP
+externW BOOTSTACKBOTTOM
+externW UNUSED1_STACK
 externW HEXEHEAD
 
 ; Figure out what these are
@@ -715,13 +722,7 @@ PUBLIC UNKNOWNFASTBOOTARRAY
 UNKNOWNFASTBOOTARRAY    db 0Eh dup(0)
 ; ---------------------------------------------------------------------------
                 ;align 8
-INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
-                db 28h, 16h dup(0)
-UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
-BOOTSTACKTOP       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
-BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
-BOOTSTACK       db 470h dup(0), 20h dup(0FFh)
-BOOTSTACKEND        db 0
+
 sEnd CODE
 
 END BOOTSTRAP
