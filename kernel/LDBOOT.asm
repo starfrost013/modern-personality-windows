@@ -466,6 +466,7 @@ boot_failure_01:                               ; CODE XREF: BOOTSTRAP:global_ini
                 nop
                 push    cs              ; restore code seg
                 call    EXITKERNEL      ; go back to dos
+BOOTSTRAP       endp
 
 ; This is a null-termianted list of strings with the list of files to load during slowboot.
 ; Only up to user.exe is loaded (by a compare of DI with the offset) in load_boot_file
@@ -486,8 +487,10 @@ SZMSDOSEXE      db 'MSDOS.EXE',0        ; DATA XREF: SLOWBOOT:loc_8412↓o
                 db 0
 ; ---------------------------------------------------------------------------
 
-; =============== S U B R O U T I N E =======================================
 
+
+; =============== S U B R O U T I N E =======================================
+LOADNEWEXE      proc near
 ; load_boot_file (Label)
 ;
 ; Purpose: Loads a core boot file from the null-terminated list above using the LOADMODULE function.
@@ -593,9 +596,8 @@ loc_83D5:                               ; CODE XREF: BOOTSTRAP+38E↑j
                 pop     si
                 mov     sp, bp
                 pop     bp
-                ret    2
-BOOTSTRAP       endp ; sp-analysis failed
-
+                ret     2
+LOADNEWEXE      endp ; sp-analysis failed
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -640,7 +642,7 @@ loc_842A:                               ; CODE XREF: SLOWBOOT+33↑j
 ; this part loads every core file that is not the shell
 load_file_loop:                               ; CODE XREF: SLOWBOOT+62↓j
                 push    di                    ; prepare next file to load
-                call    load_boot_file        ; load the next file
+                call    LOADNEWEXE        ; load the next file
                 push    cs
                 pop     es                      ; set es=cs, as 8086 string instructions copy from ES:SI to DS:DI and we want to copy from the kernel 
                 assume es:_TEXT
@@ -660,7 +662,7 @@ load_file_loop:                               ; CODE XREF: SLOWBOOT+62↓j
 load_default_shell:                               ; CODE XREF: SLOWBOOT+6B↑j
                                         ; SLOWBOOT+84↓j
                 push    di                      ; advance to next file (in this case, always USER.EXE)
-                call    load_boot_file          ; load it
+                call    LOADNEWEXE          ; load it
                 push    cs
                 pop     es
                 mov     cx, 0FFFFh
