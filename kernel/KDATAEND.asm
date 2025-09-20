@@ -17,17 +17,27 @@ assumeS DS,CODE
 PUBLIC INITDATA_UNK
 INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
                 db 28h, 
+PUBLIC BOOTSTACK_START
 BOOTSTACK_START db 16h dup(0)
 PUBLIC UNUSED1_STACK
 UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
-PUBLIC BOOTSTACKTOP 
-BOOTSTACKTOP       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
+PUBLIC BOOTSTACKSEG 
+BOOTSTACKSEG       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
 
+; This is horrible but is intended to kind of look like what microsoft was doing until we figure out the full usage of this
 PUBLIC BOOTSTACKBOTTOM
 BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
 
+                db 1EAh dup(0)
+
+; idk
+PUBLIC BOOTSTACK_END
+BOOTSTACK_END           dw 0
+
 PUBLIC BOOTSTACK
-BOOTSTACK       db 470h dup(0), 20h dup(0FFh)   ; Last part is for the FinalArena
+BOOTSTACK       db 1E8h dup(0), 20h dup(0FFh)   ; Last part is for the FinalArena
+
+; force this crap compiler to do things properly
 
 sEnd CODE
 END

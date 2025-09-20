@@ -17,16 +17,14 @@ externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
 externNP VALIDATECODESEGMENTS
 externNP INT3FHANDLER
-externB INITDATA_UNK
 externB BOOTSTACK_START
-
-
+externB BOOTSTACK_END
 
 externW TOPPDB
 externW HEADPDB
 externW HEADTDB ; Windows tdb
 externW CURTDB
-externW BOOTSTACKTOP
+externW BOOTSTACKSEG
 externW BOOTSTACKBOTTOM
 externW UNUSED1_STACK
 externW HEXEHEAD
@@ -185,7 +183,7 @@ BOOTSTRAP       proc far
                 mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020) or pointer
                 mov     ax, cs
                 mov     bx, offset BOOTSTACK_START
-                mov     si, offset BOOTSTACK_START+280h ; TODO: FIGURE OUT WHAT THIS REFERS TO. THIS IS A TERRIBLE WAY OF DOING THIS!
+                mov     si, offset BOOTSTACK_END ; TODO: FIGURE OUT WHAT THIS REFERS TO. THIS IS A TERRIBLE WAY OF DOING THIS!
                 ; cvt to para pointer
                 sub     si, bx
                 mov     cl, 4
@@ -198,7 +196,7 @@ BOOTSTRAP       proc far
                 sti                             ; restore interrupts
                 xor     bp, bp
                 mov     word ptr BOOTSTACKBOTTOM, si  ; not sure
-                mov     word ptr BOOTSTACKTOP, sp     ; not sure
+                mov     word ptr BOOTSTACKSEG, sp     ; not sure
                 sub     si, 200h
                 mov     word ptr UNUSED1_STACK, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
                 mov     ax, es:0FEh             ; this probably cchecks if windows is already running
@@ -377,7 +375,7 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
                 mov     cx, offset BOOTSTACK_START
-                mov     si, offset BOOTSTACK_START+280h ; test
+                mov     si, offset BOOTSTACK_END ; test
                 sub     si, cx
                 add     si, 800h
                 mov     es, cs:HEXEHEAD
