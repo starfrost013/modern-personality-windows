@@ -43,7 +43,7 @@ LSTRLEN         endp
 ; =============== S U B R O U T I N E =======================================
 
 
-INTERNALSTRFUNC proc near               ; CODE XREF: LSTRCPY↓p
+LSTRSETUP proc near               ; CODE XREF: LSTRCPY↓p
                                         ; LSTRCAT↓p ...
                 pop     dx
                 mov     bx, sp
@@ -54,24 +54,19 @@ INTERNALSTRFUNC proc near               ; CODE XREF: LSTRCPY↓p
                 les     di, ss:[bx+8]
                 cld
                 jmp     dx
-INTERNALSTRFUNC endp
+LSTRSETUP endp
 
-; ---------------------------------------------------------------------------
-; START OF FUNCTION CHUNK FOR LSTRCPY
-;   ADDITIONAL PARENT FUNCTION LSTRCMP
-;   ADDITIONAL PARENT FUNCTION ANSIPREV
 
-loc_5284:                               ; CODE XREF: LSTRCPY+E↓j
-                                        ; LSTRCMP:loc_52EE↓j ...
+; Epilog for string functions.
+LSTREND         proc far
+
                 pop     di
                 pop     si
                 pop     ds
                 ret     8
-; END OF FUNCTION CHUNK FOR LSTRCPY
-;
-; External Entry #88 into the Module
-; Attributes (0001): Fixed Exported
-;
+LSTREND         endp 
+
+
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -79,9 +74,7 @@ loc_5284:                               ; CODE XREF: LSTRCPY+E↓j
                 public LSTRCPY
 LSTRCPY         proc far
 
-; FUNCTION CHUNK AT 5284 SIZE 00000006 BYTES
-
-                call    INTERNALSTRFUNC ; KERNEL_88
+                call    LSTRSETUP ; KERNEL_88
 
 loc_528D:                               ; CODE XREF: LSTRCPY+7↓j
                                         ; LSTRCAT+B↓j
@@ -92,7 +85,7 @@ loc_528D:                               ; CODE XREF: LSTRCPY+7↓j
                 mov     ax, di
                 dec     ax
                 mov     dx, es
-                jmp     short loc_5284
+                jmp     short LSTREND
 LSTRCPY         endp ; sp-analysis failed
 
 ;
@@ -105,7 +98,7 @@ LSTRCPY         endp ; sp-analysis failed
 
                 public LSTRCAT
 LSTRCAT         proc far
-                call    INTERNALSTRFUNC ; KERNEL_89
+                call    LSTRSETUP ; KERNEL_89
                 xor     ax, ax
                 mov     cx, 0FFFFh
                 repne scasb
@@ -126,7 +119,7 @@ LSTRCMP         proc far
 
 ; FUNCTION CHUNK AT 5284 SIZE 00000006 BYTES
 
-                call    INTERNALSTRFUNC ; KERNEL_87
+                call    LSTRSETUP ; KERNEL_87
 
 loc_52AA:                               ; CODE XREF: LSTRCMP+36↓j
                 xor     ax, ax
@@ -181,7 +174,7 @@ loc_52ED:                               ; CODE XREF: LSTRCMP+3B↑j
 
 loc_52EE:                               ; CODE XREF: LSTRCMP+3E↑j
                                         ; LSTRCMP+44↑j
-                jmp     short loc_5284
+                jmp     short LSTREND
 LSTRCMP         endp ; sp-analysis failed
 
 ;
@@ -253,7 +246,7 @@ ANSIPREV        proc far
 
 ; FUNCTION CHUNK AT 5284 SIZE 00000006 BYTES
 
-                call    INTERNALSTRFUNC ; KERNEL_78
+                call    LSTRSETUP ; KERNEL_78
                 cmp     si, di
                 jz      short loc_5350
                 dec     si
@@ -278,7 +271,7 @@ loc_5350:                               ; CODE XREF: ANSIPREV+5↑j
                                         ; ANSIPREV+E↑j
                 mov     ax, si
                 mov     dx, ds
-                jmp     loc_5284
+                jmp     LSTREND
 ANSIPREV        endp ; sp-analysis failed
 
 ; ---------------------------------------------------------------------------
