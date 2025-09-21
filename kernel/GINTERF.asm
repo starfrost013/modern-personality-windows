@@ -365,7 +365,7 @@ XHANDLE         endp ; sp-analysis failed
 GLOBALHANDLE    proc far                ; CODE XREF: MYLOCK+8↑p
                                         ; ALLOCRESOURCE+6E↑p ...
                 call    XHANDLE         ; KERNEL_21
-                jmp     short loc_6E89
+                jmp     short XHANDLEX
 GLOBALHANDLE    endp
 
 ;
@@ -380,9 +380,9 @@ GLOBALHANDLE    endp
 LOCKSEGMENT     proc far                ; CODE XREF: ALLOCSEG+7A↑p
                                         ; INITTASK+5F↑p ...
                 call    XHANDLE         ; KERNEL_23
-                jz      short loc_6E89
+                jz      short XHANDLEX
                 call    GLOCK
-                jmp     short loc_6E89
+                jmp     short XHANDLEX
 LOCKSEGMENT     endp
 
 ;
@@ -397,9 +397,9 @@ LOCKSEGMENT     endp
 UNLOCKSEGMENT   proc far                ; CODE XREF: INITTASK+44↑p
                                         ; LOCALNOTIFYDEFAULT+8B↑p
                 call    XHANDLE         ; KERNEL_24
-                jz      short loc_6E89
+                jz      short XHANDLEX
                 call    GUNLOCK
-                jmp     short loc_6E89
+                jmp     short XHANDLEX
 UNLOCKSEGMENT   endp
 
 ;
@@ -415,7 +415,7 @@ GLOBALSIZE      proc far                ; CODE XREF: LOCALNOTIFYDEFAULT+1E↑p
                                         ; LOCALNOTIFYDEFAULT+57↑p
                 call    XHANDLE         ; KERNEL_20
                 or      dx, dx
-                jz      short loc_6E89
+                jz      short XHANDLEX
                 mov     ax, es:[di+3]
                 push    ax
                 xor     dx, dx
@@ -426,7 +426,7 @@ loc_6E79:                               ; CODE XREF: GLOBALSIZE+15↓j
                 rcl     dx, 1
                 loop    loc_6E79
                 pop     cx
-                jmp     short loc_6E89
+                jmp     short XHANDLEX
 GLOBALSIZE      endp
 
 ;
@@ -443,7 +443,7 @@ GLOBALFLAGS     proc far
                 xchg    cl, ch
                 mov     ax, cx
 
-loc_6E89:                               ; CODE XREF: GLOBALHANDLE+3↑j
+XHANDLEX:                               ; CODE XREF: GLOBALHANDLE+3↑j
                                         ; LOCKSEGMENT+3↑j ...
                 dec     word ptr [di+18h]
                 pop     di
@@ -498,7 +498,7 @@ loc_6EDF:                               ; CODE XREF: GLOBALLOCK+3↑j
                 mov     cx, dx
 
 loc_6EE3:                               ; CODE XREF: GLOBALUNLOCK+3↓j
-                jmp     short loc_6E89
+                jmp     short XHANDLEX
 GLOBALLOCK      endp
 
 ;
@@ -543,7 +543,7 @@ loc_6F30:                               ; CODE XREF: GLOBALUNLOCK+1D↑j
 loc_6F33:                               ; CODE XREF: GLOBALUNLOCK+8↑j
                 call    GUNLOCK
                 mov     ax, cx
-                jmp     loc_6E89
+                jmp     XHANDLEX
 GLOBALUNLOCK    endp
 
 ;

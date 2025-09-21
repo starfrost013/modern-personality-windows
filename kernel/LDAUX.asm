@@ -363,8 +363,9 @@ loc_19EA:                               ; CODE XREF: COPYNAME+14↑j
                 mov     sp, bp
                 pop     bp
                 ret     8
-; ---------------------------------------------------------------------------
-                ret  ; dead code
+; A different return that only returns 1 stack frame rather thna 8
+COPYNAME_RET2:
+                ret  
 COPYNAME        endp
 
 ;
@@ -423,7 +424,7 @@ arg_4           = word ptr  0Ah         ; lpProcName
 get_other_module_proc_address:                               ; CODE XREF: GETPROCADDRESS+19↑j
                 lea     bx, [bp+var_42] 
                 mov     dx, 0FFh
-                mov     dx, 1A00h
+                mov     dx, offset COPYNAME_RET2
                 push    [bp+hmodule]
                 push    [bp+arg_0]
                 push    bx
