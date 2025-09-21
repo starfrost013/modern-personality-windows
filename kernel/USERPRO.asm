@@ -994,7 +994,7 @@ WRITEPROFILESTRING endp ; sp-analysis failed
 ; =============== S U B R O U T I N E =======================================
 
 
-BUFFERWRITE     proc far                ; CODE XREF: WRITEPROFILESTRING+D7↑p
+BUFFERWRITE     proc near               ; CODE XREF: WRITEPROFILESTRING+D7↑p
                                         ; WRITEPROFILESTRING+E8↑p ...
                 mov     ah, 40h ; '@'
                 int     21h             ; DOS - 2+ - WRITE TO FILE WITH HANDLE

@@ -354,7 +354,7 @@ INITFWDREF      proc far                ; CODE XREF: SLOWBOOT+6D↑p
                 push    bx ; function name ptr
                 nop
                 push    cs
-                call    near ptr GETPROCADDRESS ; get t
+                call    near ptr GETPROCADDRESS ; get pointer to PTIMERPROC
                 mov     word ptr PTIMERPROC, ax
                 mov     word ptr PTIMERPROC+2, dx
                 mov     bx, offset SZKEYBOARD ; get module name of KEYBOARD
