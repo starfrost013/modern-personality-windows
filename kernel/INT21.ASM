@@ -155,9 +155,9 @@ DOS_PRINTSTRING_FN db 9                    ; Int 21/AH=09h - DOS 1+ - WRITE STRI
                 dw offset DOSDiskHook
                 db 60h                  ; Int 21/AH=60h - DOS 3.0+ - TRUENAME - CANONICALIZE FILENAME OR PATH
                 dw offset DOSTruenameHook
-                db 6                    ; Int 21/AH=06h - DOS 1+ - DIRECT CONSOLE OUTPUT
+DOS_DIRECTOUT_FN db 6                    ; Int 21/AH=06h - DOS 1+ - DIRECT CONSOLE OUTPUT
                                         ; Int 21/AH=06h/DL=FFh - DOS 1+ - DIRECT CONSOLE INPUT
-DOS_DIRECTOUT_FN dw offset DOSDirectOutHook
+                dw offset DOSDirectOutHook
                 db 0Bh                  ; Int 21/AH=0Bh - DOS 1+ - GET STDIN STATUS
                 dw offset DOSStdinHook
                 db 44h                  ; Int 21/AX=4400h - DOS 2+ - IOCTL - GET DEVICE INFORMATION
@@ -386,7 +386,7 @@ arg_0           = byte ptr  6
                 push    bx
                 push    ax
                 call    cs:PSYSPROC
-                mov     cs:word_3D72, byte ptr DOS_DIRECTOUT_FN
+                mov     cs:word_3D72, offset DOS_DIRECTOUT_FN
                 lds     dx, cs:PREVINT24PROC
                 mov     ax, 2524h
                 int     21h             ; DOS - SET INTERRUPT VECTOR
@@ -399,7 +399,7 @@ arg_0           = byte ptr  6
                                         ; DL = 00h for OFF or 01h for ON
                 cmp     [bp+arg_0], 0
                 jnz     short loc_3F34
-                mov     cs:word_3D72, DOS_DEFAULT_DRIVE_FN
+                mov     cs:word_3D72, offset DOS_DEFAULT_DRIVE_FN
                 mov     ah, 52h ; 'R'
                 int     21h             ; DOS - 2+ internal - GET LIST OF LISTS
                                         ; Return: ES:BX -> DOS list of lists
@@ -1106,7 +1106,7 @@ loc_42AA:                               ; CODE XREF: SftThing+11↑j
                 and     dx, 3Fh
                 or      byte ptr ds:3Ah, 40h
                 mov     ah, 0Eh
-                cmp     cs:word_3D72, byte ptr DOS_PRINTSTRING_FN ; is this the dos print string function?
+                cmp     cs:word_3D72, offset DOS_PRINTSTRING_FN ; is this the dos print string function?
                 jnz     short loc_4301 
                 push    bx
                 mov     bx, word ptr INT21_TABLE
@@ -1318,7 +1318,7 @@ DOSFlushBufferStdinHook:                ; DATA XREF: _TEXT:3DE9↑o
 ; ---------------------------------------------------------------------------
 
 DOSDirectOutHook:                       ; DATA XREF: _TEXT:3DD7↑o
-                cmp     cs:word_3D72, byte ptr DOS_PRINTSTRING_FN
+                cmp     cs:word_3D72, offset DOS_PRINTSTRING_FN
                 jz      short loc_4458
                 cmp     dl, 0FFh
                 jz      short loc_4458
@@ -1469,7 +1469,7 @@ DOSStdInNoEchoHook endp
 
 
 DOSSelectDefaultDriveHook proc far      ; DATA XREF: _TEXT:3DF2↑o
-                cmp     cs:word_3D72, byte ptr DOS_PRINTSTRING_FN
+                cmp     cs:word_3D72, offset DOS_PRINTSTRING_FN
                 jnz     short loc_450A
                 push    dx
                 inc     dx
@@ -1509,7 +1509,7 @@ DOSSelectDefaultDriveHook endp
 
 
 DOSChdirHook    proc far                ; DATA XREF: _TEXT:3DF5↑o
-                cmp     cs:word_3D72, byte ptr DOS_PRINTSTRING_FN
+                cmp     cs:word_3D72, offset DOS_PRINTSTRING_FN
                 jnz     short loc_451B
                 call    near ptr PATHDRVDSDX
                 jnb     short loc_451B
@@ -1651,7 +1651,7 @@ SZWINOLDAP      db 'WINOLDAP.MOD',0
 
 
 DOSExecHook     proc far                ; DATA XREF: _TEXT:3E04↑o
-                cmp     cs:word_3D72, byte ptr DOS_PRINTSTRING_FN
+                cmp     cs:word_3D72, offset DOS_PRINTSTRING_FN
                 jnz     short loc_45F5
                 call    near ptr PATHDRVDSDX
                 jnb     short loc_45F5
