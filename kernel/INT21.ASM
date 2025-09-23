@@ -69,7 +69,7 @@ NETBIOSCALL     endp
 ; ---------------------------------------------------------------------------
 word_3D72       dw 0                    ; DATA XREF: ENABLEDOS+6↓w
                                         ; DISABLEDOS+12↓w ...
-word_3D74       dw 0                    ; DATA XREF: INT21HANDLER+25↓w
+INT21INFO       dw 0                    ; DATA XREF: INT21HANDLER+25↓w
                                         ; INT21HANDLER+35↓r ...
                 db 0
                 db 0
@@ -604,21 +604,22 @@ arg_0           = word ptr  0Ah
                 assume ds:nothing
                 mov     ax, [bp+var_s4]
                 cli
-                mov     ds:3D78h, ax
+                ; all this +2/+4 stuff is temp until we have a structure
+                mov     word ptr INT21INFO+4, ax
                 mov     ax, [bp+8]
-                mov     ds:3D76h, ax
+                mov     word ptr INT21INFO+2, ax
                 mov     ax, [bp+arg_0]
-                mov     ds:3D74h, ax
+                mov     word ptr INT21INFO, ax
                 pop     ax
                 pop     bp
                 add     sp, 8
                 pushf
-                push    word ptr ds:3D76h
-                push    word ptr ds:3D74h
+                push    word ptr INT21INFO+2
+                push    word ptr INT21INFO
                 push    ds
-                mov     word ptr ds:3D76h, offset INT21HANDLER
-                push    word ptr ds:3D76h
-                mov     ds, word ptr ds:3D78h
+                mov     word ptr INT21INFO+2, offset INT21HANDLER
+                push    word ptr INT21INFO+2
+                mov     ds, word ptr INT21INFO+4
                 sti
                 mov     ah, cl
                 ret
@@ -695,7 +696,7 @@ loc_409E:                               ; CODE XREF: INT21HANDLER+17↓j
 loc_40B2:                               ; CODE XREF: DOSIoctlHook+16↓p
                                         ; DOSIoctlHook:DOSWriteHook↓p ...
                 cli
-                pop     cs:word_3D74
+                pop     word ptr cs:INT21INFO
                 push    dx
                 push    es
                 push    bx
@@ -704,7 +705,7 @@ loc_40B2:                               ; CODE XREF: DOSIoctlHook+16↓p
                 push    si
                 push    di
                 and     byte ptr [bp+6], 0FEh
-                push    cs:word_3D74
+                push    word ptr cs:INT21INFO
                 cld
                 sti
                 ret
@@ -713,7 +714,7 @@ loc_40B2:                               ; CODE XREF: DOSIoctlHook+16↓p
 loc_40CB:                               ; CODE XREF: INT21HANDLER+A1↓p
                                         ; DOSIoctlHook:loc_4410↓p ...
                 cli
-                pop     cs:word_3D74
+                pop     word ptr cs:INT21INFO
                 pop     di
                 pop     si
                 pop     cx
@@ -724,7 +725,7 @@ loc_40CB:                               ; CODE XREF: INT21HANDLER+A1↓p
                 pop     ds
                 pop     bp
                 dec     bp
-                jmp     cs:word_3D74
+                jmp     word ptr cs:INT21INFO
 ; ---------------------------------------------------------------------------
 
 DOSTSRHook:                             ; DATA XREF: _TEXT:3E0D↑o
@@ -780,7 +781,7 @@ loc_412C:                               ; CODE XREF: INT21HANDLER+7B↑j
                                         ; else
                                         ; interrupted DOS call continues
                 pushf
-                pop     cs:word_3D74
+                pop     word ptr cs:INT21INFO
 
 loc_413F:
                 cmp     sp, word ptr cs:INT21_HOOK_TABLE
@@ -788,7 +789,7 @@ loc_413F:
                 add     sp, 2
                 cmp     sp, word ptr cs:INT21_HOOK_TABLE
                 jnz     short loc_4158
-                push    cs:word_3D74
+                push    word ptr cs:INT21INFO
                 popf
                 jnb     short loc_415B
 
