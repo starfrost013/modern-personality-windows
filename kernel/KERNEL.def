@@ -7,7 +7,7 @@
 
 DESCRIPTION 'Microsoft Windows Kernel Interface for 2.x and 3.x' ; Singletasking DOS
 STUB 'KERNSTUB.EXE' ; this must be built with regular LINK!
-
+CODE FIXED
 
 SEGMENTS
     IGROUP   CLASS 'CODE' PRELOAD FIXED  ; this is the only segment i 
