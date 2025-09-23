@@ -678,7 +678,7 @@ INT21HANDLER    proc near               ; CODE XREF: INT27HANDLER+3↑j
                 inc     bp
                 push    bp
                 push    ds
-                mov     cs:LAST_INT21_FUNCTION_NUMBER, ah
+                mov     word ptr cs:LAST_INT21_FUNCTION_NUMBER, ah
                 mov     bp, cs:word_3D72
                 sub     bp, 3
 
