@@ -684,9 +684,9 @@ INT21HANDLER    proc near               ; CODE XREF: INT27HANDLER+3↑j
 
 loc_409E:                               ; CODE XREF: INT21HANDLER+17↓j
                 add     bp, 3
-                cmp     ah, cs:[bp+0]
+                cmp     ah, [bp+0]
                 jnz     short loc_409E
-                push    word ptr cs:[bp+1]
+                push    word ptr [bp+1]
                 mov     bp, sp
                 add     bp, 4
                 sti
