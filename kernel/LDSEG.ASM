@@ -643,7 +643,7 @@ arg_6           = dword ptr  0Ah
                 jz      short loc_FA9
 
 loc_FA6:                                ; CODE XREF: SEGLOAD+44↓j
-                jmp     loc_1033
+                jmp     print_segcontent_err
 ; ---------------------------------------------------------------------------
 
 loc_FA9:                                ; CODE XREF: SEGLOAD+34↑j
@@ -696,7 +696,7 @@ loc_FF4:                                ; CODE XREF: SEGLOAD+88↓j
                 mov     ax, 4200h
                 int     21h             ; DOS - 2+ - MOVE FILE READ/WRITE POINTER (LSEEK)
                                         ; AL = method: offset from beginning of file
-                jb      short loc_1030
+                jb      short segcontent_err
                 mov     cx, di
                 mov     ds, [bp+var_2]
                 xor     dx, dx
@@ -704,9 +704,9 @@ loc_FF4:                                ; CODE XREF: SEGLOAD+88↓j
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read
                                         ; DS:DX -> buffer
-                jb      short loc_1030
+                jb      short segcontent_err
                 cmp     ax, cx
-                jnz     short loc_1030
+                jnz     short segcontent_err
                 test    word ptr es:[si+4], 100h
                 jz      short loc_1070
                 push    ss
@@ -717,17 +717,17 @@ loc_FF4:                                ; CODE XREF: SEGLOAD+88↓j
                 int     21h             ; DOS - 2+ - READ FROM FILE WITH HANDLE
                                         ; BX = file handle, CX = number of bytes to read
                                         ; DS:DX -> buffer
-                jb      short loc_1030
+                jb      short segcontent_err
                 cmp     ax, cx
                 jz      short loc_1070
 
-loc_1030:                               ; CODE XREF: SEGLOAD+93↑j
+segcontent_err:                               ; CODE XREF: SEGLOAD+93↑j
                                         ; SEGLOAD+A0↑j ...
                 pop     ds
                 pop     si
                 pop     es
 
-loc_1033:                               ; CODE XREF: SEGLOAD:loc_FA6↑j
+print_segcontent_err:                           ; CODE XREF: SEGLOAD:loc_FA6↑j
                 xor     bx, bx
                 mov     ax, 409h
                 push    ax

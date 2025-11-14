@@ -29,6 +29,7 @@ externNP FINDORDINAL
 externNP LOADSEGMENT
 externNP CHECKSEGCHKSUM
 externNP OPENFILE
+externNP ALLOCSEG
 
 
 if KDEBUG
@@ -83,90 +84,6 @@ loc_DC6:                                ; CODE XREF: GETCHKSUMADDR+E↑j
                 pop     dx
                 ret
 GETCHKSUMADDR   endp
-
-
-; =============== S U B R O U T I N E =======================================
-
-; Attributes: bp-based frame
-
-ALLOCSEG        proc near               ; CODE XREF: ALLOCALLSEGS+2A↓p
-                                        ; ALLOCALLSEGS+7E↓p ...
-
-arg_0           = dword ptr  4
-
-                push    bp
-                mov     bp, sp
-                push    si
-                les     si, [bp+arg_0]
-                mov     bx, es:[si+4]
-                mov     ax, es:[si+6]
-                cmp     si, es:8
-                jnz     short loc_E5D
-                cmp     cs:FBOOTING, 0
-                jnz     short loc_E4A
-                test    word ptr es:0Ch, 80h
-                jz      short loc_E4A
-                or      bl, 10h
-
-loc_E4A:                                ; CODE XREF: ALLOCSEG+1C↑j
-                                        ; ALLOCSEG+25↑j
-                add     ax, es:12h
-                jb      short loc_E58
-                add     ax, es:10h
-                jnb     short loc_E5D
-
-loc_E58:                                ; CODE XREF: ALLOCSEG+2F↑j
-                xor     ax, ax
-                jmp     short loc_EA4
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
-
-loc_E5D:                                ; CODE XREF: ALLOCSEG+14↑j
-                                        ; ALLOCSEG+36↑j
-                test    bl, 2
-                jnz     short loc_E9E
-                xor     cx, cx
-                push    es
-                push    bx
-                push    ax
-                push    cx
-                call    MYALLOC
-                pop     es
-                or      ax, ax
-                jz      short loc_EA4
-                mov     es:[si+8], dx
-                and     byte ptr es:[si+4], 0FBh
-                or      byte ptr es:[si+4], 2
-                mov     cx, es
-                dec     ax
-                mov     es, ax
-                mov     es:1, cx
-                mov     es, cx
-                inc     ax
-                cmp     ax, dx
-                jz      short loc_E9E
-                test    byte ptr es:[si+4], 10h
-                jnz     short loc_E9E
-                push    es
-                push    ax
-                nop
-                push    cs
-                call    near ptr LOCKSEGMENT
-                pop     es
-
-loc_E9E:                                ; CODE XREF: ALLOCSEG+40↑j
-                                        ; ALLOCSEG+6D↑j ...
-                mov     ax, es:[si+8]
-                or      ax, ax
-
-loc_EA4:                                ; CODE XREF: ALLOCSEG+3A↑j
-                                        ; ALLOCSEG+4E↑j
-                pop     si
-                mov     sp, bp
-                pop     bp
-                ret     4
-ALLOCSEG        endp
 
 
 ; =============== S U B R O U T I N E =======================================
