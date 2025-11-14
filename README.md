@@ -36,3 +36,14 @@ Tools required for building:
 | Windows SDK, version 1.03 | Headers and libraries, provides debug symbols |
 | IDA | Time Wasted Debugging |
 
+## Building
+
+First, navigate to the "bin" directory.
+Then run the following commands:
+
+```
+msdos -E command
+makekern
+```
+
+The output `KERNEL.EXE` will be located in the `BIN\OUT` directory. 

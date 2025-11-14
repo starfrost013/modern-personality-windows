@@ -3,6 +3,7 @@
         "RESMAN.C": "cpp",
         "LACHECK.C": "cpp",
         "RIP.C": "cpp",
-        "RIP copy.C": "cpp"
+        "RIP copy.C": "cpp",
+        "WINDWP.C": "cpp"
     }
 }
