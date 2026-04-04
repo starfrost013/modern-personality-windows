@@ -27,6 +27,32 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
+; =============== S U B R O U T I N E =======================================
+; context.asm?
+; or maybe ld.asm
+
+; Function Name: GetVersion()
+;
+; Purpose: Returns the operating system version.
+; Windows 1.0 DR5 to 1.01                                               0x1
+; Windows 1.02                                                          0x102
+; Windows 1.03                                                          0x103
+; Windows 1.04                                                          0x104
+; Windows 2.01                                                          0x201
+; Windows 2.02 (from Excel for Windows 2.0 runtime install)             0x202
+; Windows 2.03                                                          0x203 (haven't checked other values)
+; Windows 2.10                                                          0x210 (probably intended to be BCD)
+; Windows 2.11                                                          0x211 (probably intended to be BCD)
+
+; Returns: The new process priority. In Windows 2.01 and above, returns the DOS version and revision when called from assembly, but not in public headers. (used to detect OS/2/DOS5).
+
+
+                public GETVERSION
+GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p
+                mov     ax, 301h        ; 0103h = Windows 1.03
+                ret
+GETVERSION      endp
+
 
                 public WAITEVENT
 WAITEVENT       proc far
@@ -511,31 +537,7 @@ loc_3BBD:                               ; CODE XREF: BOOTSCHEDULE+A4↑j
 RESCHEDULE      endp ; sp-analysis failed
 
 
-; =============== S U B R O U T I N E =======================================
-; context.asm?
-; or maybe ld.asm
 
-; Function Name: GetVersion()
-;
-; Purpose: Returns the operating system version.
-; Windows 1.0 DR5 to 1.01                                               0x1
-; Windows 1.02                                                          0x102
-; Windows 1.03                                                          0x103
-; Windows 1.04                                                          0x104
-; Windows 2.01                                                          0x201
-; Windows 2.02 (from Excel for Windows 2.0 runtime install)             0x202
-; Windows 2.03                                                          0x203 (haven't checked other values)
-; Windows 2.10                                                          0x210 (probably intended to be BCD)
-; Windows 2.11                                                          0x211 (probably intended to be BCD)
-
-; Returns: The new process priority. In Windows 2.01 and above, returns the DOS version and revision when called from assembly, but not in public headers. (used to detect OS/2/DOS5).
-
-
-                public GETVERSION
-GETVERSION      proc far                ; CODE XREF: RETTHUNK+6B↓p
-                mov     ax, 301h        ; 0103h = Windows 1.03
-                ret
-GETVERSION      endp
 
 sEnd CODE
 

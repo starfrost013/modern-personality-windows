@@ -6,8 +6,8 @@
 .8086
 .8087
 
-%out Modern Personality Operating System Version 1.03.01
-%out (c)2025 Starfrost
+%out Modern Personality Operating System Version 1.03.02
+%out (c) 2022, 2025, 2026 starfrost
 
 ; Prevent implicit creation of segments
 ?NODATA = 1
@@ -20,6 +20,10 @@ include NEWEXE.inc
 
 ; 0 = Retail Windows
 KDEBUG=1
+
+; 0 = Windows 1.03
+; 1 = ModernPersonality
+MPENHANCE=1
 
 ; Windows 1.0 Kernel is a tiny application 
 createSeg   _TEXT,CODE,PARA,PUBLIC,CODE ; TODO: get IGROUP to work

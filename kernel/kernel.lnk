@@ -1,10 +1,10 @@
-kdata ldboot dosinit ldfastb rip diskio +
+kdata context rip diskio +
 ginterf galloc gcompact glru gmem handle +
 int21 int24 i21mem lalloc lcompact ldheader +
-ldreloc ldaux lddebug lddisk ld ldfile ldint +
+ldreloc ldaux lddebug resman resaux lddisk ld ldfile ldint +
 ldopen ldseg ldstack ldutil +
 linterf lstring userpro task schedule +
-context atom resman resaux kdataend
+ldboot atom ldfastb dosinit kdataend
 kernel.exe
 kernel.map
 

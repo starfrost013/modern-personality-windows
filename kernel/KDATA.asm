@@ -360,6 +360,10 @@ if KDEBUG
 endif
 ;end
 
+if MPENHANCE
+    SZMPSTRING      db 'Modern Personality 1.03.02 (c) 2022, 2025, 2026 starfrost', 0Dh, 0Ah, 0
+endif
+
 sEnd CODE
 
 end
