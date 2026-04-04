@@ -118,8 +118,6 @@ call	boot_failure
 ; error message
 boot_failure_msg	db 'KERNSTUB: Error during boot',13,10,'$'
 
-sign_msg			db "Like Halley 1986-2025 https://starfrost.net Greetz @IDAPro",13,10,'$' ; lol
-
 boot_failure:
 	pop     dx
 	push    cs
