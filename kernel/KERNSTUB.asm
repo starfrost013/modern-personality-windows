@@ -26,18 +26,8 @@ INCLUDE cmacros.inc
 INCLUDE NEWEXE.inc
 
 ; Disassembled binary has a _TEXT section
-createSeg   STACK,STACK,PARA,STACK,STACK
 createSeg   _TEXT,CODE,PARA,PUBLIC,CODE 
 
-
-sBegin STACK
-	DB 128 DUP (?)
-sEnd STACK
-
-
-; /libw/inc
-;include newexe.inc
-; Segment type: Pure code
 
 sBegin  CODE
 assumes CS,CODE
@@ -46,16 +36,16 @@ assumes DS,CODE
 start PROC FAR
 	push    cs
 	pop     ds
-	mov     si, 180h
+	mov     si, 130h
 	; the MP kernstub is larger than the retail microsoft one. so we just do this.
-	;add     si, 1FFh 
-	;and     si, 0FE00h ; 0x200 - location of NE header in binary
+	add     si, 1FFh 
+	and     si, 0FE00h ; 0x200 - location of NE header in binary
 	cmp     word ptr [si], 454Eh ; check for NE header magic
-	jnz     short call_boot_failure ; jump to fail code if it is not 0x4E45 ("NE")
+	jnz     short boot_failure ; jump to fail code if it is not 0x4E45 ("NE")
 	mov     ax, ds
 	cli		; Disable interrupts
 	mov     ss, ax
-	assume ss:STACK ; si -> pointer to NE header
+	;assume ss:STACK ; si -> pointer to NE header
 	mov     sp, si
 	sti		; Enable interrupts
 	mov     bx, [si].ne_autodata ; segment # of automatic data segment
@@ -83,7 +73,7 @@ shift_alignment:
 load_segment:
 	mov     bx, word ptr [si].ne_csip+2 ; number of code segments 
 	dec     bx ; decrement bx 
-	jl      short call_boot_failure ; fail to boot if there are no code segments
+	jl      short boot_failure ; fail to boot if there are no code segments
 	; we are now booting
 	; load the initial code segment, perform default alignment from the segment table so we can far return to the kernel entrypoint
 	shl     bx, 1 ;*2
@@ -102,15 +92,18 @@ load_segment:
 	mov     ds, di
 	mov     cx, si
 	add     cx, 200h ; NE header location added to initial CS value (so that we don't execute the header)
-	jmp     short boot
+	jmp     short boot_success
 
 ; DEBUG message so that we can see if we booted properly.
-boot:
-	ret ; far return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
 
-call_boot_failure:
-call	boot_failure
+; this is required for it to match, why?
+padding 	db 0Ch dup(0)
+
 ; Attributes: noreturn
+boot_success:
+	ret ; far return to the code segment we just set up, which is the kernel entry point we determined from the NE header. Therefore we will now boot windows.
+boot_failure:
+call	boot_failure_proc
 
 ; Run on invalid NE header present during boot (no code segments or no NE magic). 
 ; Prints message using DOS API and exits.
@@ -118,7 +111,7 @@ call	boot_failure
 ; error message
 boot_failure_msg	db 'KERNSTUB: Error during boot',13,10,'$'
 
-boot_failure:
+boot_failure_proc:
 	pop     dx
 	push    cs
 	pop     ds

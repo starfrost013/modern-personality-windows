@@ -27,15 +27,11 @@ BOOTSTACKSEG       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
 ; This is horrible but is intended to kind of look like what microsoft was doing until we figure out the full usage of this
 PUBLIC BOOTSTACKBOTTOM
 BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
+PUBLIC BOOTSTACK
+BOOTSTACK              db 264h dup(0)
 
-                db 1EAh dup(0)
-
-; idk
 PUBLIC BOOTSTACK_END
 BOOTSTACK_END           dw 0
-
-PUBLIC BOOTSTACK
-BOOTSTACK       db 1E8h dup(0), 
 
 FINALARENA      db 20h dup(0FFh)   ; Last part is for the FinalArena
 
