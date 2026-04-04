@@ -86,16 +86,16 @@ load_segment:
 	jl      short call_boot_failure ; fail to boot if there are no code segments
 	; we are now booting
 	; load the initial code segment, perform default alignment from the segment table so we can far return to the kernel entrypoint
-	shl     bx, 1
-	shl     bx, 1
-	shl     bx, 1
+	shl     bx, 1 ;*2
+	shl     bx, 1 ;*4
+	shl     bx, 1 ;*8
 	add     bx, [si].ne_segtab ; get the address of the NE segment table (get the first code segment)
 	mov     ax, [bx+si] ; find the segment table
 	mov     cx, [si].ne_align ; alignment shift count (so that segments can be aligned on a paragraph boundary)
 	sub     cx, 4 ; segment table address is in paragraphs (16-bytes)
 	shl     ax, cl
 	mov     dx, cs
-	sub     dx, 28h ; 20h for MZ header, 8h for larger MP kernstub
+	sub     dx, 20h ; 20h for MZ header (if you increase the size of KERNSTUB you have to change this value)
 	add     dx, ax
 	push    dx
 	push    word ptr [si].ne_csip ; initial CSIP value from our first code segment
