@@ -1739,7 +1739,7 @@ loc_465F:                               ; CODE XREF: DOSExecHook+4C↑j
                 lds     si, [bp-8]
                 mov     [si+2], di
                 mov     word ptr [si+4], es
-                mov     dx, 45D4h
+                mov     dx, offset SZWINOLDAP
                 push    cs
                 push    dx
                 push    ds
