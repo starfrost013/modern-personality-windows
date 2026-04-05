@@ -17,16 +17,16 @@ externNP BOOTSCHEDULE
 externNP GLOBALREALLOC
 externNP VALIDATECODESEGMENTS
 externNP INT3FHANDLER
-externB BOOTSTACK_START
-externB BOOTSTACK_END
+externB KERNEL_TEXTEND
+externB KERNEL_STACKEND
 
 externW TOPPDB
 externW HEADPDB
 externW HEADTDB ; Windows tdb
 externW CURTDB
-externW BOOTSTACKSEG
-externW BOOTSTACKBOTTOM
-externW UNUSED1_STACK
+externW KERNEL_STACKMIN
+externW KERNEL_STACKTOP
+externW KERNEL_STACKBOTTOM
 externW HEXEHEAD
 
 ; Figure out what these are
@@ -50,6 +50,11 @@ externNP ALLOCALLSEGS
 externNP ENABLEINT21
 externNP GLOBALFREE
 externNP LOADEXEHEADER
+
+;
+; LOCAL GLOBALS TO THIS SOURCE FILE
+;
+KERNEL_STACKMAXUSE = 512
 
 sBegin CODE
 
@@ -88,7 +93,7 @@ SZFREEZEGLOBALMOTION db 'FreezeGlobalMotion',0
 PUBLIC SZLRUSWEEPFREQUENCY
 ; Debug WIN.INI setting to modify the frequency of checking for and freeing the least recently used memory areas.
 SZLRUSWEEPFREQUENCY db 'LRUSweepFrequency',0
-word_7F8C       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
+KERNEL_STACKSIZE       dw 0                    ; DATA XREF: BOOTSTRAP+39↓w
                                         ; BOOTSTRAP+1B2↓r
 
 ; =============== S U B R O U T I N E =======================================
@@ -169,41 +174,43 @@ BOOTDONE        endp
 ; Initial kernel bootstrap functionality.
 BOOTSTRAP       proc far
                 mov     cs:TOPPDB, es           ; set TOPPDB to pointer to MS-DOS Program Data Block (PDB) structure. (so it can be restored on Windows exiting)
+                                                ; MS-DOS sets CS,DS,ES,SS to this
                 mov     cs:HEADPDB, es          ; same for the pointer to the top of the list
-                mov     word ptr es:42h, 0
-                mov     ax, cx
+                mov     word ptr es:42h, 0      ; PDB:0042 (reserved)
+                mov     ax, cx                  
                 mov     cl, 4
-                shr     ax, cl
-                mov     cs:CPSHRUNK, ax         ; CPSHRUNK -> 0x0040
-                mov     bx, sp
+                shr     ax, cl  
+                mov     cs:CPSHRUNK, ax         ; CPSHRUNK -> 0x0040 (DOS header size), how much KERNSTUB shrunk this
+                mov     bx, sp                  ; get stack pointer
+                mov     cl, 4                   ;
+                shr     bx, cl                  ; / 16 (convert to paragraphs)
+                mov     ax, ss                  ; get stack segment
+                add     ax, bx                  ; add stack pointer to stack segment
+                mov     cs:SEGINITMEM, ax       ; store original stack segment so DOS doesn't explode when Windows quits
+                mov     ax, cs                  ; prepare to relocate stack
+                ; **** Relocate the stack segment ****
+                mov     bx, offset KERNEL_TEXTEND       ; end of kernel data
+                mov     si, offset KERNEL_STACKEND      ; end of kernel stack
+                sub     si, bx                  ; get size of kernel stack
                 mov     cl, 4
-                shr     bx, cl                  ; * 16
-                mov     ax, ss
-                add     ax, bx
-                mov     cs:SEGINITMEM, ax       ; size of SEGINIT in paragraphs? (0x00020) or pointer
-                mov     ax, cs
-                mov     bx, offset BOOTSTACK_START
-                mov     si, offset BOOTSTACK_END ; TODO: FIGURE OUT WHAT THIS REFERS TO. THIS IS A TERRIBLE WAY OF DOING THIS!
-                ; cvt to para pointer
-                sub     si, bx
-                mov     cl, 4
-                shr     bx, cl                  ; * 16
-                add     ax, bx
-                mov     cs:word_7F8C, bx        ; 0x093f
+                shr     bx, cl                  ; convert to paragraphs
+                add     ax, bx                  ; add to kernel's segment
+                ; **** Code segment is now relocated to KERNEL ****
+                mov     cs:KERNEL_STACKSIZE, bx         
                 cli                             ; turn off interrupts
-                mov     ss, ax                  ; set up stack to be kernel internal stack? 
-                mov     sp, si
+                mov     ss, ax                  ; stack now points to our own stack
+                mov     sp, si                  ;
                 sti                             ; restore interrupts
                 xor     bp, bp
-                mov     word ptr BOOTSTACKBOTTOM, si  ; not sure
-                mov     word ptr BOOTSTACKSEG, sp     ; not sure
-                sub     si, 200h
-                mov     word ptr UNUSED1_STACK, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
-                mov     ax, es:0FEh             ; this probably cchecks if windows is already running
+                mov     word ptr KERNEL_STACKTOP, si  
+                mov     word ptr KERNEL_STACKMIN, sp     ; not sure
+                sub     si, KERNEL_STACKMAXUSE     ; set kernel stack size to set bottom of stack (TODO: MOVE THAT SHIT HERE)
+                mov     word ptr KERNEL_STACKBOTTOM, si    ; 0x0080 (including binary header?) Maybe add 0x80 oo it...
+                mov     ax, es:0FEh             ; check pdb:00fe, this probably cchecks if windows is already running
                 cmp     ax, 5758h               ; 'WX' (FWINX)
                 jz      short fwinx_found       ; if we found it, jump here
                 cmp     ax, 5747h               ; 'GW' (????)
-                jnz     short get_boot_default_filename          ; if we found it, jump here?
+                jnz     short get_boot_default_filename          ; if Windows launched itself, jump here 
                 inc     cs:FWINX
 
 fwinx_found:                                    ; CODE XREF: BOOTSTRAP+60↑j
@@ -374,13 +381,13 @@ loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
-                mov     cx, offset BOOTSTACK_START
-                mov     si, offset BOOTSTACK_END ; test
+                mov     cx, offset KERNEL_TEXTEND
+                mov     si, offset KERNEL_STACKEND ; test
                 sub     si, cx
                 add     si, 800h
                 mov     es, cs:HEXEHEAD
                 mov     bx, ax
-                add     bx, cs:word_7F8C
+                add     bx, cs:KERNEL_STACKSIZE
                 test    bl, 1
                 jnz     short loc_81C7
                 dec     bx

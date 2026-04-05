@@ -14,30 +14,40 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
-PUBLIC INITDATA_UNK
-INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh)
-                db 28h, 
-PUBLIC BOOTSTACK_START
-BOOTSTACK_START db 16h dup(0)
-PUBLIC UNUSED1_STACK
-UNUSED1_STACK       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
-PUBLIC BOOTSTACKSEG 
-BOOTSTACKSEG       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
+PUBLIC INITDATA_UNK 
+INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh),
+                28h, 0Ch dup(0)
+
+; end of kernel data
+PUBLIC KERNEL_TEXTEND
+KERNEL_TEXTEND db 0Ah dup(0)
+PUBLIC KERNEL_STACKBOTTOM
+KERNEL_STACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+54↑w
+PUBLIC KERNEL_STACKMIN 
+KERNEL_STACKMIN       dw 0                    ; DATA XREF: BOOTSTRAP+4B↑w
 
 ; This is horrible but is intended to kind of look like what microsoft was doing until we figure out the full usage of this
-PUBLIC BOOTSTACKBOTTOM
-BOOTSTACKBOTTOM       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
-PUBLIC BOOTSTACK
-BOOTSTACK              db 264h dup(0)
+PUBLIC KERNEL_STACKTOP
+KERNEL_STACKTOP       dw 0                    ; DATA XREF: BOOTSTRAP+46↑w
 
-PUBLIC BOOTSTACK_END
-BOOTSTACK_END           dw 0
 
+; Some boot data like BOOTTDB needs to be moved here...
+
+; It is a very bad idea to change this
+
+KERNELSTACKSIZE = 640 ; Was 512 bytes in later versions. But it ensures that at least 128 bytes are free    
+                        ; ALSO CHANGE KERNEL_STACKMAXUSE IN LDBOOT.ASM (TODO: MOEV EVERYTHING FRROM THERE HERE!)
+    
+KERNELSTACK   db KERNELSTACKSIZE dup(?)
+
+PUBLIC KERNEL_STACKEND
+KERNEL_STACKEND           dw 0
+
+; End of memory arena list
 FINALARENA      db 20h dup(0FFh)   ; Last part is for the FinalArena
 
 ; force this crap compiler to do things properly
 
 sEnd CODE
-END
 
 end
