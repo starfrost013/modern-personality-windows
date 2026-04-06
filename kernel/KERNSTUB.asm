@@ -28,6 +28,12 @@ INCLUDE NEWEXE.inc
 ; Disassembled binary has a _TEXT section
 createSeg   _TEXT,CODE,PARA,PUBLIC,CODE 
 
+createSeg   STACK,STACK,PARA,STACK,STACK
+
+sBegin  STACK
+        DB  128 DUP (?)
+stacktop    LABEL BYTE
+sEnd    STACK
 
 sBegin  CODE
 assumes CS,CODE
@@ -36,7 +42,7 @@ assumes DS,CODE
 start PROC FAR
 	push    cs
 	pop     ds
-	mov     si, 130h
+	mov     si, offset STACKTOP
 	; the MP kernstub is larger than the retail microsoft one. so we just do this.
 	add     si, 1FFh 
 	and     si, 0FE00h ; 0x200 - location of NE header in binary
@@ -51,9 +57,9 @@ start PROC FAR
 	mov     bx, [si].ne_autodata ; segment # of automatic data segment
 	dec     bx
 	jl      short load_segment
-	shl     bx, 1
-	shl     bx, 1
-	shl     bx, 1
+	shl     bx, 1 ; *2
+	shl     bx, 1 ; *4
+	shl     bx, 1 ; *8
 	add     bx, [si].ne_segtab ;  NE relative offset to segment table
 	mov     ax, [bx+si]
 	cmp     word ptr [si].ne_align, 0

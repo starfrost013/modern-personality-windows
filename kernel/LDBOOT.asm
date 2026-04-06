@@ -549,7 +549,7 @@ SZBOOTCANNOTFINDFILE db 'BOOT: Unable to find file - ',0
 ; ---------------------------------------------------------------------------
 
 boot_failure_file_not_found:                               ; CODE XREF: BOOTSTRAP+333↑j
-                jmp     short boot_failure_02
+                jmp     short boot_failure_03
 ; ---------------------------------------------------------------------------
                 ;align 2
 
@@ -572,7 +572,7 @@ SZBOOTINVALIDEXE db 'BOOT: Invalid .EXE file - ',0
 ; ---------------------------------------------------------------------------
 
 loc_8393:                               ; CODE XREF: BOOTSTRAP+36B↑j
-                jmp     short boot_failure_02
+                jmp     short boot_failure_03
 ; ---------------------------------------------------------------------------
                 ;align 2
 
@@ -588,14 +588,14 @@ loc_8396:                               ; CODE XREF: BOOTSTRAP+321↑j
                 push    cs
                 push    word ptr [bp+4]
                 call    KERNELERROR
-                jmp     short boot_failure_02
+                jmp     short boot_failure_03
 ; ---------------------------------------------------------------------------
 SZBOOTCANNOTLOAD db 'BOOT: Unable to load - ',0
                                         ; DATA XREF: BOOTSTRAP+394↑o
                 db 24h
 ; ---------------------------------------------------------------------------
 
-boot_failure_02:                               ; CODE XREF: BOOTSTRAP:boot_failure_file_not_found↑j
+boot_failure_03:                               ; CODE XREF: BOOTSTRAP:boot_failure_file_not_found↑j
                                         ; BOOTSTRAP:loc_8393↑j ...
                 cmp     word ptr [bp+4], offset SZMSDOSDEXE ; "MSDOSD.EXE"
                 jnb     short loc_83D5
