@@ -14,8 +14,9 @@ sBegin CODE
 assumeS CS,CODE
 assumeS DS,CODE
 
-PUBLIC INITDATA_UNK 
-INITDATA_UNK    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh),
+; Dummy memory arena
+PUBLIC DUMMYARENA 
+DUMMYARENA    db 4Dh, 2 dup(0FFh), 29h, 0Ch dup(0), 4Dh, 2 dup(0FFh),
                 28h, 0Ch dup(0)
 
 ; end of kernel data

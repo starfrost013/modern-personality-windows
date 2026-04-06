@@ -772,9 +772,7 @@ loc_9176:                               ; CODE XREF: INITDOSVARP+23F↑j
                 cmp     ax, es:[bx]
                 jz      short loc_91B4
                 jmp     short wrong_current_pdb
-; ---------------------------------------------------------------------------
-                db 90h
-; ---------------------------------------------------------------------------
+                nop
 
 loc_91A9:                               ; CODE XREF: INITDOSVARP+265↑j
                 mov     bx, 188h
@@ -967,7 +965,7 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 mov     [bx+8], ax
                 sub     ax, di                      ; wut
                 dec     ax
-                mov     byte ptr [bx], 4Dh ; 'M'
+                mov     byte ptr [bx], 4Dh ; 'M'    ; memory arena header
                 mov     [bx+1], bx                  ; ga_owner
                 mov     [bx+3], ax                  ; ga_size
                 mov     [bx+6], si                  ; ga_prev
@@ -986,8 +984,8 @@ GINIT           proc near               ; CODE XREF: GLOBALINIT:loc_934C↓p
                 mov     ds, dx
                 pop     cx
                 shl     cx, 1
-                pop     ax
-                pop     dx
+                pop     ax                          
+                pop     dx                          
                 pop     bx
                 ret
 GINIT           endp

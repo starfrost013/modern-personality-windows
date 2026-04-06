@@ -186,7 +186,8 @@ BOOTSTRAP       proc far
                 shr     bx, cl                  ; / 16 (convert to paragraphs)
                 mov     ax, ss                  ; get stack segment
                 add     ax, bx                  ; add stack pointer to stack segment
-                mov     cs:SEGINITMEM, ax       ; store original stack segment so DOS doesn't explode when Windows quits
+                mov     cs:SEGINITMEM, ax       ; after this (since the stack grows down) is the first free memory (I think). So we can start allocating down from here.
+                                                ; This is a cool optimisation
                 mov     ax, cs                  ; prepare to relocate stack
                 ; **** Relocate the stack segment ****
                 mov     bx, offset KERNEL_TEXTEND       ; end of kernel data
@@ -201,7 +202,7 @@ BOOTSTRAP       proc far
                 mov     ss, ax                  ; stack now points to our own stack
                 mov     sp, si                  ;
                 sti                             ; restore interrupts
-                xor     bp, bp
+                xor     bp, bp                  ; Ensure the "BP chain" ends at 0
                 mov     word ptr KERNEL_STACKTOP, si  
                 mov     word ptr KERNEL_STACKMIN, sp     ; not sure
                 sub     si, KERNEL_STACKMAXUSE     ; set kernel stack size to set bottom of stack (TODO: MOVE THAT SHIT HERE)
@@ -214,7 +215,7 @@ BOOTSTRAP       proc far
                 inc     cs:FWINX
 
 fwinx_found:                                    ; CODE XREF: BOOTSTRAP+60↑j
-                inc     cs:FWINX
+                inc     cs:FWINX                ; FWINX->2
                 jmp     short loc_80AF
 ; ---------------------------------------------------------------------------
 
@@ -241,12 +242,12 @@ get_boot_default_filename:                               ; CODE XREF: BOOTSTRAP+
                 sub     cx, si                  ; get +0x000b (size of "WIN100.BIN" string + drive letter)
                 mov     ax, cx                  
                 add     al, 2                   ; reserve space for drive letter
-                stosb                           
+                stosb                           ; store ?drive number?
                 mov     ah, 19h                 
                 int     21h                     ; DOS - GET DEFAULT DISK NUMBER
                 add     al, 41h ; 'A'           ; add A: to convert to ASCII
                 mov     ah, 3Ah ; ':'  
-                stosw
+                stosw                           ; store drive letter
                 rep movsb                       ; copy Windows Overlay (WIN100.BIN) filename, on default drive.
                 pop     ds
                 assume ds:nothing
@@ -255,22 +256,23 @@ loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 cld
                 mov     es, cs:TOPPDB           ; restore PDB chain we just trashed
                 mov     ax, es                  
-                add     ax, 10h
+                add     ax, 10h                 ; Segment part of pointer to CTRL-C (INT 23H) handler
                 mov     bx, cs:SEGINITMEM       ; SEGINITMEM is now 95c0 (i guess paragraph address)
-                mov     cx, es:2                ; 0x9FC0
-                mov     es, bx                
-                mov     dx, es:10h
+                mov     cx, es:2                ; get the address of the last segment allocated to the program         
+                                                ; we make windows load as high as possible via the MZ header requiring all ram. 
+                mov     es, bx                  ; es->SEGINITMEM (p)    
+                mov     dx, es:10h              ; get (original stack+0x0010)
                 push    dx                      ; 0x0200
-                push    bx                      ; 0x95C0 (SEGINITMEM Location)
+                push    bx                      ; 0x95C0 (SEGINITMEM Location) (probably the highest available address)
                 push    ax                      ; 0x1D8B
-                push    cx                      ; 0x9FC0
+                push    cx                      ; last segment allocated to the prgoram (9FC0 for instance)
                 nop 
                 push    cs                      ; kernel code segment
                 call    near ptr GLOBALINIT     ; initialise global component of memory manager 
                 jcxz    short global_init_fail  ; returns cx=0 on failure.
-                mov     cs:HINITMEM, ax
+                mov     cs:HINITMEM, ax         ; GLOBALINIT returns the first handle / memory block's segment address. So put that here...
                 call    DEBUGINIT               ; Initialise debug subsystem
-                call    INITDOSVARP             ; Get information about the version of DOs we are running on.
+                call    INITDOSVARP             ; Get information about the version of DOs we are running on & initialise related information.
                 mov     bx, offset EXITKERNEL   ; load PEXITPROC  with the address of EXITKERNEL
                 mov     word ptr cs:PEXITPROC, bx
                 mov     word ptr cs:PEXITPROC+2, cs
@@ -279,45 +281,60 @@ loc_80AF:                               ; CODE XREF: BOOTSTRAP+71↑j
                 mov     ds, ax
                 assume ds:_TEXT
                 ; set up the 8087 control word
-                ; set it to 0x001E (0b0000000000011110):
-                ; bit15-13: ignored
-                ; bit12 (Infinity Control): Projective Infinity
-                ; bit11-10: (Rounding Control): Round to Nearest 
-                ; bit8-9 (Precision Control): Single precision (32-bit)
-                ; bit1-7 (Exception Mask): Exceptions masked except "Inexact" and "Underflow" (I think?)
-                ; bit0 (Interrupt Mask): Interrupts not masked
-                mov     si, 1Eh                 
+                ; set 0x00: *check this value
+                mov     si, offset F8087                
                 ; initialise the intel 8087
                 fninit
                 fnstcw  word ptr [si]           ; send control word to 8087
-                jmp     short $+2               ; go to loc_80fb
+                jmp     short $+2               ; go to reset_8087
 ; ---------------------------------------------------------------------------
 
-loc_80FB:                               ; CODE XREF: BOOTSTRAP+EF↑j
+reset_8087:                               ; CODE XREF: BOOTSTRAP+EF↑j
                 mov     ax, [si]
-                and     ax, 37Fh
-                cmp     ax, 37Fh
-                jz      short loc_8109
-                mov     word ptr [si], 0
+                ; 0x037f = mask all exceptions
+                ; 80-bit precision
+                ; Interrupts disabled
+                ; Rounding: truncate towards zero
+                ; Affine infinity
+                and     ax, 37Fh            
+                cmp     ax, 37Fh                ; check bits 10..8 and 6...0 are set and 7 is not set
+                jz      short loc_8109          ; if the 8087 control word is exactly 0x037F, jump
+                mov     word ptr [si], 0        ; otherwise set it to 0
 
 loc_8109:                               ; CODE XREF: BOOTSTRAP+F9↑j
+                ; WIN.COM built us a PSP, and put "WIN100" in it. So now we will try to find the .OVL (with APPS) in it.
+                ; even on slowboot this is required
                 pop     ds
                 assume ds:nothing
-                mov     es, cs:TOPPDB ; set up pdb?
-                mov     si, 80h
-                xor     ax, ax
-                lods    byte ptr es:[si]
-                add     si, ax
-                inc     si
-                lods    byte ptr es:[si]
-                add     si, ax
-                mov     word ptr es:[si-4], 564Fh
-                mov     byte ptr es:[si-2], 4Ch ; 'L'
-                sub     si, ax
-                sub     sp, 80h
-                mov     di, sp
-                mov     bx, 4000h
-                push    es
+                mov     es, cs:TOPPDB           ; set up WIN.COM PSP 
+                mov     si, 80h                 ; Command-line
+                xor     ax, ax                  ; reset ax to 0
+                lods    byte ptr es:[si]        ; load first character of command line
+                add     si, ax                  ; treat it as a length
+                inc     si                      ; increment again
+                lods    byte ptr es:[si]        ; go to the end of string #2
+                add     si, ax                  ; increment
+                mov     word ptr es:[si-4], 564Fh ; replace bytes with OV
+                mov     byte ptr es:[si-2], 4Ch   ; 'L'
+                sub     si, ax                  ; go back to the start of string 2
+                sub     sp, 80h                 
+                mov     di, sp                  ; convert the upper 0x80 bytes of the stack into a temporary buffer
+                mov     bx, 4000h               ; set the open mode
+                push    es                      ; PSP segment
+                push    es                      ;
+                push    si                      ; filename
+                push    ss                      ;
+                push    di                      ;
+                push    bx                      ; open mode
+                nop                             ; idk
+                push    cs                      ; save code segment
+                call    near ptr OPENFILE
+                inc     ax                      ; increment result code
+                pop     es                      ; es=whatever the segment that we got back from  OPENFILE
+                jnz     short found_fastboot_files          ; if it is not -1 it is uccessful (also if)
+                inc     byte ptr es:[si]        ; What???? What is it doing?
+                mov     bx, 4000h               ; Try again???
+                push    es                      
                 push    es
                 push    si
                 push    ss
@@ -326,58 +343,44 @@ loc_8109:                               ; CODE XREF: BOOTSTRAP+F9↑j
                 nop
                 push    cs
                 call    near ptr OPENFILE
-                inc     ax
-                pop     es
-                jnz     short loc_815A
-                inc     byte ptr es:[si]
-                mov     bx, 4000h
-                push    es
-                push    es
-                push    si
-                push    ss
-                push    di
-                push    bx
-                nop
-                push    cs
-                call    near ptr OPENFILE
                 pop     es
                 inc     ax
-                jnz     short loc_815A
+                jnz     short found_fastboot_files
 
-loc_8157:                               ; CODE XREF: BOOTSTRAP+166↓j
-                jmp     boot_failure_01
+boot_failure_02:                               ; CODE XREF: BOOTSTRAP+166↓j
+                jmp     boot_failure_01         ; it is over
 ; ---------------------------------------------------------------------------
 
-loc_815A:                               ; CODE XREF: BOOTSTRAP+136↑j
+found_fastboot_files:                               ; CODE XREF: BOOTSTRAP+136↑j
                                         ; BOOTSTRAP+14B↑j
                 mov     di, sp
                 mov     ax, 0FFFFh
-                push    cs:SEGINITMEM
-                push    ax
+                push    cs:SEGINITMEM           ; porbably this is KERNEL itsefl
+                push    ax  
                 push    ss
                 push    di
-                call    LOADEXEHEADER
-                add     sp, 80h
-                or      ax, ax
-                jz      short loc_8157
-                mov     es, ax
-                mov     cs:HEXEHEAD, ax
-                mov     si, es:22h
-                add     word ptr es:[si+6], 800h
-                inc     word ptr es:2
+                call    LOADEXEHEADER           ; load KERNEL's (?) exe header
+                add     sp, 80h                 ; restore stack from earlier
+                or      ax, ax                  ; did we load the exe header ?
+                jz      short boot_failure_02   ; no, don't even bother booting
+                mov     es, ax                  ; set es to the segaddr of the exe header
+                mov     cs:HEXEHEAD, ax         ; set pointer to our own exe header
+                mov     si, es:22h              ; es:0022 (22h of NE header) -> NR table
+                add     word ptr es:[si+6], 800h ; 
+                inc     word ptr es:2           ; waht 
                 push    es
-                call    ALLOCALLSEGS
+                call    ALLOCALLSEGS            ; allocate space for all of KERNEL's segments
                 mov     es, cs:HEXEHEAD
                 mov     si, 1
                 mov     ax, 0FFFFh
-                push    cs:HEXEHEAD
-                push    si
-                push    cs
-                push    ax
-                call    LOADSEGMENT
-                or      ax, ax
-                jnz     short loc_81A9
-                jmp     boot_failure_01
+                push    cs:HEXEHEAD             ; KERNEL header
+                push    si                      ; Load segment 1
+                push    cs                      ; (?) Probably the segment to load from
+                push    ax                      ; Maximum size
+                call    LOADSEGMENT             ; load kernel segment into memory
+                or      ax, ax                  ; Did it load?
+                jnz     short loc_81A9          ; If so, branch
+                jmp     boot_failure_01         
 ; ---------------------------------------------------------------------------
 
 loc_81A9:                               ; CODE XREF: BOOTSTRAP+19A↑j
@@ -446,7 +449,7 @@ check_boot_type:
                 mov     word ptr cs:PREVINT3FPROC+2, ax
                 mov     es, cs:SEGINITMEM
                 assume es:nothing
-                cmp     word ptr es:0Ah, 0
+                cmp     word ptr es:0Ah, 0                  
 ife KDEBUG
                 jnz     short no_fastboot
                 mov     ax, offset BOOTDONE                 ; function to run after fastboot
@@ -472,7 +475,7 @@ SZWINPACKFILE   db 'WIN100.BIN',0
 ; ---------------------------------------------------------------------------
 
 boot_failure_01:                               ; CODE XREF: BOOTSTRAP:global_init_fail↑j
-                                        ; BOOTSTRAP:loc_8157↑j ...
+                                        ; BOOTSTRAP:boot_failure_02↑j ...
                 mov     al, 1           ; error code
                 push    ax
                 nop

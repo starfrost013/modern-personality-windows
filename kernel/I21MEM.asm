@@ -33,7 +33,7 @@ INT21ALLOC      proc near               ; CODE XREF: DOSAllocMemoryHook+3↑p
 INT21ALLOC      endp
 
 ; ---------------------------------------------------------------------------
-                db 90h
+                nop
 
 ; =============== S U B R O U T I N E =======================================
 
