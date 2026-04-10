@@ -74,8 +74,10 @@ LME_INVEXE = 11                             ; Invalid binary
 LME_MAXERR = 32                             ; for comparisons
 
 ;
-; **** Standard task stuff **** (idk if it should be a struct?)
+; Instance data / NULL segment at the start of DGROUP (idk if it should be a struct?)
 ;
+; If [0] is not a heap it is not a null segment,
+; If [0x06] is not a pointer to valid local heap it is not a null segent
 
 __ACRTUSED = 1                              ; Determiens if the crt was used?
 PLOCALHEAP = 6                              ; Pointer to the local heap of a task (near pointers)
