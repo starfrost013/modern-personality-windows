@@ -51,8 +51,8 @@ assumeS DS,CODE
 LOCALALLOC      proc far                ; CODE XREF: INITATOMTABLE+20↑p
                                         ; LOOKUPATOM+116↑p
 
-arg_0           = word ptr  6
-arg_2           = word ptr  8
+wBytes           = word ptr  6
+wFlags           = word ptr  8
 
                 inc     bp              ; KERNEL_5
                 push    bp
@@ -77,7 +77,7 @@ arg_2           = word ptr  8
                 call    KERNELERROR
                 jmp     short loc_5849
 ; ---------------------------------------------------------------------------
-SZERRLOCALALLOC db 'LocalAlloc: Invalid local heap',0
+SZERRLOCALALLOC db 'LocalAlloc: Invalid local heap',0arg_0
                                         ; DATA XREF: LOCALALLOC+12↑o
                 db 24h
 ; ---------------------------------------------------------------------------
@@ -85,13 +85,13 @@ SZERRLOCALALLOC db 'LocalAlloc: Invalid local heap',0
 loc_5849:                               ; CODE XREF: LOCALALLOC+C↑j
                                         ; LOCALALLOC+1E↑j
                 call    LENTER
-                mov     ax, [bp+arg_2]
+                mov     ax, [bp+wFlags]
                 test    al, 10h
                 jz      short loc_5856
                 inc     word ptr [di+2]
 
 loc_5856:                               ; CODE XREF: LOCALALLOC+48↑j
-                mov     bx, [bp+arg_0]
+                mov     bx, [bp+wBytes]
                 or      bx, bx
                 jnz     short loc_586E
                 and     ax, 2
@@ -117,7 +117,7 @@ loc_586E:                               ; CODE XREF: LOCALALLOC+52↑j
 
 loc_588C:                               ; CODE XREF: LOCALALLOC+57↑j
                                         ; LOCALALLOC+63↑j ...
-                test    [bp+arg_2], 10h
+                test    [bp+wFlags], 10h
                 jz      short loc_5896
                 dec     word ptr [di+2]
 
@@ -146,9 +146,9 @@ LOCALALLOC      endp
                 public LOCALREALLOC
 LOCALREALLOC    proc far
 
-arg_0           = word ptr  6
-arg_2           = word ptr  8
-arg_4           = word ptr  0Ah
+wFlags           = word ptr  6
+wBytes           = word ptr  8
+hMem           = word ptr  0Ah
 
                 inc     bp              ; KERNEL_6
                 push    bp
@@ -179,22 +179,22 @@ SZERRLOCALREALLOC db 'LocalReAlloc: Invalid local heap',0
 loc_58EA:                               ; CODE XREF: LOCALREALLOC+C↑j
                                         ; LOCALREALLOC+1E↑j
                 call    LENTER
-                test    [bp+arg_0], 10h
+                test    [bp+wFlags], 10h
                 jz      short loc_58F7
                 inc     word ptr [di+2]
 
 loc_58F7:                               ; CODE XREF: LOCALREALLOC+4A↑j
-                mov     si, [bp+arg_4]
+                mov     si, [bp+hMem]
                 call    LDREF
                 jz      short loc_5957
-                test    [bp+arg_0], 80h
+                test    [bp+wFlags], 80h
                 jnz     short loc_5944
                 mov     si, bx
                 mov     bx, ax
-                add     bx, [bp+arg_2]
+                add     bx, [bp+wBytes]
                 call    LALIGN
                 mov     bx, [si+2]
-                cmp     [bp+arg_2], 0
+                cmp     [bp+wBytes], 0
                 jnz     short loc_5973
                 jcxz    short loc_5920
 
@@ -205,11 +205,11 @@ loc_591B:                               ; CODE XREF: LOCALREALLOC+7D↓j
 ; ---------------------------------------------------------------------------
 
 loc_5920:                               ; CODE XREF: LOCALREALLOC+71↑j
-                test    [bp+arg_0], 2
+                test    [bp+wFlags], 2
                 jz      short loc_591B
                 mov     al, 2
                 xor     cx, cx
-                mov     bx, [bp+arg_4]
+                mov     bx, [bp+hMem]
                 call    LNOTIFY
                 jz      short loc_591B
                 xor     ax, ax
@@ -222,7 +222,7 @@ loc_5920:                               ; CODE XREF: LOCALREALLOC+71↑j
 ; ---------------------------------------------------------------------------
 
 loc_5944:                               ; CODE XREF: LOCALREALLOC+5C↑j
-                mov     ax, [bp+arg_0]
+                mov     ax, [bp+wFlags]
                 or      si, si
                 jz      short loc_59A5
                 and     byte ptr [si+2], 0C0h
@@ -234,10 +234,10 @@ loc_5944:                               ; CODE XREF: LOCALREALLOC+5C↑j
 loc_5957:                               ; CODE XREF: LOCALREALLOC+55↑j
                 test    cl, 40h
                 jz      short loc_59A5
-                mov     bx, [bp+arg_2]
+                mov     bx, [bp+wBytes]
                 push    si
                 mov     ax, 2
-                or      ax, [bp+arg_0]
+                or      ax, [bp+wFlags]
                 call    LALLOC
                 pop     si
                 jz      short loc_591B
@@ -277,7 +277,7 @@ loc_599E:                               ; CODE XREF: LOCALREALLOC+EC↑j
 
 loc_59A5:                               ; CODE XREF: LOCALREALLOC+9A↑j
                                         ; LOCALREALLOC+A1↑j ...
-                mov     ax, [bp+arg_4]
+                mov     ax, [bp+hMem]
 
 loc_59A8:                               ; CODE XREF: LOCALREALLOC+92↑j
                 jmp     short loc_5A1E
@@ -290,7 +290,7 @@ loc_59AB:                               ; CODE XREF: LOCALREALLOC+CD↑j
                 ja      short loc_59C6
                 mov     cx, bx
                 call    LJOIN
-                test    [bp+arg_0], 40h
+                test    [bp+wFlags], 40h
                 jz      short loc_59C4
                 call    LZERO
 
@@ -300,7 +300,7 @@ loc_59C4:                               ; CODE XREF: LOCALREALLOC+117↑j
 
 loc_59C6:                               ; CODE XREF: LOCALREALLOC+106↑j
                                         ; LOCALREALLOC+10B↑j
-                mov     dx, [bp+arg_0]
+                mov     dx, [bp+wFlags]
                 mov     bx, 2
                 jcxz    short loc_59D5
                 test    dx, bx
@@ -314,23 +314,23 @@ loc_59D2:                               ; CODE XREF: LOCALREALLOC+137↓j
 loc_59D5:                               ; CODE XREF: LOCALREALLOC+124↑j
                                         ; LOCALREALLOC+128↑j
                 or      dx, bx
-                test    [bp+arg_4], bx
+                test    [bp+hMem], bx
                 jnz     short loc_59E3
-                test    [bp+arg_0], bx
+                test    [bp+wFlags], bx
                 jz      short loc_59D2
                 xor     dx, bx
 
 loc_59E3:                               ; CODE XREF: LOCALREALLOC+132↑j
                 mov     ax, dx
-                mov     bx, [bp+arg_2]
+                mov     bx, [bp+wBytes]
                 call    LALLOC
                 jz      short loc_59D2
                 push    ax
                 mov     cx, ax
-                mov     bx, [bp+arg_4]
+                mov     bx, [bp+hMem]
                 mov     al, 1
                 call    LNOTIFY
-                mov     si, [bp+arg_4]
+                mov     si, [bp+hMem]
                 call    LDREF
                 mov     si, ax
                 pop     ax
@@ -352,7 +352,7 @@ loc_5A14:                               ; CODE XREF: LOCALREALLOC+C8↑j
 
 loc_5A1E:                               ; CODE XREF: LOCALREALLOC+75↑j
                                         ; LOCALREALLOC:loc_59A8↑j ...
-                test    [bp+arg_0], 10h
+                test    [bp+wFlags], 10h
                 jz      short loc_5A28
                 dec     word ptr [di+2]
 
@@ -381,7 +381,7 @@ LOCALREALLOC    endp
                 public LOCALFREE
 LOCALFREE       proc far                ; CODE XREF: LOOKUPATOM+102↑p
 
-arg_0           = word ptr  6
+hMem           = word ptr  6
 
                 inc     bp              ; KERNEL_7
                 push    bp
@@ -413,7 +413,7 @@ SZERRLOCALFREE  db 'LocalFree: Invalid local heap',0
 loc_5A79:                               ; CODE XREF: LOCALFREE+C↑j
                                         ; LOCALFREE+1E↑j
                 call    LENTER
-                mov     si, [bp+arg_0]
+                mov     si, [bp+hMem]
                 call    LDREF
                 jz      short loc_5AC7
                 or      ch, ch
@@ -425,7 +425,7 @@ loc_5A79:                               ; CODE XREF: LOCALFREE+C↑j
                 push    cs
                 push    ax
                 push    bx
-                push    [bp+arg_0]
+                push    [bp+hMem]
                 call    KERNELERROR
                 jmp     short loc_5ABE
 ; ---------------------------------------------------------------------------
@@ -435,7 +435,7 @@ SZERRLOCALFREELOCKED db 'LocalFree: freeing locked object',0
 ; ---------------------------------------------------------------------------
 
 loc_5ABE:                               ; CODE XREF: LOCALFREE+60↑j
-                mov     si, [bp+arg_0]
+                mov     si, [bp+hMem]
                 call    LDREF
 
 loc_5AC4:                               ; CODE XREF: LOCALFREE+4C↑j
@@ -464,9 +464,12 @@ LOCALFREE       endp
 
                 public LOCALSIZE
 LOCALSIZE       proc far
+
+hMem           = word ptr  6
+
                 push    si              ; KERNEL_10
                 mov     si, sp
-                mov     si, ss:[si+6]
+                mov     si, ss:[si+hMem]
                 call    LDREF
                 jz      short loc_5AEB
                 sub     ax, [bx+2]
@@ -488,9 +491,12 @@ LOCALSIZE       endp
 
                 public LOCALFLAGS
 LOCALFLAGS      proc far
+
+hMem           = word ptr  6
+
                 push    si              ; KERNEL_12
                 mov     si, sp
-                mov     si, ss:[si+6]
+                mov     si, ss:[si+hMem]
                 call    LDREF
                 mov     cx, si
                 jcxz    short loc_5B02
@@ -515,14 +521,14 @@ LOCALFLAGS      endp
                 public LOCALLOCK
 LOCALLOCK       proc far
 
-arg_0           = word ptr  6
+hMem           = word ptr  6
 
                 inc     bp              ; KERNEL_8
                 push    bp
                 mov     bp, sp
                 push    ds
                 push    si
-                mov     si, [bp+arg_0]
+                mov     si, [bp+hMem]
                 call    LDREF
                 jz      short loc_5B62
                 or      si, si
@@ -536,7 +542,7 @@ arg_0           = word ptr  6
                 push    cs
                 push    ax
                 push    ax
-                push    [bp+arg_0]
+                push    [bp+hMem]
                 call    KERNELERROR
                 jmp     short loc_5B5D
 ; ---------------------------------------------------------------------------
@@ -575,14 +581,14 @@ LOCALLOCK       endp
                 public LOCALUNLOCK
 LOCALUNLOCK     proc far
 
-arg_0           = word ptr  6
+hMem           = word ptr  6
 
                 inc     bp              ; KERNEL_9
                 push    bp
                 mov     bp, sp
                 push    ds
                 push    si
-                mov     si, [bp+arg_0]
+                mov     si, [bp+hMem]
                 call    LDREF
                 jz      short loc_5BD5
                 xor     ax, ax
@@ -602,7 +608,7 @@ arg_0           = word ptr  6
                 push    cs
                 push    ax
                 push    ax
-                push    [bp+arg_0]
+                push    [bp+hMem]
                 call    KERNELERROR
                 jmp     short loc_5BD3
 ; ---------------------------------------------------------------------------
@@ -665,7 +671,7 @@ LOCALHANDLE     endp
                 public LOCALCOMPACT
 LOCALCOMPACT    proc far
 
-arg_0           = word ptr  6
+wMinFree           = word ptr  6
 
                 inc     bp              ; KERNEL_13
                 push    bp
@@ -696,7 +702,7 @@ SZERRLOCALCOMPACT db 'LocalCompact: Invalid local heap',0
 loc_5C40:                               ; CODE XREF: LOCALCOMPACT+C↑j
                                         ; LOCALCOMPACT+1E↑j
                 call    LENTER
-                mov     bx, [bp+arg_0]
+                mov     bx, [bp+wMinFree]
                 clc
                 call    LALIGN
                 call    LCOMPACT
@@ -726,10 +732,13 @@ LOCALCOMPACT    endp
 ; Set P_NOTIFYINFO function pointer in the Local Heap Info structure.
 ; This function never changed and is the same even in Windows 3.1!
                 public LOCALNOTIFY
-LOCALNOTIFY     proc far
+LOCALNOTIFY     proc far    
+
+lpNotifyFunc    =  word ptr  4
+
                 mov     bx, sp          ; KERNEL_14
-                mov     ax, ss:[bx+4]   ; lpNotifyFunc
-                mov     dx, ss:[bx+6]   ; lpNotifyFunc+2
+                mov     ax, ss:[bx+lpNotifyFunc] 
+                mov     dx, ss:[bx+lpNotifyFunc+2] 
                 mov     bx, ds:PLOCALHEAP ; pointer to app local heap
                 xchg    ax, [bx+16h]    ; p_notifyinfo
                 xchg    dx, [bx+18h]
