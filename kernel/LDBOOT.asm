@@ -529,7 +529,7 @@ load_boot_file:                               ; CODE XREF: SLOWBOOT+51↓p
                 nop
                 push    cs
                 call    near ptr LOADMODULE     ; attempt to load the binary by calling LOADMODULE
-                cmp     ax, 2                   ; LoadModule Error Code 2 - File Not Found
+                cmp     ax, LME_FNF             ; LoadModule Error Code 2 - File Not Found
                 jnz     short boot_failure_file_corrupted
                 cmp     word ptr [bp+4], offset SZMSDOSDEXE ; did we try to load MSDOSD.EXE?
                 jnb     short loc_8396
@@ -677,7 +677,7 @@ load_file_loop:                               ; CODE XREF: SLOWBOOT+62↓j
 load_default_shell:                               ; CODE XREF: SLOWBOOT+6B↑j
                                         ; SLOWBOOT+84↓j
                 push    di                      ; advance to next file (in this case, always USER.EXE)
-                call    LOADNEWEXE          ; load it
+                call    LOADNEWEXE              ; load it
                 push    cs
                 pop     es
                 mov     cx, 0FFFFh

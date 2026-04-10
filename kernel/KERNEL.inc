@@ -65,5 +65,21 @@ ERR_SEGMENT_LOAD_FAILED=4FFh                ; Couldn't load segment
 ERR_RESOURCE_INVALID=504h                   ; Invalid resource
 ERR_RESOURCE_LOAD_FAIL=505h                 ; Could not load resource
 
-; Some functions that we need everywhere
+;
+; ***** LoadModule and co. error codes *****
+;
 
+LME_FNF = 2                                 ; File not found
+LME_INVEXE = 11                             ; Invalid binary
+LME_MAXERR = 32                             ; for comparisons
+
+;
+; **** Standard task stuff **** (idk if it should be a struct?)
+;
+
+__ACRTUSED = 1                              ; Determiens if the crt was used?
+PLOCALHEAP = 6                              ; Pointer to the local heap of a task (near pointers)
+PATOMTABLE = 8                              ; Pointer to the local atom table of a task
+PSTACKTOP = 0x0A                            ; Top of the task's stack
+PSTACKMIN = 0x0C                            ; Top of the stack
+PSTACKBOT = 0x0E                            ; Top of the stack

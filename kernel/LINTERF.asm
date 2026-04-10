@@ -723,14 +723,15 @@ LOCALCOMPACT    endp
 
 ; =============== S U B R O U T I N E =======================================
 
-
+; Set P_NOTIFYINFO function pointer in the Local Heap Info structure.
+; This function never changed and is the same even in Windows 3.1!
                 public LOCALNOTIFY
 LOCALNOTIFY     proc far
                 mov     bx, sp          ; KERNEL_14
-                mov     ax, ss:[bx+4]
-                mov     dx, ss:[bx+6]
-                mov     bx, ds:6
-                xchg    ax, [bx+16h]
+                mov     ax, ss:[bx+4]   ; lpNotifyFunc
+                mov     dx, ss:[bx+6]   ; lpNotifyFunc+2
+                mov     bx, ds:PLOCALHEAP ; pointer to app local heap
+                xchg    ax, [bx+16h]    ; p_notifyinfo
                 xchg    dx, [bx+18h]
                 ret     4
 LOCALNOTIFY     endp

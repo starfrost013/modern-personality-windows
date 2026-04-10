@@ -390,8 +390,20 @@ STARTMODULE     endp
 ; =============== S U B R O U T I N E =======================================
 
 
+; LoadModule: Load a new module or create an instance of an existing one.
+;
+; Return value:
+; AX < 32 - Error:
+;   AX = 1 = ???
+;   AX = 2 = File not found
+;   AX = 11 = Invalid EXE
+; AX > 32 - Module handle (or instance handle if instance of module) (use LME_MAXERR)
+
+; -9Ah = handle
                 public LOADMODULE
 LOADMODULE      proc far                ; CODE XREF: LOADMODULE+23E↓p
+
+mod_hfile       = word ptr -9Eh
                                         ; LOADLIBRARY+9↓j ...
                 push    ds              ; KERNEL_45
                 pop     ax
@@ -401,9 +413,9 @@ LOADMODULE      proc far                ; CODE XREF: LOADMODULE+23E↓p
                 mov     bp, sp
                 push    ds
                 mov     ds, ax
-                sub     sp, 0A2h
+                sub     sp, 0A2h        ; allocate stack
                 push    si
-                mov     ax, [bp+0Ch]
+                mov     ax, [bp+0Ch]    
                 sub     dx, dx
                 or      ax, dx
                 jnz     short loc_3CF
@@ -470,13 +482,13 @@ loc_421:                                ; CODE XREF: LOADMODULE+67↑j
                 nop
                 push    cs
                 call    near ptr OPENFILE
-                mov     [bp-9Eh], ax
+                mov     [bp+mod_hfile], ax
                 inc     ax
                 jnz     short loc_491
                 cmp     word ptr [bp-9Ah], 0
                 jz      short loc_482
                 mov     ax, [bp-9Ah]
-                jmp     loc_7D6
+                jmp     lm_done
 ; ---------------------------------------------------------------------------
 
 loc_45E:                                ; CODE XREF: LOADMODULE+4F↑j
@@ -502,7 +514,7 @@ loc_473:                                ; CODE XREF: LOADMODULE+B3↑j
 
 loc_482:                                ; CODE XREF: LOADMODULE+A1↑j
                 mov     ax, 1
-                jmp     loc_7D6
+                jmp     lm_done
 ; ---------------------------------------------------------------------------
 
 loc_488:                                ; CODE XREF: LOADMODULE+18↑j
@@ -518,21 +530,21 @@ loc_491:                                ; CODE XREF: LOADMODULE+7E↑j
 ; ---------------------------------------------------------------------------
 
 loc_49A:                                ; CODE XREF: LOADMODULE+E1↑j
-                push    word ptr [bp-9Eh]
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
+                push    word ptr [bp+mod_hfile]
                 lea     ax, [bp-9Ch]
                 push    ss
                 push    ax
                 call    LOADEXEHEADER
                 mov     [bp-0A0h], ax
-                or      ax, ax
-                jnz     short loc_4C2
-                push    word ptr [bp-9Eh]
+                or      ax, ax          ; did LOADEXEHEADER return 0?
+                jnz     short loc_4C2   ; no, branch
+                push    word ptr [bp+mod_hfile]   ; handle
                 nop
                 push    cs
                 call    near ptr _LCLOSE
-                mov     ax, 0Bh
-                jmp     loc_7D6
+                mov     ax, LME_INVEXE
+                jmp     lm_done
 ; ---------------------------------------------------------------------------
 
 loc_4C2:                                ; CODE XREF: LOADMODULE+FD↑j
@@ -540,7 +552,7 @@ loc_4C2:                                ; CODE XREF: LOADMODULE+FD↑j
                 jnz     short loc_4D7
 
 loc_4C9:                                ; CODE XREF: LOADMODULE+14F↓j
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
                 nop
                 push    cs
                 call    near ptr _LCLOSE
@@ -548,7 +560,7 @@ loc_4C9:                                ; CODE XREF: LOADMODULE+14F↓j
 loc_4D2:                                ; CODE XREF: LOADMODULE+38B↓j
                                         ; LOADMODULE+40B↓j
                 sub     ax, ax
-                jmp     loc_7D6
+                jmp     lm_done
 ; ---------------------------------------------------------------------------
 
 loc_4D7:                                ; CODE XREF: LOADMODULE+113↑j
@@ -619,7 +631,7 @@ loc_552:                                ; CODE XREF: LOADMODULE+199↑j
 
 loc_55F:                                ; CODE XREF: LOADMODULE+1A6↑j
                 push    word ptr [bp-0A0h]
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
                 push    si
                 call    GETSTRINGPTR
                 mov     [bp-10h], ax
@@ -742,8 +754,8 @@ loc_66A:                                ; CODE XREF: LOADMODULE+2EA↓j
                 jz      short loc_697
                 push    word ptr [bp-0A0h]
                 push    ax
-                push    word ptr [bp-9Eh]
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
+                push    word ptr [bp+mod_hfile]
                 call    LOADSEGMENT
                 mov     [bp-16h], ax
                 or      ax, ax
@@ -765,7 +777,7 @@ loc_6AB:                                ; CODE XREF: LOADMODULE+284↑j
                 cmp     word ptr [bp-16h], 0
                 jz      short loc_6BC
                 push    word ptr [bp-0A0h]
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
                 call    PRELOADRESOURCES
 
 loc_6BC:                                ; CODE XREF: LOADMODULE+2FB↑j
@@ -786,14 +798,14 @@ loc_6D6:                                ; CODE XREF: LOADMODULE+312↑j
                 push    word ptr [bp+8]
                 push    word ptr [bp+6]
                 push    word ptr [bp-0A0h]
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
                 call    STARTMODULE
                 mov     [bp-16h], ax
                 jmp     short loc_6F8
 ; ---------------------------------------------------------------------------
 
 loc_6EF:                                ; CODE XREF: LOADMODULE+30C↑j
-                push    word ptr [bp-9Eh]
+                push    word ptr [bp+mod_hfile]
                 nop
                 push    cs
                 call    near ptr _LCLOSE
@@ -803,13 +815,13 @@ loc_6F8:                                ; CODE XREF: LOADMODULE+339↑j
                 call    TRIMEXEHEADER
                 cmp     word ptr [bp-16h], 0
                 jz      short loc_708
-                jmp     loc_7D3
+                jmp     lm_setresultdone
 ; ---------------------------------------------------------------------------
 
 loc_708:                                ; CODE XREF: LOADMODULE+34F↑j
                 push    word ptr [bp-0A0h]
                 call    DELMODULE
-                jmp     loc_7D3
+                jmp     lm_setresultdone
 ; ---------------------------------------------------------------------------
 
 loc_712:                                ; CODE XREF: LOADMODULE+E3↑j
@@ -858,18 +870,18 @@ loc_748:                                ; CODE XREF: LOADMODULE+378↑j
                 call    STARTMODULE
                 mov     [bp-16h], ax
                 or      ax, ax
-                jnz     short loc_7D3
+                jnz     short lm_setresultdone
                 push    word ptr [bp-0A0h]
                 nop
                 push    cs
                 call    near ptr FREEMODULE
-                jmp     short loc_7D3
+                jmp     short lm_setresultdone
 ; ---------------------------------------------------------------------------
 
 loc_798:                                ; CODE XREF: LOADMODULE+3BC↑j
                 push    word ptr [bp-0A0h]
                 call    DECEXEUSAGE
-                jmp     short loc_7D3
+                jmp     short lm_setresultdone
 ; ---------------------------------------------------------------------------
 
 loc_7A1:                                ; CODE XREF: LOADMODULE+39C↑j
@@ -895,11 +907,11 @@ loc_7C2:                                ; CODE XREF: LOADMODULE+3F5↑j
                 call    GETINSTANCE
                 mov     [bp-16h], ax
 
-loc_7D3:                                ; CODE XREF: LOADMODULE+351↑j
+lm_setresultdone:                                ; CODE XREF: LOADMODULE+351↑j
                                         ; LOADMODULE+35B↑j ...
                 mov     ax, [bp-16h]
 
-loc_7D6:                                ; CODE XREF: LOADMODULE+A7↑j
+lm_done:                                ; CODE XREF: LOADMODULE+A7↑j
                                         ; LOADMODULE+D1↑j ...
                 pop     si
                 sub     bp, 2

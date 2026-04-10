@@ -98,7 +98,7 @@ LSTRCPY         endp ; sp-analysis failed
 
                 public LSTRCAT
 LSTRCAT         proc far
-                call    LSTRSETUP ; KERNEL_89
+                call    LSTRSETUP ; KERNEL_89 
                 xor     ax, ax
                 mov     cx, 0FFFFh
                 repne scasb
