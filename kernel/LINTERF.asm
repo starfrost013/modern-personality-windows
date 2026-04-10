@@ -77,7 +77,7 @@ wFlags           = word ptr  8
                 call    KERNELERROR
                 jmp     short loc_5849
 ; ---------------------------------------------------------------------------
-SZERRLOCALALLOC db 'LocalAlloc: Invalid local heap',0arg_0
+SZERRLOCALALLOC db 'LocalAlloc: Invalid local heap',0
                                         ; DATA XREF: LOCALALLOC+12↑o
                 db 24h
 ; ---------------------------------------------------------------------------
