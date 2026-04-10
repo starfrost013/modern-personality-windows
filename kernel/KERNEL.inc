@@ -77,11 +77,12 @@ LME_MAXERR = 32                             ; for comparisons
 ; Instance data / NULL segment at the start of DGROUP (idk if it should be a struct?)
 ;
 ; If [0] is not a heap it is not a null segment,
-; If [0x06] is not a pointer to valid local heap it is not a null segent
+; If [0x06] is not a pointer to valid local heap it is not a null segment
+; Also PSTACKMIN & BOT don't exist on DLL
 
 __ACRTUSED = 1                              ; Determiens if the crt was used?
 PLOCALHEAP = 6                              ; Pointer to the local heap of a task (near pointers)
 PATOMTABLE = 8                              ; Pointer to the local atom table of a task
 PSTACKTOP = 0x0A                            ; Top of the task's stack
-PSTACKMIN = 0x0C                            ; Top of the stack
-PSTACKBOT = 0x0E                            ; Top of the stack
+PSTACKMIN = 0x0C                            ; High water mark of current stack use
+PSTACKBOT = 0x0E                            ; Bottom of the stack
