@@ -1,3 +1,5 @@
+**This is on hiatus. I don't have time to work on it. ;)**
+
 # modern:personality - Windows Decompilation
 
 This project attempts to reverse engineer Microsoft Windows 1.x entirely to recompliable code, as well as research it and Multitasking MS-DOS 4.0 ("MT-DOS"). 
